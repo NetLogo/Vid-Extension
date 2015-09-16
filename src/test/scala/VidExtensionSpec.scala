@@ -9,34 +9,54 @@ import org.nlogo.api._
 import scala.language.dynamics
 
 class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
-  val fileSet = Map[String, JFile](
-    "foobar.mp4" -> JFile.createTempFile("foobar", ".mp4"))
+  val movieFactory = new MovieFactory {
+    override def open(filePath: String): Option[JFile] = {
+      filePath match {
+        case "/currentdir/foobar.mp4"      => Some[JFile](null)
+        case "/currentdir/unsupported.ogg" => throw new InvalidFormatException
+        case _ => None
+      }
+    }
+  }
 
   def withLoadedExtension(f: (VidExtension, CommandPrimitiveLoader) => Unit) = {
-    val vidExtension = new VidExtension(fileSet)
-    val primitiveLoader = new CommandPrimitiveLoader()
-    vidExtension.load(primitiveLoader)
-    f(vidExtension, primitiveLoader)
+    val vidExtension = new VidExtension(movieFactory)
+    val vid = new CommandPrimitiveLoader()
+    vidExtension.load(vid)
+    f(vidExtension, vid)
   }
 
   feature("opening and closing") {
     scenario("opens a movie") {
-      withLoadedExtension { (vidExtension, primitiveLoader) =>
+      withLoadedExtension { (vidExtension, vid) =>
         When("I have opened a movie")
-        primitiveLoader.`movie-open`("foobar.mp4")
+        vid.`movie-open`("foobar.mp4")
 
         Then("I should see that I have an active video source")
-        assert(vidExtension.activeVideoSource != null)
+        assert(vidExtension.activeVideoSource.nonEmpty)
       }
     }
 
-    scenario("fails to open a movie") {
-      withLoadedExtension { (vidExtension, primitiveLoader) =>
+    scenario("closes an opened movie") {
+      withLoadedExtension { (vidExtension, vid) =>
+        Given("I have opened a movie")
+        vid.`movie-open`("foobar.mp4")
+
+        When("I close the video source")
+        vid.close()
+
+        Then("I should see that there is no active video source")
+        assert(vidExtension.activeVideoSource.isEmpty)
+      }
+    }
+
+    scenario("cannot find movie") {
+      withLoadedExtension { (vidExtension, vid) =>
         var ee: ExtensionException = null
 
         When("I try to open a movie that doesn't exist")
         try {
-          primitiveLoader.`movie-open`("not-real.mp4")
+          vid.`movie-open`("not-real.mp4")
           fail("expected to see an error when opening non-existent movie")
         } catch {
           case e: ExtensionException => ee = e
@@ -45,6 +65,23 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         Then("I should see an error - vid: no movie found")
         assert(ee != null)
         assert(ee.getMessage.contains("vid: no movie found"))
+      }
+    }
+
+    scenario("movie has invalid format") {
+      withLoadedExtension { (vidExtension, vid) =>
+        var ee: ExtensionException = null
+        When("I try to open a movie with an invalid format")
+        try {
+          vid.`movie-open`("unsupported.ogg")
+          fail("expected to see an error when opening invalid movie")
+        } catch {
+          case e: ExtensionException => ee = e
+        }
+
+        Then("I should see an error - vid: format not supported")
+        assert(ee != null)
+        assert(ee.getMessage.contains("vid: format not supported"))
       }
     }
   }
@@ -73,7 +110,8 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
   }
 
   class FakeContext extends Context {
-    def attachCurrentDirectory(path: String): String = ???
+    def attachCurrentDirectory(path: String): String =
+      s"/currentdir/$path"
     def attachModelDir(filePath: String): String = ???
     def getAgent: org.nlogo.api.Agent = ???
     def getDrawing: java.awt.image.BufferedImage = ???
