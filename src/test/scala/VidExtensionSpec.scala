@@ -19,16 +19,18 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
     }
   }
 
-  def withLoadedExtension(f: (VidExtension, CommandPrimitiveLoader) => Unit) = {
-    val vidExtension = new VidExtension(movieFactory)
-    val vid = new CommandPrimitiveLoader()
-    vidExtension.load(vid)
-    f(vidExtension, vid)
+  trait WithLoadedExtension {
+    lazy val (vidExtension, vid) = {
+      val ve     = new VidExtension(movieFactory)
+      val loader = new CommandPrimitiveLoader()
+      ve.load(loader)
+      (ve, loader)
+    }
   }
 
   feature("opening and closing") {
     scenario("opens a movie") {
-      withLoadedExtension { (vidExtension, vid) =>
+      new WithLoadedExtension {
         When("I have opened a movie")
         vid.`movie-open`("foobar.mp4")
 
@@ -38,7 +40,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
     }
 
     scenario("closes an opened movie") {
-      withLoadedExtension { (vidExtension, vid) =>
+      new WithLoadedExtension {
         Given("I have opened a movie")
         vid.`movie-open`("foobar.mp4")
 
@@ -51,7 +53,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
     }
 
     scenario("cannot find movie") {
-      withLoadedExtension { (vidExtension, vid) =>
+      new WithLoadedExtension {
         var ee: ExtensionException = null
 
         When("I try to open a movie that doesn't exist")
@@ -69,7 +71,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
     }
 
     scenario("movie has invalid format") {
-      withLoadedExtension { (vidExtension, vid) =>
+      new WithLoadedExtension {
         var ee: ExtensionException = null
         When("I try to open a movie with an invalid format")
         try {
