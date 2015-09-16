@@ -1,11 +1,12 @@
-package org.nlogo.extensions
+package org.nlogo.extensions.vid
 
 import org.nlogo.app.App
 import org.nlogo.api._
 
-class LsFxExtension extends DefaultClassManager {
+class VidExtension extends DefaultClassManager {
 
   override def load(manager: PrimitiveManager) = {
+    /*
     manager.addPrimitive("camera-select", new CameraSelect)
     manager.addPrimitive("camera-start",  new CameraStart)
     manager.addPrimitive("camera-image",  new CameraImage)
@@ -16,7 +17,9 @@ class LsFxExtension extends DefaultClassManager {
     manager.addPrimitive("movie-image", new MovieImage)
     manager.addPrimitive("movie-stop",  new MovieStop)
 
-    manager.addPrimitive("movie-open-player", new MovieOpenPlayer)
     manager.addPrimitive("movie-set-time",    new MovieSetTime)
+    */
+
+    manager.addPrimitive("movie-open-player", new MovieOpenPlayer)
   }
 }
