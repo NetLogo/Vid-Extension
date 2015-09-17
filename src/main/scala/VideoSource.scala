@@ -10,4 +10,6 @@ trait VideoSource {
   def isPlaying: Boolean
 
   def captureImage(): BufferedImage
+
+  def setTime(timeInMillis: Long): Unit
 }

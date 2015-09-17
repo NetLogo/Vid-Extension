@@ -10,12 +10,17 @@ class VidExtension(files: MovieFactory, cameras: CameraFactory) extends DefaultC
 
   override def load(manager: PrimitiveManager) = {
     manager.addPrimitive("movie-open",    new MovieOpen(this, files))
+
     manager.addPrimitive("camera-open",   new CameraOpen(this, cameras))
+    manager.addPrimitive("camera-names",  new CameraNames(cameras))
+
     manager.addPrimitive("status",        new ReportStatus(this))
+
     manager.addPrimitive("close",         new CloseVideoSource(this))
     manager.addPrimitive("start",         new StartSource(this))
     manager.addPrimitive("stop",          new StopSource(this))
     manager.addPrimitive("capture-image", new CaptureImage(this))
+    manager.addPrimitive("set-time",      new SetTime(this))
   }
 
   var videoSource: Option[VideoSource] = None
@@ -46,12 +51,18 @@ class CameraOpen(vid: VidExtension, cameras: CameraFactory) extends DefaultComma
     val camera = cameras.open(cameraName).getOrElse(
       throw new ExtensionException(s"""vid: camera "$cameraName" not found"""))
     vid.videoSource = Some(new VideoSource {
+      override def setTime(timeInMillis: Long): Unit = {}
       override def stop() = {}
       override def play() = {}
       override def isPlaying = true
       override def captureImage() = null
     })
   }
+}
+
+class CameraNames(cameras: CameraFactory) extends DefaultReporter {
+  override def report(args: Array[Argument], context: Context): AnyRef =
+    LogoList(cameras.cameraNames: _*)
 }
 
 class CloseVideoSource(vid: VidExtension) extends DefaultCommand {
@@ -118,6 +129,19 @@ class ReportStatus(vid: VidExtension) extends DefaultReporter {
       case Some(source) if source.isPlaying => "playing"
       case Some(source)                     => "stopped"
       case None                             => "inactive"
+    }
+  }
+}
+
+class SetTime(vid: VidExtension) extends DefaultCommand {
+  def perform(args: Array[Argument], context: Context): Unit = {
+    if (vid.videoSource.isEmpty)
+      throw new ExtensionException("vid: no selected source")
+    try {
+      vid.videoSource.foreach(_.setTime(args(0).getDoubleValue.toLong))
+    } catch {
+      case e: IllegalArgumentException =>
+        throw new ExtensionException("vid: invalid time")
     }
   }
 }

@@ -187,6 +187,35 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
     }
   }
 
+  feature("set-time") {
+    scenario("set-time errors when no video source has been selected") {
+      new VidSpecHelpers with ExpectError {
+        whenRunForError("vid:set-time 100", vid.`set-time`(Double.box(100)))
+        thenShouldSeeError("vid: no selected source")
+      }
+    }
+
+    scenario("set-time errors when a video source cannot be set to a time") {
+      new VidSpecHelpers with ExpectError {
+        givenOpenMovie()
+        whenRunForError("vid:set-time -1", vid.`set-time`(Double.box(-1)))
+        thenShouldSeeError("vid: invalid time")
+      }
+    }
+  }
+
+  feature("camera-names") {
+    scenario("camera-names displays names of available cameras") {
+      new VidSpecHelpers {
+        When("I call vid:camera-names")
+        val cameras = vid.`camera-names`()
+        Then("I get a list of cameras available")
+        assert(cameras.isInstanceOf[LogoList])
+        assert(cameras.asInstanceOf[LogoList].scalaIterator.toSeq == Seq("camera"))
+      }
+    }
+  }
+
   def shouldMatchBufferedImage(capturedImage: AnyRef): Unit = {
     Then("I should get a BufferedImage matching the image from the video source")
     assert(capturedImage == dummyImage)
@@ -194,16 +223,21 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
 
   val dummyImage = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB)
 
-  val dummyVideoSource = new VideoSource {
-    var isPlaying = false
-    override def play(): Unit =
-      isPlaying = true
-    override def stop(): Unit =
-      isPlaying = false
-    def captureImage() = dummyImage
-  }
-
   trait VidSpecHelpers extends WithLoadedVidExtension {
+    val dummyVideoSource = new VideoSource {
+      var isPlaying = false
+      override def play(): Unit =
+        isPlaying = true
+      override def stop(): Unit =
+        isPlaying = false
+      def captureImage() = dummyImage
+
+      def setTime(time: Long): Unit = {
+        if (time < 0)
+          throw new IllegalArgumentException("bad time!")
+      }
+    }
+
     val movieFactory = new MovieFactory {
       override def open(filePath: String): Option[VideoSource] = {
         filePath match {
@@ -215,6 +249,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
     }
 
     val cameraFactory = new CameraFactory {
+      val cameraNames = Seq("camera")
       var defaultCameraName: Option[String] = Some("camera")
 
       override def open(cameraName: String): Option[AnyRef] = {
