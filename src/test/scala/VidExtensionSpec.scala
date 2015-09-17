@@ -19,9 +19,18 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
     }
   }
 
+  val cameraFactory = new CameraFactory {
+    override def open(cameraName: String): Option[AnyRef] = {
+      cameraName match {
+        case "camera" => Some(this)
+        case _        => None
+      }
+    }
+  }
+
   trait WithLoadedExtension {
     lazy val (vidExtension, vid) = {
-      val ve     = new VidExtension(movieFactory)
+      val ve     = new VidExtension(movieFactory, cameraFactory)
       val loader = new CommandPrimitiveLoader()
       ve.load(loader)
       (ve, loader)
@@ -54,13 +63,40 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
   }
 
   feature("opening and closing") {
+    scenario("no movie open") {
+      new WithLoadedExtension {
+        Then("I should see that I have no active video source")
+        assert(vid.`status`() == "inactive")
+      }
+    }
+
     scenario("opens a movie") {
       new WithLoadedExtension {
-        When("""I run movie:open "foobar.mp4"""")
+        When("""I run vid:movie-open "foobar.mp4"""")
         vid.`movie-open`("foobar.mp4")
 
-        Then("I should see that I have an active video source")
-        assert(vidExtension.videoSource.nonEmpty)
+        Then("I should see that I have an stopped video source")
+        assert(vid.`status`() == "stopped")
+      }
+    }
+
+    scenario("open a camera") {
+      new WithLoadedExtension {
+        When("""I run vid:camera-open "camera"""")
+        vid.`camera-open`("camera")
+
+        Then("I should see that I have playing video source")
+        assert(vid.`status`() == "playing")
+      }
+    }
+
+    scenario("open a camera that doesn't exist") {
+      new WithLoadedExtension with ExpectError {
+        whenRunForError("""vid:camera-open "nocamera"""",
+          vid.`camera-open`("nocamera"))
+        thenShouldSeeError("""vid: camera "nocamera" not found""")
+        And("I should see that there is no active video")
+        assert(vid.`status`() == "inactive")
       }
     }
 
@@ -72,7 +108,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         vid.close()
 
         Then("I should see that there is no active video source")
-        assert(vidExtension.videoSource.isEmpty)
+        assert(vid.`status`() == "inactive")
       }
     }
 
@@ -81,6 +117,8 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         whenRunForError("""vid:movie-open "not-real.mp4"""",
           vid.`movie-open`("not-real.mp4"))
         thenShouldSeeError("vid: no movie found")
+        And("I should see that there is no active video")
+        assert(vid.`status`() == "inactive")
       }
     }
 
@@ -89,10 +127,13 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         whenRunForError("""vid:movie-open "unsupported.ogg"""",
           vid.`movie-open`("unsupported.ogg"))
         thenShouldSeeError("vid: format not supported")
+        And("I should see that there is no active video")
+        assert(vid.`status`() == "inactive")
       }
     }
   }
 
+  /*
   feature("Starting and stopping") {
     scenario("no source selected") {
       new WithLoadedExtension with ExpectError {
@@ -137,6 +178,24 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
       }
     }
   }
+
+  feature("capture-image") {
+    scenario("capture-image errors when no movie") {
+      new WithLoadedExtension with ExpectError {
+        whenRunForError("vid:capture-image", vid.`capture-image`())
+        thenShouldSeeError("vid: no selected source")
+      }
+    }
+
+    scenario("capture-image errors when movie not started") {
+      new WithLoadedExtension with ExpectError {
+        givenOpenMovie
+        whenRunForError("vid:capture-image", vid.`capture-image`())
+        thenShouldSeeError("vid: source stopped")
+      }
+    }
+  }
+  */
 
   class CommandPrimitiveLoader extends PrimitiveManager with Dynamic {
     var commands  = Map[String, Command]()
