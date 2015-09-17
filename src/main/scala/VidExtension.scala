@@ -10,9 +10,10 @@ class VidExtension(files: MovieFactory) extends DefaultClassManager {
     manager.addPrimitive("movie-open", new MovieOpen(this, files))
     manager.addPrimitive("close",      new CloseVideoSource(this))
     manager.addPrimitive("start",      new StartSource(this))
+    manager.addPrimitive("stop",       new StopSource(this))
   }
 
-  var activeVideoSource: Option[AnyRef] = None
+  var videoSource: Option[VideoSource] = None
 }
 
 class MovieOpen(vid: VidExtension, files: MovieFactory) extends DefaultCommand {
@@ -20,7 +21,7 @@ class MovieOpen(vid: VidExtension, files: MovieFactory) extends DefaultCommand {
     val filePath = context.attachCurrentDirectory(args(0).getString)
     try {
       if (files.open(filePath).nonEmpty) {
-        vid.activeVideoSource = Some(true: java.lang.Boolean)
+        vid.videoSource = Some(new VideoSource {})
       } else {
         throw new ExtensionException("vid: no movie found")
       }
@@ -33,12 +34,25 @@ class MovieOpen(vid: VidExtension, files: MovieFactory) extends DefaultCommand {
 
 class CloseVideoSource(vid: VidExtension) extends DefaultCommand {
   def perform(args: Array[Argument], context: Context): Unit = {
-    vid.activeVideoSource = None
+    vid.videoSource = None
   }
 }
 
 class StartSource(vid: VidExtension) extends DefaultCommand {
   def perform(args: Array[Argument], context: Context): Unit = {
-    throw new ExtensionException("vid: no selected source")
+    if (args(0).getDoubleValue <= 0 || args(1).getDoubleValue <= 0)
+      throw new ExtensionException("vid: invalid dimensions")
+    else if (vid.videoSource.isEmpty)
+      throw new ExtensionException("vid: no selected source")
   }
 }
+
+class StopSource(vid: VidExtension) extends DefaultCommand {
+  def perform(args: Array[Argument], context: Context): Unit = {
+    vid.videoSource = Some(new VideoSource {
+      override def isPlaying = false
+    })
+  }
+}
+
+

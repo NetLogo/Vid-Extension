@@ -26,17 +26,30 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
       ve.load(loader)
       (ve, loader)
     }
+
+    def givenOpenMovie: Unit = {
+      Given("I have opened a movie")
+      vid.`movie-open`("foobar.mp4")
+    }
   }
 
   trait ExpectError {
-    def expectError(errorCondition: String, f: => Unit): ExtensionException = {
+    var _error = Option.empty[ExtensionException]
+
+    def whenRunForError(errorCondition: String, f: => Unit): Unit = {
       When(s"I run $errorCondition")
       try {
         f
         fail(s"expected $errorCondition to error")
       } catch {
-        case e: ExtensionException => e
+        case e: ExtensionException => _error = Some(e)
       }
+    }
+
+    def thenShouldSeeError(errorMessage: String): Unit = {
+      Then(s"I should see an error - $errorMessage")
+      assert(_error.nonEmpty)
+      assert(_error.get.getMessage.contains(errorMessage))
     }
   }
 
@@ -47,42 +60,35 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         vid.`movie-open`("foobar.mp4")
 
         Then("I should see that I have an active video source")
-        assert(vidExtension.activeVideoSource.nonEmpty)
+        assert(vidExtension.videoSource.nonEmpty)
       }
     }
 
     scenario("closes an opened movie") {
       new WithLoadedExtension {
-        Given("I have opened a movie")
-        vid.`movie-open`("foobar.mp4")
+        givenOpenMovie
 
         When("I run movie:close")
         vid.close()
 
         Then("I should see that there is no active video source")
-        assert(vidExtension.activeVideoSource.isEmpty)
+        assert(vidExtension.videoSource.isEmpty)
       }
     }
 
     scenario("cannot find movie") {
       new WithLoadedExtension with ExpectError {
-        val ee =
-          expectError("""vid:movie-open "not-real.mp4"""",
-            vid.`movie-open`("not-real.mp4"))
-
-        Then("I should see an error - vid: no movie found")
-        assert(ee.getMessage.contains("vid: no movie found"))
+        whenRunForError("""vid:movie-open "not-real.mp4"""",
+          vid.`movie-open`("not-real.mp4"))
+        thenShouldSeeError("vid: no movie found")
       }
     }
 
     scenario("movie has invalid format") {
       new WithLoadedExtension with ExpectError {
-        val ee = expectError(
-          """vid:movie-open "unsupported.ogg"""",
+        whenRunForError("""vid:movie-open "unsupported.ogg"""",
           vid.`movie-open`("unsupported.ogg"))
-
-        Then("I should see an error - vid: format not supported")
-        assert(ee.getMessage.contains("vid: format not supported"))
+        thenShouldSeeError("vid: format not supported")
       }
     }
   }
@@ -90,11 +96,44 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
   feature("Starting and stopping") {
     scenario("no source selected") {
       new WithLoadedExtension with ExpectError {
-        val ee = expectError("vid:start 640 480",
+        whenRunForError("vid:start 640 480",
           vid.start(Double.box(640.0), Double.box(480.0)))
+        thenShouldSeeError("vid: no selected source")
+      }
+    }
 
-        Then("I should see an error - vid: no selected source")
-        assert(ee.getMessage.contains("vid: no selected source"))
+    scenario("invalid dimensions") {
+      new WithLoadedExtension with ExpectError {
+        givenOpenMovie
+        whenRunForError("vid:start -1 -1",
+          vid.start(Double.box(-1), Double.box(-1)))
+        thenShouldSeeError("vid: invalid dimensions")
+      }
+    }
+
+    scenario("starts movie") {
+      new WithLoadedExtension {
+        givenOpenMovie
+
+        When("I start the movie")
+        vid.start(Double.box(640.0), Double.box(480.0))
+
+        Then("I should see that the video source is currently playing")
+        assert(vidExtension.videoSource.map(_.isPlaying).getOrElse(false))
+      }
+    }
+
+    scenario("start and stop movie") {
+      new WithLoadedExtension {
+        givenOpenMovie
+        And("I have started the movie")
+        vid.start(Double.box(640.0), Double.box(480.0))
+
+        When("I run vid:stop")
+        vid.stop()
+
+        Then("I should see that the movie is not playing")
+        assert(vidExtension.videoSource.map(! _.isPlaying).getOrElse(false))
       }
     }
   }
@@ -142,7 +181,10 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
     def getBooleanValue: Boolean = ???
     def getCode: java.util.List[org.nlogo.api.Token] = ???
     def getCommandTask: org.nlogo.api.CommandTask = ???
-    def getDoubleValue: Double = ???
+    def getDoubleValue: Double = underlying match {
+      case d: java.lang.Double => d.doubleValue
+      case _ => throw new ExtensionException(s"expected a double, got $underlying")
+    }
     def getIntValue: Int = ???
     def getLink: org.nlogo.api.Link = ???
     def getList: org.nlogo.api.LogoList = ???
