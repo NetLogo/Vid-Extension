@@ -46,6 +46,8 @@ class CameraOpen(vid: VidExtension, cameras: CameraFactory) extends DefaultComma
     val camera = cameras.open(cameraName).getOrElse(
       throw new ExtensionException(s"""vid: camera "$cameraName" not found"""))
     vid.videoSource = Some(new VideoSource {
+      override def stop() = {}
+      override def play() = {}
       override def isPlaying = true
       override def captureImage() = null
     })
@@ -62,19 +64,13 @@ class StartSource(vid: VidExtension) extends DefaultCommand {
   def perform(args: Array[Argument], context: Context): Unit = {
     if (vid.videoSource.isEmpty)
       throw new ExtensionException("vid: no selected source")
-    vid.videoSource = Some(new VideoSource {
-      override def isPlaying = true
-      override def captureImage() = null
-    })
+    vid.videoSource.foreach(_.play())
   }
 }
 
 class StopSource(vid: VidExtension) extends DefaultCommand {
   def perform(args: Array[Argument], context: Context): Unit = {
-    vid.videoSource = Some(new VideoSource {
-      override def isPlaying = false
-      override def captureImage() = null
-    })
+    vid.videoSource.foreach(_.stop())
   }
 }
 
