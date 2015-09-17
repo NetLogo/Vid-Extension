@@ -3,16 +3,25 @@ package org.nlogo.extensions.vid
 import org.scalatest.{ FeatureSpec, GivenWhenThen }
 
 import java.io.{ File => JFile }
+import java.awt.image.BufferedImage
 
 import org.nlogo.api._
 
 import scala.language.dynamics
 
 class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
+
+  val dummyImage = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB)
+
+  val dummyVideoSource = new VideoSource {
+    def isPlaying      = false
+    def captureImage() = dummyImage
+  }
+
   val movieFactory = new MovieFactory {
-    override def open(filePath: String): Option[JFile] = {
+    override def open(filePath: String): Option[VideoSource] = {
       filePath match {
-        case "/currentdir/foobar.mp4"      => Some[JFile](null)
+        case "/currentdir/foobar.mp4"      => Some(dummyVideoSource)
         case "/currentdir/unsupported.ogg" => throw new InvalidFormatException
         case _ => None
       }
@@ -155,34 +164,23 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
     }
   }
 
-  /*
+
   feature("Starting and stopping") {
     scenario("no source selected") {
       new WithLoadedExtension with ExpectError {
-        whenRunForError("vid:start 640 480",
-          vid.start(Double.box(640.0), Double.box(480.0)))
+        whenRunForError("vid:start", vid.start())
         thenShouldSeeError("vid: no selected source")
       }
     }
 
-    scenario("invalid dimensions") {
-      new WithLoadedExtension with ExpectError {
-        givenOpenMovie()
-        whenRunForError("vid:start -1 -1",
-          vid.start(Double.box(-1), Double.box(-1)))
-        thenShouldSeeError("vid: invalid dimensions")
-      }
-    }
-
-    scenario("starts movie") {
+    scenario("starts stopped source") {
       new WithLoadedExtension {
         givenOpenMovie()
 
         When("I start the movie")
-        vid.start(Double.box(640.0), Double.box(480.0))
+        vid.start()
 
-        Then("I should see that the video source is currently playing")
-        assert(vidExtension.videoSource.map(_.isPlaying).getOrElse(false))
+        thenStatusShouldBe("playing")
       }
     }
 
@@ -190,13 +188,12 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
       new WithLoadedExtension {
         givenOpenMovie()
         And("I have started the movie")
-        vid.start(Double.box(640.0), Double.box(480.0))
+        vid.start()
 
         When("I run vid:stop")
         vid.stop()
 
-        Then("I should see that the movie is not playing")
-        assert(vidExtension.videoSource.map(! _.isPlaying).getOrElse(false))
+        thenStatusShouldBe("stopped")
       }
     }
   }
@@ -204,20 +201,52 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
   feature("capture-image") {
     scenario("capture-image errors when no movie") {
       new WithLoadedExtension with ExpectError {
-        whenRunForError("vid:capture-image", vid.`capture-image`())
+        whenRunForError("vid:capture-image 640 480",
+          vid.`capture-image`(Double.box(640), Double.box(480)))
         thenShouldSeeError("vid: no selected source")
       }
     }
 
-    scenario("capture-image errors when movie not started") {
+    scenario("invalid dimensions") {
       new WithLoadedExtension with ExpectError {
         givenOpenMovie()
-        whenRunForError("vid:capture-image", vid.`capture-image`())
-        thenShouldSeeError("vid: source stopped")
+        whenRunForError("vid:capture-image -1 -1",
+          vid.`capture-image`(Double.box(-1), Double.box(-1)))
+        thenShouldSeeError("vid: invalid dimensions")
+      }
+    }
+
+    scenario("capture-image returns a scaled image from the active video source") {
+      new WithLoadedExtension {
+        givenOpenMovie()
+
+        When("I call vid:capture-image 32 32")
+        val capturedImage =
+          vid.`capture-image`(Double.box(32), Double.box(32))
+
+        Then("I should have a BufferedImage scaled to fit a 32x32 box")
+        capturedImage match {
+          case image: BufferedImage =>
+            assert(image.getWidth  <= 32)
+            assert(image.getHeight <= 32)
+          case _ => fail("expected BufferedImage to be returned")
+        }
+      }
+    }
+
+    scenario("capture-image returns native-resolution image from active video source") {
+      new WithLoadedExtension {
+        givenOpenMovie()
+
+        When("I call vid:capture-image")
+        val capturedImage =
+          vid.`capture-image`()
+
+        Then("I should have a BufferedImage matching the image from the video source")
+        assert(capturedImage == dummyImage)
       }
     }
   }
-  */
 
   class CommandPrimitiveLoader extends PrimitiveManager with Dynamic {
     var commands  = Map[String, Command]()

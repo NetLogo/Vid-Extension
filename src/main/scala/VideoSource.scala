@@ -1,5 +1,9 @@
 package org.nlogo.extensions.vid
 
+import java.awt.image.BufferedImage
+
 trait VideoSource {
-  def isPlaying = false
+  def isPlaying: Boolean
+
+  def captureImage(): BufferedImage
 }
