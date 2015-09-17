@@ -167,25 +167,29 @@ vid:set-time 100
 Errors:
 
 * Message `"vid: no selected source"`: There is no currently selected video source. Select a source with `vid:movie-open`, `vid:movie-select`, `vid:camera-open`, or `vid:camera-select`.
-* Message `"vid: source stopped"`: The currently active video source has not been started. Start it with `vid:start`.
 * Message `"vid: invalid time"`: The currently active video does not contain the specified second. The second may be negative, or greater than the length of the video.
 
-### `vid:show-player`
+### `vid:show-player *width* *height*`
 
 Shows a player in a separate window.
 If there is no video source, the window will be an empty black frame.
-If there is an active video source, it will be displayed in the window at its native resolution.
-If there is a playing video source, it will be displayed in the window at its playback resolution.
+If there is an active video source, it will be displayed in the window with the specified width and height.
+If there is a playing video source, it will be displayed in the window at its specified width and height.
+If width and height are omitted, the video will be displayed in its native resolution.
 
 Example:
 
 ```NetLogo
-vid:show-player
+vid:show-player 640 480
 ```
+
+Errors:
+
+* Message `"vid: invalid dimensions"`: The selected dimensions are invalid (one of the dimensions is zero or negative).
 
 ### `vid:hide-player`
 
-Hides the player if open. Works just as though the player window had been closed.
+Hides the player if open. Does nothing if there is no player window.
 
 Example:
 
