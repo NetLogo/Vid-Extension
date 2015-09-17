@@ -9,6 +9,7 @@ class VidExtension(files: MovieFactory) extends DefaultClassManager {
   override def load(manager: PrimitiveManager) = {
     manager.addPrimitive("movie-open", new MovieOpen(this, files))
     manager.addPrimitive("close",      new CloseVideoSource(this))
+    manager.addPrimitive("start",      new StartSource(this))
   }
 
   var activeVideoSource: Option[AnyRef] = None
@@ -33,5 +34,11 @@ class MovieOpen(vid: VidExtension, files: MovieFactory) extends DefaultCommand {
 class CloseVideoSource(vid: VidExtension) extends DefaultCommand {
   def perform(args: Array[Argument], context: Context): Unit = {
     vid.activeVideoSource = None
+  }
+}
+
+class StartSource(vid: VidExtension) extends DefaultCommand {
+  def perform(args: Array[Argument], context: Context): Unit = {
+    throw new ExtensionException("vid: no selected source")
   }
 }

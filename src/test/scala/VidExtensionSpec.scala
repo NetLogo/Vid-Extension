@@ -28,10 +28,22 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
     }
   }
 
+  trait ExpectError {
+    def expectError(errorCondition: String, f: => Unit): ExtensionException = {
+      When(s"I run $errorCondition")
+      try {
+        f
+        fail(s"expected $errorCondition to error")
+      } catch {
+        case e: ExtensionException => e
+      }
+    }
+  }
+
   feature("opening and closing") {
     scenario("opens a movie") {
       new WithLoadedExtension {
-        When("I have opened a movie")
+        When("""I run movie:open "foobar.mp4"""")
         vid.`movie-open`("foobar.mp4")
 
         Then("I should see that I have an active video source")
@@ -44,7 +56,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         Given("I have opened a movie")
         vid.`movie-open`("foobar.mp4")
 
-        When("I close the video source")
+        When("I run movie:close")
         vid.close()
 
         Then("I should see that there is no active video source")
@@ -53,37 +65,36 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
     }
 
     scenario("cannot find movie") {
-      new WithLoadedExtension {
-        var ee: ExtensionException = null
-
-        When("I try to open a movie that doesn't exist")
-        try {
-          vid.`movie-open`("not-real.mp4")
-          fail("expected to see an error when opening non-existent movie")
-        } catch {
-          case e: ExtensionException => ee = e
-        }
+      new WithLoadedExtension with ExpectError {
+        val ee =
+          expectError("""vid:movie-open "not-real.mp4"""",
+            vid.`movie-open`("not-real.mp4"))
 
         Then("I should see an error - vid: no movie found")
-        assert(ee != null)
         assert(ee.getMessage.contains("vid: no movie found"))
       }
     }
 
     scenario("movie has invalid format") {
-      new WithLoadedExtension {
-        var ee: ExtensionException = null
-        When("I try to open a movie with an invalid format")
-        try {
-          vid.`movie-open`("unsupported.ogg")
-          fail("expected to see an error when opening invalid movie")
-        } catch {
-          case e: ExtensionException => ee = e
-        }
+      new WithLoadedExtension with ExpectError {
+        val ee = expectError(
+          """vid:movie-open "unsupported.ogg"""",
+          vid.`movie-open`("unsupported.ogg"))
 
         Then("I should see an error - vid: format not supported")
-        assert(ee != null)
         assert(ee.getMessage.contains("vid: format not supported"))
+      }
+    }
+  }
+
+  feature("Starting and stopping") {
+    scenario("no source selected") {
+      new WithLoadedExtension with ExpectError {
+        val ee = expectError("vid:start 640 480",
+          vid.start(Double.box(640.0), Double.box(480.0)))
+
+        Then("I should see an error - vid: no selected source")
+        assert(ee.getMessage.contains("vid: no selected source"))
       }
     }
   }
