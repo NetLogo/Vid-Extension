@@ -4,14 +4,17 @@ organization := "org.nlogo"
 
 scalaVersion := "2.11.7"
 
-resolvers += "Sonatype OSS Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+scalacOptions ++=
+  "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -Xlint -Xfatal-warnings".split(" ").toSeq
 
+resolvers += "Sonatype OSS Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies +=
   "org.nlogo" % "NetLogo" % "5.3" from "http://ccl.northwestern.edu/devel/NetLogo-5.3-LevelSpace-3a6b9b4.jar"
 
 libraryDependencies ++= Seq(
-  "com.github.sarxos" % "webcam-capture" % "0.3.10"
+  "com.github.sarxos" % "webcam-capture" % "0.3.10",
+  "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 )
 
 isSnapshot := true

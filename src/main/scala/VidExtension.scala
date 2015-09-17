@@ -37,15 +37,17 @@ class MovieOpen(vid: VidExtension, files: MovieFactory) extends DefaultCommand {
 
 class CameraOpen(vid: VidExtension, cameras: CameraFactory) extends DefaultCommand {
   def perform(args: Array[Argument], context: Context): Unit = {
-    val cameraName = args(0).getString
-    cameras.open(cameraName) match {
-      case Some(x) =>
-        vid.videoSource = Some(new VideoSource {
-          override def isPlaying = true
-        })
-      case None =>
-        throw new ExtensionException(s"""vid: camera "$cameraName" not found""")
-    }
+    val cameraName =
+      if (args.length == 0)
+        cameras.defaultCameraName.getOrElse(
+          throw new ExtensionException("vid: no cameras found"))
+      else
+        args(0).getString
+    val camera = cameras.open(cameraName).getOrElse(
+      throw new ExtensionException(s"""vid: camera "$cameraName" not found"""))
+    vid.videoSource = Some(new VideoSource {
+      override def isPlaying = true
+    })
   }
 }
 

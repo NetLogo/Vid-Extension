@@ -33,8 +33,8 @@ If no name is provided, opens the first camera that would be listed by `camera-n
 
 Example:
 ```NetLogo
-vid:camera-start ; opens first camera
-vid:camera-start "Logitech Camera"
+vid:camera-open ; opens first camera
+vid:camera-open "Logitech Camera"
 ```
 
 Errors:
@@ -60,8 +60,7 @@ Errors:
 
 ### `vid:movie-open`
 
-Prompts the user to select a movie to use as a video source.
-The formats supported are those [supported by JavaFX2](https://docs.oracle.com/javafx/2/api/javafx/scene/media/package-summary.html#SupportedMediaTypes).
+Opens a video from the given path relative to the current model directory.
 
 Example:
 
@@ -77,7 +76,6 @@ Errors:
 ### `vid:close`
 
 Closes the currently selected video source.
-Errors if the source has not been stopped with `vid:stop`.
 Has no effect if there is no active video source.
 
 Example:
@@ -86,26 +84,20 @@ Example:
 vid:close
 ```
 
-Errors:
+### `vid:start`
 
-* Message `"vid: video in progress"`: The active source is currently running, stop it first with `vid:stop`
-
-### `vid:start *width* *height*`
-
-Starts the selected video source with the given width and height.
-A video source must have been selected before being started.
-This must be called before `vid:capture-image` or `vid:set-time`.
+Starts the selected video source.
+A video source must have been selected before calling `vid:start`.
 
 Example:
 
 ```NetLogo
-vid:start 640 480
+vid:start
 ```
 
 Errors:
 
 * Message `"vid: no selected source"`: There is no currently selected video source. Select a source with `vid:movie-open`, `vid:movie-select`, `vid:camera-open`, or `vid:camera-select`.
-* Message `"vid: invalid dimensions"`: The selected dimensions are invalid (one of the dimensions is zero or negative).
 
 ### `vid:stop`
 
@@ -116,7 +108,25 @@ Example:
 vid:stop
 ```
 
-### `vid:capture-image`
+### `vid:status`
+
+Reports the current status of an active video.
+Note that calling `vid:movie-open` or `vid:movie-select` the status will be set to "stopped",
+while after calling `vid:camera-open` or `vid:camera-select` the status will be "playing".
+
+Example:
+
+```NetLogo
+vid:status     ; => "inactive"
+
+vid:movie-open "foobar.mp4"
+vid:status      ; => "stopped"
+
+vid:movie-start
+vid:status       ; => "playing"
+```
+
+### `vid:capture-image *width* *height*`
 
 Captures an image from the currently selected active source.
 
@@ -124,17 +134,17 @@ Example:
 
 ```NetLogo
 ; when camera open, take an image
-vid:camera-image ; returns image suitable for use with bitmap extension
+vid:camera-image ;=> returns image suitable for use with bitmap extension
 
 ; capture an image if the camera is open, have the user
 ; select a camera if no camera is open
 carefully [
-  vid:camera-image
+  vid:capture-image 640 480
 ] [
   if errormessage = "vid: no selected source" [
     vid:camera-select
-    vid:start 640 480
-    vid:capture-image
+    vid:start
+    vid:capture-image 640 480
   ]
 ]
 ```
@@ -142,7 +152,7 @@ carefully [
 Errors:
 
 * Message `"vid: no selected source"`: There is no currently selected video source. Select a source with `vid:movie-open`, `vid:movie-select`, `vid:camera-open`, or `vid:camera-select`.
-* Message `"vid: source stopped"`: The currently active video source has not been started. Start it with `vid:start`.
+* Message `"vid: invalid dimensions"`: The selected dimensions are invalid (one of the dimensions is zero or negative).
 
 ### `vid:set-time *seconds*`
 

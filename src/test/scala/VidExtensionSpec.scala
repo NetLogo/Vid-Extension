@@ -20,6 +20,8 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
   }
 
   val cameraFactory = new CameraFactory {
+    var defaultCameraName: Option[String] = Some("camera")
+
     override def open(cameraName: String): Option[AnyRef] = {
       cameraName match {
         case "camera" => Some(this)
@@ -36,9 +38,19 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
       (ve, loader)
     }
 
-    def givenOpenMovie: Unit = {
+    def givenOpenMovie(): Unit = {
       Given("I have opened a movie")
       vid.`movie-open`("foobar.mp4")
+    }
+
+    def thenStatusShouldBe(status: String): Unit = {
+      Then(s"""vid:status should show "$status"""")
+      assert(vid.`status`() == status)
+    }
+
+    def andStatusShouldBe(status: String): Unit = {
+      And(s"""vid:status should show "$status"""")
+      assert(vid.`status`() == status)
     }
   }
 
@@ -65,8 +77,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
   feature("opening and closing") {
     scenario("no movie open") {
       new WithLoadedExtension {
-        Then("I should see that I have no active video source")
-        assert(vid.`status`() == "inactive")
+        thenStatusShouldBe("inactive")
       }
     }
 
@@ -75,8 +86,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         When("""I run vid:movie-open "foobar.mp4"""")
         vid.`movie-open`("foobar.mp4")
 
-        Then("I should see that I have an stopped video source")
-        assert(vid.`status`() == "stopped")
+        thenStatusShouldBe("stopped")
       }
     }
 
@@ -85,8 +95,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         When("""I run vid:camera-open "camera"""")
         vid.`camera-open`("camera")
 
-        Then("I should see that I have playing video source")
-        assert(vid.`status`() == "playing")
+        thenStatusShouldBe("playing")
       }
     }
 
@@ -95,20 +104,35 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         whenRunForError("""vid:camera-open "nocamera"""",
           vid.`camera-open`("nocamera"))
         thenShouldSeeError("""vid: camera "nocamera" not found""")
-        And("I should see that there is no active video")
-        assert(vid.`status`() == "inactive")
+        andStatusShouldBe("inactive")
+      }
+    }
+
+    scenario("opens a default camera") {
+      new WithLoadedExtension {
+        When("I run vid:camera-open")
+        vid.`camera-open`()
+        thenStatusShouldBe("playing")
+      }
+    }
+
+    scenario("tries to open a default camera when none available") {
+      new WithLoadedExtension with ExpectError {
+        import scala.language.reflectiveCalls
+        Given("there are no cameras available")
+        cameraFactory.defaultCameraName = None
+        whenRunForError("vid:camera-open", vid.`camera-open`())
+        thenShouldSeeError("vid: no cameras found")
+        andStatusShouldBe("inactive")
       }
     }
 
     scenario("closes an opened movie") {
       new WithLoadedExtension {
-        givenOpenMovie
-
+        givenOpenMovie()
         When("I run movie:close")
         vid.close()
-
-        Then("I should see that there is no active video source")
-        assert(vid.`status`() == "inactive")
+        thenStatusShouldBe("inactive")
       }
     }
 
@@ -117,8 +141,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         whenRunForError("""vid:movie-open "not-real.mp4"""",
           vid.`movie-open`("not-real.mp4"))
         thenShouldSeeError("vid: no movie found")
-        And("I should see that there is no active video")
-        assert(vid.`status`() == "inactive")
+        andStatusShouldBe("inactive")
       }
     }
 
@@ -127,8 +150,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         whenRunForError("""vid:movie-open "unsupported.ogg"""",
           vid.`movie-open`("unsupported.ogg"))
         thenShouldSeeError("vid: format not supported")
-        And("I should see that there is no active video")
-        assert(vid.`status`() == "inactive")
+        andStatusShouldBe("inactive")
       }
     }
   }
@@ -145,7 +167,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
 
     scenario("invalid dimensions") {
       new WithLoadedExtension with ExpectError {
-        givenOpenMovie
+        givenOpenMovie()
         whenRunForError("vid:start -1 -1",
           vid.start(Double.box(-1), Double.box(-1)))
         thenShouldSeeError("vid: invalid dimensions")
@@ -154,7 +176,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
 
     scenario("starts movie") {
       new WithLoadedExtension {
-        givenOpenMovie
+        givenOpenMovie()
 
         When("I start the movie")
         vid.start(Double.box(640.0), Double.box(480.0))
@@ -166,7 +188,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
 
     scenario("start and stop movie") {
       new WithLoadedExtension {
-        givenOpenMovie
+        givenOpenMovie()
         And("I have started the movie")
         vid.start(Double.box(640.0), Double.box(480.0))
 
@@ -189,7 +211,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
 
     scenario("capture-image errors when movie not started") {
       new WithLoadedExtension with ExpectError {
-        givenOpenMovie
+        givenOpenMovie()
         whenRunForError("vid:capture-image", vid.`capture-image`())
         thenShouldSeeError("vid: source stopped")
       }
