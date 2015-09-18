@@ -18,6 +18,9 @@ class CameraOpen(vid: VidExtension, cameras: CameraFactory) extends DefaultComma
       override def play() = {}
       override def isPlaying = true
       override def captureImage() = null
+      // can't be shown at the moment
+      override def showInPlayer(player: Player) = {}
+
     })
   }
 }

@@ -216,6 +216,62 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
     }
   }
 
+  feature("show-player") {
+    scenario("player can be hidden even if it has not been shown") {
+      new VidSpecHelpers {
+        Given("The player is not showing")
+        assert(! player.isShowing)
+        When("I call vid:hide-player")
+        vid.`hide-player`()
+        Then("I should see that there is no player")
+        assert(! player.isShowing)
+      }
+    }
+
+    scenario("player must have valid dimensions") {
+      new VidSpecHelpers with ExpectError {
+        whenRunForError("vid:show-player -1 -1",
+          vid.`show-player`(Double.box(-1), Double.box(-1)))
+        thenShouldSeeError("vid: invalid dimensions")
+      }
+    }
+
+    scenario("player can be started with no source") {
+      import scala.language.reflectiveCalls
+      new VidSpecHelpers {
+        When("I run vid:show-player")
+        vid.`show-player`()
+
+        Then("I should see a player showing with no video")
+        assert(player.isShowing)
+        assert(player.videoSource.isEmpty)
+      }
+    }
+
+    scenario("player can be started with no dimensions") {
+      import scala.language.reflectiveCalls
+      new VidSpecHelpers {
+        givenOpenMovie()
+
+        When("I run vid:show-player")
+        vid.`show-player`()
+
+        Then("I should see a player running with native dimensions matching the video")
+        assert(player.isShowing)
+        assert(player.videoSource.get == dummyVideoSource)
+      }
+    }
+
+    scenario("player can be started with specific dimensions") {
+      new VidSpecHelpers {
+        When("I run vid:show-player 640 480")
+        vid.`show-player`(Double.box(640), Double.box(480))
+
+        // Then("I should see a player with the specified dimensions")
+      }
+    }
+  }
+
   def shouldMatchBufferedImage(capturedImage: AnyRef): Unit = {
     Then("I should get a BufferedImage matching the image from the video source")
     assert(capturedImage == dummyImage)
@@ -232,9 +288,16 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         isPlaying = false
       def captureImage() = dummyImage
 
-      def setTime(time: Double): Unit = {
+      def setTime(time: Double): Unit =
         if (time < 0)
           throw new IllegalArgumentException("bad time!")
+
+      override def showInPlayer(player: Player): Unit = {
+        println("Showing in player")
+        import javafx.scene.{ Group, Scene }
+        val g = new Group()
+        val scene = new Scene(g)
+        player.show(scene, this)
       }
     }
 
@@ -257,6 +320,26 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
           case "camera" => Some(this)
           case _        => None
         }
+      }
+    }
+
+    override val player = new Player {
+      import javafx.scene.Scene
+
+      var videoSource: Option[VideoSource] = None
+
+      var scene: Scene = null
+
+      var isShowing = false
+
+      def hide() = { isShowing = false }
+
+      def showEmpty() = { isShowing = true }
+
+      def show(showThisScene: Scene, source: VideoSource) = {
+        scene = showThisScene
+        isShowing = true
+        videoSource = Some(source)
       }
     }
 

@@ -8,6 +8,7 @@ import javafx.util.Duration
 import java.awt.image.BufferedImage
 import java.util.Arrays
 
+import javafx.scene.Scene
 import javafx.scene.media.{ Media, MediaException, MediaPlayer }
 
 class MovieTest extends FunSuite {
@@ -124,6 +125,26 @@ class MovieTest extends FunSuite {
           println("non-matching image written to target/failed-img.png")
           throw e
       }
+    }
+  }
+
+  test("showInPlayer shows the movie in the player") {
+    new MovieFixture {
+      var shownScene: Scene = null
+
+      // TODO: DRY up `val movie`
+      val movie = new Movie(media, mediaPlayer)
+
+      movie.showInPlayer(new Player {
+        def isShowing = false
+        def hide(): Unit = {}
+        def show(scene: Scene, video: VideoSource): Unit =
+          shownScene = scene
+        def showEmpty(): Unit = {}
+        def videoSource: Option[VideoSource] = None
+      })
+
+      assert(shownScene != null)
     }
   }
 }

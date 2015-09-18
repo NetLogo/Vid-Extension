@@ -79,5 +79,9 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
       throw new IllegalArgumentException(s"invalid time $timeInSeconds")
     mediaPlayer.seek(requestedTime)
   }
+
+  def showInPlayer(player: Player): Unit = {
+
+  }
 }
 

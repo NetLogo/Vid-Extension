@@ -32,8 +32,11 @@ trait WithLoadedVidExtension {
 
   def cameraFactory: CameraFactory
 
+  def player: Player
+
   lazy val (vidExtension, vid) = {
-    val ve     = new VidExtension(movieFactory, cameraFactory)
+    val ve     = new VidExtension(movieFactory, cameraFactory, player)
+    ve.runOnce(null)
     val loader = new CommandPrimitiveLoader()
     ve.load(loader)
     (ve, loader)
