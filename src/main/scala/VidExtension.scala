@@ -4,6 +4,8 @@ import org.nlogo.api._
 
 class VidExtension(files: MovieFactory, cameras: CameraFactory) extends DefaultClassManager {
 
+  def this() = this(Movie, Camera)
+
   override def runOnce(em: ExtensionManager): Unit = {
     //initialize javafx
     import javafx.embed.swing.JFXPanel
