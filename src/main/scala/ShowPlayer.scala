@@ -4,7 +4,7 @@ import org.nlogo.api._
 
 import javafx.embed.swing.JFXPanel
 
-class ShowPlayer(player: Player, vidExtension: VideoSourceContainer, panel: JFXPanel) extends DefaultCommand {
+class ShowPlayer(player: Player, vidExtension: VideoSourceContainer) extends DefaultCommand {
   override def getSyntax =
     Syntax.commandSyntax(Array[Int](Syntax.NumberType | Syntax.RepeatableType))
 

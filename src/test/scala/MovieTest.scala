@@ -20,6 +20,8 @@ class MovieTest extends FunSuite {
     var loaded = false
     val mediaPlayer = new MediaPlayer(media)
 
+    val movie = new Movie(media, mediaPlayer)
+
     mediaPlayer.setOnReady(new Runnable() {
       override def run(): Unit =
         loaded = true
@@ -45,7 +47,6 @@ class MovieTest extends FunSuite {
 
   test("when an attempt is made to setTime outside the time of the media, it raises IllegalArgumentException") {
     new MovieFixture {
-      val movie = new Movie(media, mediaPlayer)
       intercept[IllegalArgumentException]{ movie.setTime(-1) }
       intercept[IllegalArgumentException]{ movie.setTime(media.getDuration.toSeconds + 1.0) }
     }
@@ -53,7 +54,6 @@ class MovieTest extends FunSuite {
 
   test("when an attempt is made to setTime to a time within the movie, that time is set") {
     new MovieFixture {
-      val movie = new Movie(media, mediaPlayer)
       movie.setTime(0.5)
       Thread.sleep(50)
       assert(mediaPlayer.getCurrentTime.equals(Duration.millis(500)))
@@ -62,7 +62,6 @@ class MovieTest extends FunSuite {
 
   test("play starts playback") {
     new MovieFixture {
-    val movie = new Movie(media, mediaPlayer)
     assert(! movie.isPlaying)
     movie.play()
     Thread.sleep(100)
@@ -73,23 +72,21 @@ class MovieTest extends FunSuite {
 
   test("stop pauses playback") {
     new MovieFixture {
-    val movie = new Movie(media, mediaPlayer)
-    assert(! movie.isPlaying)
-    movie.play()
-    Thread.sleep(100)
-    movie.stop()
-    Thread.sleep(100)
-    assert(mediaPlayer.getStatus == MediaPlayer.Status.PAUSED)
-    assert(! movie.isPlaying)
+      assert(! movie.isPlaying)
+      movie.play()
+      Thread.sleep(100)
+      movie.stop()
+      Thread.sleep(100)
+      assert(mediaPlayer.getStatus == MediaPlayer.Status.PAUSED)
+      assert(! movie.isPlaying)
     }
   }
 
   test("captureImage records the image available") {
     new MovieFixture {
       import javax.imageio.ImageIO
-
-      val movie = new Movie(media, mediaPlayer)
       val image = movie.captureImage()
+
       assert(image.isInstanceOf[BufferedImage])
       assert(image.getWidth()  == 560)
       assert(image.getHeight() == 320)
@@ -131,9 +128,6 @@ class MovieTest extends FunSuite {
   test("showInPlayer shows the movie in the player") {
     new MovieFixture {
       var shownScene: Scene = null
-
-      // TODO: DRY up `val movie`
-      val movie = new Movie(media, mediaPlayer)
 
       movie.showInPlayer(new Player {
         def isShowing = false

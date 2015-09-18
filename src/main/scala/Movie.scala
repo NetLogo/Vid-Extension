@@ -37,6 +37,8 @@ object Movie extends MovieFactory {
 }
 
 class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
+  mediaPlayer.setMute(true)
+
   def play(): Unit =
     mediaPlayer.play()
 
@@ -63,14 +65,17 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
     Platform.runLater(
       new Runnable() {
         override def run(): Unit = {
-          val mv = new MediaView(mediaPlayer)
-          val g = new Group(mv)
-          val scene = new Scene(g, media.getWidth, media.getHeight)
-          scene.snapshot(callback, null)
+          mediaScene.snapshot(callback, null)
         }
       })
 
     chan.read
+  }
+
+  private def mediaScene: Scene = {
+    val mv = new MediaView(mediaPlayer)
+    val g = new Group(mv)
+    new Scene(g, media.getWidth, media.getHeight)
   }
 
   def setTime(timeInSeconds: Double): Unit = {
@@ -80,8 +85,7 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
     mediaPlayer.seek(requestedTime)
   }
 
-  def showInPlayer(player: Player): Unit = {
-
-  }
+  def showInPlayer(player: Player): Unit =
+    player.show(mediaScene, this)
 }
 

@@ -13,13 +13,9 @@ trait VideoSourceContainer {
 class VidExtension(files: MovieFactory, cameras: CameraFactory, player: Player)
   extends DefaultClassManager with VideoSourceContainer {
 
-  def this() = this(Movie, Camera, null)
-
-  var panel = Option.empty[JFXPanel]
+  def this() = this(Movie, Camera, new JavaFXPlayer())
 
   override def runOnce(em: ExtensionManager): Unit = {
-    //initialize javafx
-    panel = Some(new JFXPanel())
   }
 
   override def load(manager: PrimitiveManager) = {
@@ -30,7 +26,7 @@ class VidExtension(files: MovieFactory, cameras: CameraFactory, player: Player)
     manager.addPrimitive("hide-player",   new HidePlayer(player))
     manager.addPrimitive("movie-open",    new MovieOpen(this, files))
     manager.addPrimitive("set-time",      new SetTime(this))
-    manager.addPrimitive("show-player",   new ShowPlayer(player, this, panel.get))
+    manager.addPrimitive("show-player",   new ShowPlayer(player, this))
     manager.addPrimitive("start",         new StartSource(this))
     manager.addPrimitive("status",        new ReportStatus(this))
     manager.addPrimitive("stop",          new StopSource(this))
