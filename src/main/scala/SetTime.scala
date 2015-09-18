@@ -3,6 +3,9 @@ package org.nlogo.extensions.vid
 import org.nlogo.api._
 
 class SetTime(vid: VidExtension) extends DefaultCommand {
+  override def getSyntax =
+    Syntax.commandSyntax(Array[Int](Syntax.NumberType))
+
   def perform(args: Array[Argument], context: Context): Unit = {
     if (vid.videoSource.isEmpty)
       throw new ExtensionException("vid: no selected source")

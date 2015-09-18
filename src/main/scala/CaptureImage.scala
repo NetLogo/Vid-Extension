@@ -5,6 +5,8 @@ import java.awt.image.BufferedImage
 import java.awt.{ Image => JImage }
 
 class CaptureImage(vid: VidExtension) extends DefaultReporter {
+  override def getSyntax = Syntax.reporterSyntax(Array[Int](Syntax.NumberType | Syntax.RepeatableType), Syntax.WildcardType)
+
   def report(args: Array[Argument], context: Context): AnyRef = {
     vid.videoSource.map { source =>
       val image = source.captureImage()

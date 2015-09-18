@@ -3,6 +3,8 @@ package org.nlogo.extensions.vid
 import org.nlogo.api._
 
 class MovieOpen(vid: VidExtension, files: MovieFactory) extends DefaultCommand {
+  override def getSyntax = Syntax.commandSyntax(Array[Int](Syntax.StringType))
+
   def perform(args: Array[Argument], context: Context): Unit = {
     val filePath = context.attachCurrentDirectory(args(0).getString)
     try {
