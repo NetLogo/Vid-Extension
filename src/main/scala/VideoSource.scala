@@ -11,5 +11,5 @@ trait VideoSource {
 
   def captureImage(): BufferedImage
 
-  def setTime(timeInMillis: Long): Unit
+  def setTime(timeInSeconds: Double): Unit
 }

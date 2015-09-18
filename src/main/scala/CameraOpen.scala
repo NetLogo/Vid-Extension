@@ -13,7 +13,7 @@ class CameraOpen(vid: VidExtension, cameras: CameraFactory) extends DefaultComma
     val camera = cameras.open(cameraName).getOrElse(
       throw new ExtensionException(s"""vid: camera "$cameraName" not found"""))
     vid.videoSource = Some(new VideoSource {
-      override def setTime(timeInMillis: Long): Unit = {}
+      override def setTime(timeInSeconds: Double): Unit = {}
       override def stop() = {}
       override def play() = {}
       override def isPlaying = true

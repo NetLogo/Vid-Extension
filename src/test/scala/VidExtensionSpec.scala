@@ -232,7 +232,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         isPlaying = false
       def captureImage() = dummyImage
 
-      def setTime(time: Long): Unit = {
+      def setTime(time: Double): Unit = {
         if (time < 0)
           throw new IllegalArgumentException("bad time!")
       }

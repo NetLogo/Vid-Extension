@@ -4,7 +4,14 @@ import org.nlogo.api._
 
 class VidExtension(files: MovieFactory, cameras: CameraFactory) extends DefaultClassManager {
 
+  override def runOnce(em: ExtensionManager): Unit = {
+    //initialize javafx
+    import javafx.embed.swing.JFXPanel
+    val init = new JFXPanel()
+  }
+
   override def load(manager: PrimitiveManager) = {
+
     manager.addPrimitive("camera-names",  new CameraNames(cameras))
     manager.addPrimitive("camera-open",   new CameraOpen(this, cameras))
     manager.addPrimitive("capture-image", new CaptureImage(this))
