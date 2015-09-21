@@ -277,6 +277,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         When("I run vid:show-player 640 480")
         vid.`show-player`(Double.box(640), Double.box(480))
 
+        //TODO: Add dimensionality to player
         // Then("I should see a player with the specified dimensions")
       }
     }

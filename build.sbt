@@ -14,7 +14,6 @@ libraryDependencies +=
 
 libraryDependencies ++= Seq(
   "com.github.sarxos" % "webcam-capture" % "0.3.10",
-  "com.nativelibs4java" % "bridj" % "0.7.0",
   "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 )
 
