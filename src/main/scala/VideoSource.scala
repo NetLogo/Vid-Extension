@@ -7,6 +7,8 @@ trait VideoSource {
 
   def stop(): Unit
 
+  def close(): Unit
+
   def isPlaying: Boolean
 
   def captureImage(): BufferedImage

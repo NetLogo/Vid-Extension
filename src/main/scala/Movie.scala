@@ -1,14 +1,15 @@
 package org.nlogo.extensions.vid
 
 import java.awt.image.BufferedImage
+import java.lang.{ Void => JVoid }
 import java.io.File
 
 import javafx.embed.swing.SwingFXUtils
 import javafx.application.Platform
-import javafx.scene.{ Group, Scene }
+import javafx.scene.{ Group, Scene, SnapshotResult }
 import javafx.scene.image.WritableImage
 import javafx.scene.media.{ Media, MediaException, MediaPlayer, MediaView }
-import javafx.util.Duration
+import javafx.util.{ Callback, Duration }
 
 import scala.concurrent.Channel
 
@@ -39,21 +40,22 @@ object Movie extends MovieFactory {
 class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
   mediaPlayer.setMute(true)
 
-  def play(): Unit =
+  override def play(): Unit =
     mediaPlayer.play()
 
-  def stop(): Unit =
+  override def stop(): Unit =
     mediaPlayer.pause()
 
-  def isPlaying: Boolean =
+  override def close(): Unit = {
+    mediaPlayer.stop()
+    mediaPlayer.dispose()
+  }
+
+  override def isPlaying: Boolean =
     mediaPlayer.getStatus == MediaPlayer.Status.PLAYING
 
-  def captureImage(): BufferedImage = {
+  override def captureImage(): BufferedImage = {
     val chan = new Channel[BufferedImage]
-
-    import javafx.util.Callback
-    import javafx.scene.SnapshotResult
-    import java.lang.{ Void => JVoid }
 
     val callback = new Callback[SnapshotResult, JVoid] {
       def call(res: SnapshotResult): JVoid = {
@@ -78,14 +80,14 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
     new Scene(g, media.getWidth, media.getHeight)
   }
 
-  def setTime(timeInSeconds: Double): Unit = {
+  override def setTime(timeInSeconds: Double): Unit = {
     val requestedTime = new Duration(timeInSeconds * 1000)
     if (timeInSeconds < 0 || requestedTime.greaterThan(media.getDuration))
       throw new IllegalArgumentException(s"invalid time $timeInSeconds")
     mediaPlayer.seek(requestedTime)
   }
 
-  def showInPlayer(player: Player): Unit =
+  override def showInPlayer(player: Player): Unit =
     player.show(mediaScene, this)
 }
 

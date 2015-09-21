@@ -82,6 +82,14 @@ class MovieTest extends FunSuite {
     }
   }
 
+  test("close disposes media player") {
+    new MovieFixture {
+      movie.close()
+      Thread.sleep(100)
+      assert(mediaPlayer.getStatus == MediaPlayer.Status.DISPOSED)
+    }
+  }
+
   test("captureImage records the image available") {
     new MovieFixture {
       import javax.imageio.ImageIO

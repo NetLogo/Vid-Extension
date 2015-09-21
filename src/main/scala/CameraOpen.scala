@@ -16,6 +16,7 @@ class CameraOpen(vid: VidExtension, cameras: CameraFactory) extends DefaultComma
       override def setTime(timeInSeconds: Double): Unit = {}
       override def stop() = {}
       override def play() = {}
+      override def close() = {}
       override def isPlaying = true
       override def captureImage() = null
       // can't be shown at the moment

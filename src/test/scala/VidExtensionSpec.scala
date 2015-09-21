@@ -64,10 +64,12 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
 
     scenario("closes an opened movie") {
       new VidSpecHelpers {
+        import scala.language.reflectiveCalls
         givenOpenMovie()
         When("I run movie:close")
         vid.close()
         thenStatusShouldBe("inactive")
+        assert(dummyVideoSource.isClosed)
       }
     }
 
@@ -282,10 +284,16 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
   trait VidSpecHelpers extends WithLoadedVidExtension {
     val dummyVideoSource = new VideoSource {
       var isPlaying = false
+      var isClosed  = false
+
       override def play(): Unit =
         isPlaying = true
       override def stop(): Unit =
         isPlaying = false
+
+      def close(): Unit =
+        isClosed = true
+
       def captureImage() = dummyImage
 
       def setTime(time: Double): Unit =
