@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage
 import org.nlogo.api._
 
 class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
+  import scala.language.reflectiveCalls
 
   feature("opening and closing") {
     scenario("no movie open") {
@@ -22,6 +23,17 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         vid.`movie-open`("foobar.mp4")
 
         thenStatusShouldBe("stopped")
+      }
+    }
+
+    scenario("opening a new source closes the first source") {
+      new VidSpecHelpers {
+        givenOpenMovie()
+        When("""I run vid:camera-open "camera"""")
+        vid.`camera-open`("camera")
+
+        Then("the movie should be closed")
+        assert(dummyVideoSource.isClosed)
       }
     }
 
@@ -53,7 +65,6 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
 
     scenario("tries to open a default camera when none available") {
       new VidSpecHelpers with ExpectError {
-        import scala.language.reflectiveCalls
         Given("there are no cameras available")
         cameraFactory.defaultCameraName = None
         whenRunForError("vid:camera-open", vid.`camera-open`())
@@ -64,7 +75,6 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
 
     scenario("closes an opened movie") {
       new VidSpecHelpers {
-        import scala.language.reflectiveCalls
         givenOpenMovie()
         When("I run movie:close")
         vid.close()
@@ -239,7 +249,6 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
     }
 
     scenario("player can be started with no source") {
-      import scala.language.reflectiveCalls
       new VidSpecHelpers {
         When("I run vid:show-player")
         vid.`show-player`()
@@ -251,7 +260,6 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
     }
 
     scenario("player can be started with no dimensions") {
-      import scala.language.reflectiveCalls
       new VidSpecHelpers {
         givenOpenMovie()
 

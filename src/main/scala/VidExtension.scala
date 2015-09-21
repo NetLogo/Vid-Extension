@@ -32,5 +32,20 @@ class VidExtension(files: MovieFactory, cameras: CameraFactory, player: Player)
     manager.addPrimitive("stop",          new StopSource(this))
   }
 
-  var videoSource: Option[VideoSource] = None
+  var _videoSource: Option[VideoSource] = None
+
+  def videoSource: Option[VideoSource] =
+    _videoSource
+
+  def videoSource_=(source: Option[VideoSource]): Unit = {
+    try {
+      _videoSource.foreach(_.close())
+    } catch {
+      case e: Exception =>
+        println("VID Extension Exception")
+        println(e.getMessage)
+        e.printStackTrace()
+    }
+    _videoSource = source
+  }
 }

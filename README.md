@@ -1,5 +1,27 @@
 # NetLogo Vid Extension
 
+## Building
+
+Build with `sbt package`. `sbt test` runs tests.
+
+## Concepts
+
+### Video Source
+
+The `vid` extension has a built in concept of a video source.
+At the moment, the only video sources available are movies in the directory the model lives in and cameras attached to the computer.
+The `vid` extension opens a new video source with the `vid:<source>-open` and `vid:<source>-select`.
+These primitives change the source to the selected source.
+If a source is already open, it closes it before opening a new one.
+
+### Source Lifecycle
+
+Movie sources are "stopped" after being created by `vid:movie-select` or `vid:movie-open`.
+Camera sources start off as "playing" after being created by `vid:camera-select` or `vid:camera-open`.
+If a source is in status "stopped" it can be started with `vid:start`.
+Conversely, if the source is "playing" it can be stopped with `vid:stop`.
+When a source is "stopped", each call to `vid:capture-image` will return the same image.
+
 ## Primitives
 
 ### `vid:camera-select`
