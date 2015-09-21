@@ -274,11 +274,15 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
 
     scenario("player can be started with specific dimensions") {
       new VidSpecHelpers {
+        givenOpenMovie()
+
         When("I run vid:show-player 640 480")
         vid.`show-player`(Double.box(640), Double.box(480))
 
-        //TODO: Add dimensionality to player
-        // Then("I should see a player with the specified dimensions")
+        Then("I should see a player with the specified dimensions")
+        assert(player.scene != null)
+        assert(player.scene.getRoot.getBoundsInLocal.getWidth == 640)
+        assert(player.scene.getRoot.getBoundsInLocal.getHeight == 480)
       }
     }
   }
@@ -292,6 +296,9 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
 
   trait VidSpecHelpers extends WithLoadedVidExtension {
     class DummySource(val startPlaying: Boolean) extends VideoSource {
+      import javafx.scene.{ Group, Scene }
+      import javafx.scene.shape.Rectangle
+
       var isPlaying = startPlaying
       var isClosed  = false
       override def play(): Unit = { isPlaying = true }
@@ -301,9 +308,18 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
       def setTime(time: Double): Unit =
         if (time < 0)
           throw new IllegalArgumentException("bad time!")
-      override def showInPlayer(player: Player): Unit = {
-        import javafx.scene.{ Group, Scene }
+
+      override def showInPlayer(player: Player) = {
         val g = new Group()
+        val scene = new Scene(g)
+        player.show(scene, this)
+      }
+
+      override def showInPlayer(player: Player, width: Double, height: Double): Unit = {
+        val r = new Rectangle()
+        r.setWidth(width)
+        r.setHeight(height)
+        val g = new Group(r)
         val scene = new Scene(g)
         player.show(scene, this)
       }

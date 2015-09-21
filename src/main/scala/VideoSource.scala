@@ -16,4 +16,6 @@ trait VideoSource {
   def setTime(timeInSeconds: Double): Unit
 
   def showInPlayer(player: Player): Unit
+
+  def showInPlayer(player: Player, width: Double, height: Double): Unit
 }

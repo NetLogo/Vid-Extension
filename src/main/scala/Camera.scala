@@ -56,4 +56,6 @@ class Camera(val webcam: Webcam) extends VideoSource {
     cachedImage.getOrElse(webcam.getImage)
 
   override def showInPlayer(player: Player) = {}
+
+  override def showInPlayer(player: Player, width: Double, height: Double): Unit = {}
 }

@@ -67,15 +67,15 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
     Platform.runLater(
       new Runnable() {
         override def run(): Unit = {
-          mediaScene.snapshot(callback, null)
+          mediaScene().snapshot(callback, null)
         }
       })
 
     chan.read
   }
 
-  private def mediaScene: Scene = {
-    val mv = new MediaView(mediaPlayer)
+  private def mediaScene(f: MediaView => MediaView = identity): Scene = {
+    val mv = f(new MediaView(mediaPlayer))
     val g = new Group(mv)
     new Scene(g, media.getWidth, media.getHeight)
   }
@@ -87,7 +87,16 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
     mediaPlayer.seek(requestedTime)
   }
 
-  override def showInPlayer(player: Player): Unit =
-    player.show(mediaScene, this)
+  def showInPlayer(player: Player): Unit =
+    player.show(mediaScene(), this)
+
+  override def showInPlayer(player: Player, width: Double, height: Double): Unit = {
+    val scene = mediaScene { view =>
+      view.setFitWidth(width)
+      view.setFitHeight(height)
+      view
+    }
+    player.show(scene, this)
+  }
 }
 
