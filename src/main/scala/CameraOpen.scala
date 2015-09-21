@@ -10,18 +10,10 @@ class CameraOpen(vid: VidExtension, cameras: CameraFactory) extends DefaultComma
           throw new ExtensionException("vid: no cameras found"))
       else
         args(0).getString
-    val camera = cameras.open(cameraName).getOrElse(
-      throw new ExtensionException(s"""vid: camera "$cameraName" not found"""))
-    vid.videoSource = Some(new VideoSource {
-      override def setTime(timeInSeconds: Double): Unit = {}
-      override def stop() = {}
-      override def play() = {}
-      override def close() = {}
-      override def isPlaying = true
-      override def captureImage() = null
-      // can't be shown at the moment
-      override def showInPlayer(player: Player) = {}
-
-    })
+    cameras.open(cameraName) match {
+      case cam@Some(camera) => vid.videoSource = Some(camera)
+      case _                =>
+        throw new ExtensionException(s"""vid: camera "$cameraName" not found""")
+    }
   }
 }

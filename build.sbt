@@ -14,6 +14,7 @@ libraryDependencies +=
 
 libraryDependencies ++= Seq(
   "com.github.sarxos" % "webcam-capture" % "0.3.10",
+  "com.nativelibs4java" % "bridj" % "0.7.0",
   "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 )
 
@@ -24,3 +25,7 @@ netLogoExtName := "vid"
 netLogoClassManager := "org.nlogo.extensions.vid.VidExtension"
 
 netLogoZipSources := false
+
+// necessary for testing camera functionality.
+// See https://groups.google.com/forum/#!topic/nativelibs4java/WNmOZPknRiU
+fork in Test := true

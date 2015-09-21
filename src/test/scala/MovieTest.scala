@@ -1,6 +1,6 @@
 package org.nlogo.extensions.vid
 
-import org.scalatest.{ FunSuite, OneInstancePerTest }
+import org.scalatest.FunSuite
 import java.io.File
 import java.nio.file.Files
 import javafx.util.Duration
@@ -13,7 +13,7 @@ import javafx.scene.media.{ Media, MediaException, MediaPlayer }
 
 class MovieTest extends FunSuite {
   import javafx.embed.swing.JFXPanel
-  val init = new JFXPanel()
+  val _ = new JFXPanel() // init JavaFX
 
   trait MovieFixture {
     val media = new Media(new File("src/test/resources/small.mp4").toURI.toString)

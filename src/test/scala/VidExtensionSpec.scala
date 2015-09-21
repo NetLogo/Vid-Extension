@@ -33,7 +33,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         vid.`camera-open`("camera")
 
         Then("the movie should be closed")
-        assert(dummyVideoSource.isClosed)
+        assert(dummyMovie.isClosed)
       }
     }
 
@@ -79,7 +79,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         When("I run movie:close")
         vid.close()
         thenStatusShouldBe("inactive")
-        assert(dummyVideoSource.isClosed)
+        assert(dummyMovie.isClosed)
       }
     }
 
@@ -268,7 +268,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
 
         Then("I should see a player running with native dimensions matching the video")
         assert(player.isShowing)
-        assert(player.videoSource.get == dummyVideoSource)
+        assert(player.videoSource.get == dummyMovie)
       }
     }
 
@@ -290,26 +290,17 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
   val dummyImage = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB)
 
   trait VidSpecHelpers extends WithLoadedVidExtension {
-    val dummyVideoSource = new VideoSource {
-      var isPlaying = false
+    class DummySource(val startPlaying: Boolean) extends VideoSource {
+      var isPlaying = startPlaying
       var isClosed  = false
-
-      override def play(): Unit =
-        isPlaying = true
-      override def stop(): Unit =
-        isPlaying = false
-
-      def close(): Unit =
-        isClosed = true
-
+      override def play(): Unit = { isPlaying = true }
+      override def stop(): Unit = { isPlaying = false }
+      def close(): Unit = { isClosed = true }
       def captureImage() = dummyImage
-
       def setTime(time: Double): Unit =
         if (time < 0)
           throw new IllegalArgumentException("bad time!")
-
       override def showInPlayer(player: Player): Unit = {
-        println("Showing in player")
         import javafx.scene.{ Group, Scene }
         val g = new Group()
         val scene = new Scene(g)
@@ -317,10 +308,14 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
       }
     }
 
+    val dummyMovie = new DummySource(false)
+
+    val dummyCamera = new DummySource(true)
+
     val movieFactory = new MovieFactory {
       override def open(filePath: String): Option[VideoSource] = {
         filePath match {
-          case "/currentdir/foobar.mp4"      => Some(dummyVideoSource)
+          case "/currentdir/foobar.mp4"      => Some(dummyMovie)
           case "/currentdir/unsupported.ogg" => throw new InvalidFormatException
           case _ => None
         }
@@ -331,9 +326,9 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
       val cameraNames = Seq("camera")
       var defaultCameraName: Option[String] = Some("camera")
 
-      override def open(cameraName: String): Option[AnyRef] = {
+      override def open(cameraName: String): Option[VideoSource] = {
         cameraName match {
-          case "camera" => Some(this)
+          case "camera" => Some(dummyCamera)
           case _        => None
         }
       }
