@@ -8,10 +8,11 @@ import javafx.application.Platform
 import javafx.geometry.Bounds
 import javafx.scene.Scene
 import javafx.beans.value.ObservableValue
-import javafx.beans.value.{ ChangeListener, ObservableValue }
 import javafx.embed.swing.JFXPanel
 
 import javax.swing.{ JFrame, SwingUtilities }
+
+import util.FunctionToCallback.{ function2Runnable, function2ChangeListener }
 
 trait BoundsPreference {
   def preferredBound: ObservableValue[Dimension]
@@ -62,15 +63,9 @@ class JavaFXPlayer extends Player {
       onJavaFX { () =>
         jfxPanel.setScene(scene)
         scene.preferredBound.addListener(
-          new ChangeListener[Dimension] {
-            override def changed(obs: ObservableValue[_ <: Dimension], oldDim: Dimension, newDim: Dimension) = {
-              jfxPanel.setPreferredSize(newDim)
-
-              onSwing { () =>
-                f.pack()
-              }
-            }
-          })
+          (oldDim: Dimension, newDim: Dimension) =>
+            onSwing { () => f.pack() }
+          )
 
         onSwing { () =>
           f.add(jfxPanel)
@@ -87,16 +82,11 @@ class JavaFXPlayer extends Player {
     }
   }
 
-  private def onJavaFX(f: () => Unit) =
-    Platform.runLater(new Runnable() {
-      override def run() = f()
-    })
+  private def onJavaFX(runnable: Runnable) =
+    Platform.runLater(runnable)
 
-  private def onSwing(f: () => Unit) =
-    SwingUtilities.invokeLater(new Runnable() {
-      override def run(): Unit = f()
-    })
-
+  private def onSwing(runnable: Runnable) =
+    SwingUtilities.invokeLater(runnable)
 
   def showEmpty(): Unit = {}
 }

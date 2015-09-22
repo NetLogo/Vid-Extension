@@ -9,15 +9,14 @@ import javafx.embed.swing.JFXPanel
 import javafx.scene.{ Scene, Group }
 import javafx.scene.media.{ Media, MediaPlayer, MediaView }
 
+import util.FunctionToCallback.function2Runnable
+
 class MovieOpenPlayer extends DefaultCommand {
   override def perform(args: Array[Argument], context: Context): Unit = {
-    SwingUtilities.invokeLater(new Runnable() {
+    SwingUtilities.invokeLater { () =>
       val frame = new JFrame("NetLogo - vid extension")
-
-      override def run(): Unit = {
-        initJavaFXFrame(frame)
-      }
-    })
+      initJavaFXFrame(frame)
+    }
   }
 
   val mediaPath = "file:///Users/rgg284/IdeaProjects/vid/testvid.mp4"
@@ -25,21 +24,16 @@ class MovieOpenPlayer extends DefaultCommand {
   def initJavaFXFrame(frame: JFrame): Unit = {
     val fxPanel = new JFXPanel()
 
-    Platform.runLater(new Runnable() {
-      override def run(): Unit = {
-        val media   = new Media(mediaPath)
-        val mediaPlayer = new MediaPlayer(media)
-        val mediaView   = new MediaView(mediaPlayer)
-        val group   = new Group(mediaView)
-        val scene   = new Scene(group)
-        fxPanel.setScene(scene)
-        mediaPlayer.setOnReady(new Runnable() {
-          override def run(): Unit =
-            frame.setSize(media.getWidth, media.getHeight)
-        })
-        frame.setVisible(true)
-        frame.add(fxPanel)
-      }
-    })
+    Platform.runLater { () =>
+      val media   = new Media(mediaPath)
+      val mediaPlayer = new MediaPlayer(media)
+      val mediaView   = new MediaView(mediaPlayer)
+      val group   = new Group(mediaView)
+      val scene   = new Scene(group)
+      fxPanel.setScene(scene)
+      mediaPlayer.setOnReady(() => frame.setSize(media.getWidth, media.getHeight))
+      frame.setVisible(true)
+      frame.add(fxPanel)
+    }
   }
 }

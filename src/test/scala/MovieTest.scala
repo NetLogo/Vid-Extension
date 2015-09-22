@@ -1,6 +1,9 @@
 package org.nlogo.extensions.vid
 
 import org.scalatest.FunSuite
+import org.scalatest.concurrent.AsyncAssertions
+import org.scalatest.time.{ Millis, Span }
+
 import java.io.File
 import java.nio.file.Files
 import javafx.util.Duration
@@ -9,39 +12,48 @@ import java.awt.image.BufferedImage
 import java.util.Arrays
 
 import javafx.scene.Scene
-import javafx.scene.media.{ Media, MediaException, MediaPlayer }
+import javafx.scene.media.{ Media, MediaException, MediaPlayer },
+  MediaPlayer.{ Status => MPStatus }
 
-class MovieTest extends FunSuite {
+import scala.concurrent.Channel
+
+import util.FunctionToCallback.{ function2Runnable, function2ChangeListener }
+
+class MovieTest extends FunSuite with AsyncAssertions {
   import javafx.embed.swing.JFXPanel
   val _ = new JFXPanel() // init JavaFX
 
-  trait MovieFixture {
-    val media = new Media(new File("src/test/resources/small.mp4").toURI.toString)
-    var loaded = false
-    val mediaPlayer = new MediaPlayer(media)
+  val ValidMoviePath    = "src/test/resources/small.mp4"
+  val NotFoundMoviePath = "/tmp/notreal"
+  val InvalidMoviePath  = "src/test/resources/small.ogv"
 
+  trait MovieFixture {
+    val isReady = new Channel[Boolean]
+    val media = new Media(new File(ValidMoviePath).toURI.toString)
+    val mediaPlayer = new MediaPlayer(media)
+    mediaPlayer.setOnReady(() => isReady.write(true))
     val movie = new Movie(media, mediaPlayer)
 
-    mediaPlayer.setOnReady(new Runnable() {
-      override def run(): Unit =
-        loaded = true
-    })
+    def expectTransition(status: MPStatus, w: Waiter) =
+      mediaPlayer.statusProperty.addListener((_: MPStatus, newStatus: MPStatus) =>
+          if (newStatus == status) w.dismiss())
 
-    while(! loaded) {}
+    if (! (mediaPlayer.getStatus == MediaPlayer.Status.READY))
+      isReady.read
   }
 
   test("given movie doesn't exist, open returns None") {
-    assert(Movie.open("/tmp/notreal").isEmpty)
+    assert(Movie.open(NotFoundMoviePath).isEmpty)
   }
 
   test("given movie isn't in a supported format, open throws exception") {
     intercept[InvalidFormatException] {
-      Movie.open("src/test/resources/small.ogv")
+      Movie.open(InvalidMoviePath)
     }
   }
 
   test("when a movie exists and is in a supported format, returns a Movie") {
-    val m = Movie.open("src/test/resources/small.mp4")
+    val m = Movie.open(ValidMoviePath)
     assert(m.nonEmpty)
   }
 
@@ -54,6 +66,8 @@ class MovieTest extends FunSuite {
 
   test("when an attempt is made to setTime to a time within the movie, that time is set") {
     new MovieFixture {
+      // unfortunately, the currentTimeProperty only changes when the movie is playing
+      // even though getCurrentTime is updated whether or not the movie is playing
       movie.setTime(0.5)
       Thread.sleep(50)
       assert(mediaPlayer.getCurrentTime.equals(Duration.millis(500)))
@@ -62,31 +76,34 @@ class MovieTest extends FunSuite {
 
   test("play starts playback") {
     new MovieFixture {
-    assert(! movie.isPlaying)
-    movie.play()
-    Thread.sleep(100)
-    assert(mediaPlayer.getStatus == MediaPlayer.Status.PLAYING)
-    assert(movie.isPlaying)
+      val w = new Waiter()
+      assert(! movie.isPlaying)
+      expectTransition(MPStatus.PLAYING, w)
+      movie.play()
+      w.await(timeout(Span(100, Millis)), dismissals(1))
+      assert(movie.isPlaying)
     }
   }
 
   test("stop pauses playback") {
     new MovieFixture {
+      val w = new Waiter()
       assert(! movie.isPlaying)
+      mediaPlayer.statusProperty.addListener((oldStatus: MediaPlayer.Status, newStatus: MediaPlayer.Status) =>
+          if (newStatus == MediaPlayer.Status.PLAYING) movie.stop())
       movie.play()
-      Thread.sleep(100)
-      movie.stop()
-      Thread.sleep(100)
-      assert(mediaPlayer.getStatus == MediaPlayer.Status.PAUSED)
+      expectTransition(MPStatus.PAUSED, w)
+      w.await(timeout(Span(100, Millis)), dismissals(1))
       assert(! movie.isPlaying)
     }
   }
 
   test("close disposes media player") {
     new MovieFixture {
+      val w = new Waiter()
+      expectTransition(MPStatus.DISPOSED, w)
       movie.close()
-      Thread.sleep(100)
-      assert(mediaPlayer.getStatus == MediaPlayer.Status.DISPOSED)
+      w.await(timeout(Span(100, Millis)), dismissals(1))
     }
   }
 

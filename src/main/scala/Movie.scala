@@ -1,17 +1,22 @@
 package org.nlogo.extensions.vid
 
+import java.awt.Dimension
 import java.awt.image.BufferedImage
 import java.lang.{ Void => JVoid }
 import java.io.File
 
 import javafx.embed.swing.SwingFXUtils
 import javafx.application.Platform
+import javafx.beans.binding.Bindings
+import javafx.beans.value.ObservableValue
 import javafx.scene.{ Group, Scene, SnapshotResult }
 import javafx.scene.image.WritableImage
 import javafx.scene.media.{ Media, MediaException, MediaPlayer, MediaView }
 import javafx.util.{ Callback, Duration }
 
 import scala.concurrent.Channel
+
+import util.FunctionToCallback.{ function2Callable, function2Runnable }
 
 trait MovieFactory {
   // throws InvalidFormatException when the filePath points to a file
@@ -64,27 +69,9 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
       }
     }
 
-    Platform.runLater(
-      new Runnable() {
-        override def run(): Unit =
-          movieScene().snapshot(callback, null)
-      })
+    Platform.runLater(() => movieScene().snapshot(callback, null))
 
     chan.read
-  }
-
-  class MovieScene(mediaView: MediaView) extends Scene(new Group(mediaView)) with BoundsPreference {
-    import java.util.concurrent.Callable
-    import javafx.beans.binding.Bindings
-    import java.awt.Dimension
-    import javafx.beans.value.ObservableValue
-
-    val preferredBound: ObservableValue[Dimension] =
-      Bindings.createObjectBinding[Dimension](
-        new Callable[Dimension] {
-          override def call(): Dimension =
-            new Dimension(mediaView.getFitWidth.toInt, mediaView.getFitHeight.toInt)
-        }, mediaView.fitWidthProperty, mediaView.fitHeightProperty)
   }
 
   private def movieScene(f: MediaView => MediaView = identity): MovieScene =
@@ -108,5 +95,12 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
     }
     player.show(scene, this)
   }
+}
+
+class MovieScene(mediaView: MediaView) extends Scene(new Group(mediaView)) with BoundsPreference {
+  val preferredBound: ObservableValue[Dimension] =
+    Bindings.createObjectBinding[Dimension](
+      () => new Dimension(mediaView.getFitWidth.toInt, mediaView.getFitHeight.toInt),
+      mediaView.fitWidthProperty, mediaView.fitHeightProperty)
 }
 

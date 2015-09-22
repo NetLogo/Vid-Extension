@@ -5,8 +5,10 @@ import com.github.sarxos.webcam.{ Webcam, WebcamEvent, WebcamListener }
 import java.util.concurrent.TimeUnit
 
 import java.awt.image.BufferedImage
+import java.awt.Dimension
 
 import javafx.application.Platform
+import javafx.beans.binding.Bindings
 import javafx.beans.value.ObservableValue
 import javafx.geometry.Bounds
 import javafx.concurrent.{ Service, Task, WorkerStateEvent }
@@ -16,6 +18,8 @@ import javafx.scene.{ Group, Scene }
 import javafx.scene.image.{ Image, ImageView }
 
 import scala.collection.JavaConversions._
+
+import util.FunctionToCallback.function2Callable
 
 trait CameraFactory {
   def cameraNames:              Seq[String]
@@ -65,10 +69,11 @@ class Camera(val webcam: Webcam) extends VideoSource {
     cachedImage.getOrElse(webcam.getImage)
 
   class UpdateImage extends Service[Image] {
-    override protected def createTask(): Task[Image] = new Task[Image] {
-      override protected def call(): Image =
-        SwingFXUtils.toFXImage(captureImage(), null)
-    }
+    override protected def createTask(): Task[Image] =
+      new Task[Image] {
+        override protected def call(): Image =
+          SwingFXUtils.toFXImage(captureImage(), null)
+      }
   }
 
   class OnUpdateSuccess(imageView: ImageView, imageUpdate: Service[Image])
@@ -82,15 +87,10 @@ class Camera(val webcam: Webcam) extends VideoSource {
   }
 
   class CameraScene(imageView: ImageView) extends Scene(new Group(imageView)) with BoundsPreference {
-    import java.awt.Dimension
-    import javafx.beans.binding.Bindings
-    import java.util.concurrent.Callable
     val preferredBound: ObservableValue[Dimension] =
       Bindings.createObjectBinding[Dimension](
-        new Callable[Dimension] {
-          override def call(): Dimension =
-            new Dimension(imageView.boundsInLocalProperty.get.getWidth.toInt, imageView.boundsInLocalProperty.get.getHeight.toInt)
-        }, imageView.boundsInLocalProperty)
+        () => new Dimension(imageView.boundsInLocalProperty.get.getWidth.toInt, imageView.boundsInLocalProperty.get.getHeight.toInt),
+        imageView.boundsInLocalProperty)
   }
 
   private def cameraScene(f: ImageView => ImageView = identity): CameraScene = {
