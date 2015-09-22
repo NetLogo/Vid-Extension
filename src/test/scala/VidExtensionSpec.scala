@@ -295,10 +295,13 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
   val dummyImage = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB)
 
   trait VidSpecHelpers extends WithLoadedVidExtension {
-    class DummySource(val startPlaying: Boolean) extends VideoSource {
-      import javafx.scene.{ Group, Scene }
-      import javafx.scene.shape.Rectangle
+    import java.awt.Dimension
 
+    import javafx.scene.{ Group, Scene }
+    import javafx.scene.shape.Rectangle
+    import javafx.beans.value.ObservableValue
+
+    class DummySource(val startPlaying: Boolean) extends VideoSource {
       var isPlaying = startPlaying
       var isClosed  = false
       override def play(): Unit = { isPlaying = true }
@@ -311,7 +314,10 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
 
       override def showInPlayer(player: Player) = {
         val g = new Group()
-        val scene = new Scene(g)
+        val scene = new Scene(g) with BoundsPreference {
+          def preferredBound: ObservableValue[Dimension] =
+            null
+        }
         player.show(scene, this)
       }
 
@@ -320,7 +326,10 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
         r.setWidth(width)
         r.setHeight(height)
         val g = new Group(r)
-        val scene = new Scene(g)
+        val scene = new Scene(g) with BoundsPreference {
+          def preferredBound: ObservableValue[Dimension] =
+            null
+        }
         player.show(scene, this)
       }
     }
@@ -364,7 +373,7 @@ class VidExtensionSpec extends FeatureSpec with GivenWhenThen {
 
       def showEmpty() = { isShowing = true }
 
-      def show(showThisScene: Scene, source: VideoSource) = {
+      def show(showThisScene: Scene with BoundsPreference, source: VideoSource) = {
         scene = showThisScene
         isShowing = true
         videoSource = Some(source)

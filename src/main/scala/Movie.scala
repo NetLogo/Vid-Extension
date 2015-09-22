@@ -66,19 +66,29 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
 
     Platform.runLater(
       new Runnable() {
-        override def run(): Unit = {
-          mediaScene().snapshot(callback, null)
-        }
+        override def run(): Unit =
+          movieScene().snapshot(callback, null)
       })
 
     chan.read
   }
 
-  private def mediaScene(f: MediaView => MediaView = identity): Scene = {
-    val mv = f(new MediaView(mediaPlayer))
-    val g = new Group(mv)
-    new Scene(g, media.getWidth, media.getHeight)
+  class MovieScene(mediaView: MediaView) extends Scene(new Group(mediaView)) with BoundsPreference {
+    import java.util.concurrent.Callable
+    import javafx.beans.binding.Bindings
+    import java.awt.Dimension
+    import javafx.beans.value.ObservableValue
+
+    val preferredBound: ObservableValue[Dimension] =
+      Bindings.createObjectBinding[Dimension](
+        new Callable[Dimension] {
+          override def call(): Dimension =
+            new Dimension(mediaView.getFitWidth.toInt, mediaView.getFitHeight.toInt)
+        }, mediaView.fitWidthProperty, mediaView.fitHeightProperty)
   }
+
+  private def movieScene(f: MediaView => MediaView = identity): MovieScene =
+    new MovieScene(f(new MediaView(mediaPlayer)))
 
   override def setTime(timeInSeconds: Double): Unit = {
     val requestedTime = new Duration(timeInSeconds * 1000)
@@ -88,10 +98,10 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
   }
 
   def showInPlayer(player: Player): Unit =
-    player.show(mediaScene(), this)
+    player.show(movieScene(), this)
 
   override def showInPlayer(player: Player, width: Double, height: Double): Unit = {
-    val scene = mediaScene { view =>
+    val scene = movieScene { view =>
       view.setFitWidth(width)
       view.setFitHeight(height)
       view

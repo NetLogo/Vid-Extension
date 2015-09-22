@@ -140,7 +140,7 @@ class MovieTest extends FunSuite {
       movie.showInPlayer(new Player {
         def isShowing = false
         def hide(): Unit = {}
-        def show(scene: Scene, video: VideoSource): Unit =
+        def show(scene: Scene with BoundsPreference, video: VideoSource): Unit =
           shownScene = scene
         def showEmpty(): Unit = {}
         def videoSource: Option[VideoSource] = None

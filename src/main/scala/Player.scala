@@ -1,21 +1,27 @@
 package org.nlogo.extensions.vid
 
+import java.awt.Dimension
 import java.awt.event.{ WindowAdapter, WindowEvent }
 import java.lang.{ Number => JNumber }
 
 import javafx.application.Platform
+import javafx.geometry.Bounds
 import javafx.scene.Scene
+import javafx.beans.value.ObservableValue
 import javafx.beans.value.{ ChangeListener, ObservableValue }
 import javafx.embed.swing.JFXPanel
 
 import javax.swing.{ JFrame, SwingUtilities }
 
+trait BoundsPreference {
+  def preferredBound: ObservableValue[Dimension]
+}
 
 trait Player {
   def videoSource: Option[VideoSource]
   def isShowing: Boolean
   def hide(): Unit
-  def show(scene: Scene, video: VideoSource): Unit
+  def show(scene: Scene with BoundsPreference, video: VideoSource): Unit
   def showEmpty(): Unit
 }
 
@@ -49,12 +55,22 @@ class JavaFXPlayer extends Player {
     _panel.get
   }
 
-  def show(scene: Scene, video: VideoSource): Unit = {
+  def show(scene: Scene with BoundsPreference, video: VideoSource): Unit = {
     videoSource = Some(video)
 
     withFrame { f =>
       onJavaFX { () =>
         jfxPanel.setScene(scene)
+        scene.preferredBound.addListener(
+          new ChangeListener[Dimension] {
+            override def changed(obs: ObservableValue[_ <: Dimension], oldDim: Dimension, newDim: Dimension) = {
+              jfxPanel.setPreferredSize(newDim)
+
+              onSwing { () =>
+                f.pack()
+              }
+            }
+          })
 
         onSwing { () =>
           f.add(jfxPanel)
