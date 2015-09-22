@@ -17,6 +17,34 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
+    scenario("player should be showing empty if a video is closed while open") {
+      new VidSpecHelpers {
+        givenOpenMovie()
+        And("I have an open player")
+        vid.`show-player`()
+
+        When("I close the video source")
+        vid.close()
+
+        Then("I should see that the player is playing empty")
+        assert(player.videoSource.isEmpty)
+      }
+    }
+
+    scenario("changing the video source changes the players video source") {
+      new VidSpecHelpers {
+        givenOpenMovie()
+        And("I have an open player")
+        vid.`show-player`()
+
+        When("I open the camera")
+        vid.`camera-open`()
+
+        Then("I should see that the player is playing from the camera's source")
+        assert(player.videoSource.get == dummyCamera)
+      }
+    }
+
     scenario("player must have valid dimensions") {
       new VidSpecHelpers with ExpectError {
         whenRunForError("vid:show-player -1 -1",

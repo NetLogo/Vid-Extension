@@ -86,9 +86,14 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
 
       def hide() = { isShowing = false }
 
-      def showEmpty() = { isShowing = true }
+      def showEmpty() = {
+        showEmpty(0, 0)
+      }
 
-      def showEmpty(width: Double, height: Double) = { isShowing = true }
+      def showEmpty(width: Double, height: Double) = {
+        videoSource = None
+        isShowing = true
+      }
 
       def show(showThisScene: Scene with BoundsPreference, source: VideoSource) = {
         scene = showThisScene
