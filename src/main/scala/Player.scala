@@ -6,7 +6,8 @@ import java.lang.{ Number => JNumber }
 
 import javafx.application.Platform
 import javafx.geometry.Bounds
-import javafx.scene.Scene
+import javafx.scene.{ Group, Scene }
+import javafx.scene.shape.Rectangle
 import javafx.beans.value.ObservableValue
 import javafx.embed.swing.JFXPanel
 
@@ -24,6 +25,7 @@ trait Player {
   def hide(): Unit
   def show(scene: Scene with BoundsPreference, video: VideoSource): Unit
   def showEmpty(): Unit
+  def showEmpty(width: Double, height: Double): Unit
 }
 
 class JavaFXPlayer extends Player {
@@ -41,9 +43,19 @@ class JavaFXPlayer extends Player {
     }
   }
 
+  class PlayerFrame extends JFrame("NetLogo - vid extension") {
+    add(jfxPanel)
+    addWindowListener(new WindowAdapter() {
+      override def windowClosing(windowEvent: WindowEvent): Unit = {
+        frame  = None
+        _panel = None
+      }
+    })
+  }
+
   private def withFrame(f: JFrame => Unit) = {
     for {
-      currentFrame <- frame orElse Some(new JFrame("NetLogo - vid extension"))
+      currentFrame <- frame orElse Some(new PlayerFrame)
     } {
       frame = Some(currentFrame)
       f(currentFrame)
@@ -60,24 +72,15 @@ class JavaFXPlayer extends Player {
     videoSource = Some(video)
 
     withFrame { f =>
-      onJavaFX { () =>
-        jfxPanel.setScene(scene)
-        scene.preferredBound.addListener(
-          (oldDim: Dimension, newDim: Dimension) =>
-            onSwing { () => f.pack() }
-          )
+      scene.preferredBound.addListener(
+        (oldDim: Dimension, newDim: Dimension) =>
+          onSwing { () => f.pack() })
 
-        onSwing { () =>
-          f.add(jfxPanel)
-          f.pack()
-          f.addWindowListener(new WindowAdapter() {
-            override def windowClosing(windowEvent: WindowEvent): Unit = {
-              frame  = None
-              _panel = None
-            }
-          })
-          f.setVisible(true)
-        }
+      onSwing { () =>
+        jfxPanel.setScene(scene)
+        jfxPanel.setPreferredSize(scene.preferredBound.getValue)
+        f.pack()
+        f.setVisible(true)
       }
     }
   }
@@ -88,5 +91,18 @@ class JavaFXPlayer extends Player {
   private def onSwing(runnable: Runnable) =
     SwingUtilities.invokeLater(runnable)
 
-  def showEmpty(): Unit = {}
+  def showEmpty(): Unit = showEmpty(640, 480)
+
+  def showEmpty(width: Double, height: Double): Unit = {
+    val rect = new Rectangle(width, height)
+    val scene = new Scene(new Group(rect))
+
+    withFrame { f =>
+      onSwing { () =>
+        jfxPanel.setScene(scene)
+        f.pack()
+        f.setVisible(true)
+      }
+    }
+  }
 }

@@ -160,6 +160,7 @@ class MovieTest extends FunSuite with AsyncAssertions {
         def show(scene: Scene with BoundsPreference, video: VideoSource): Unit =
           shownScene = scene
         def showEmpty(): Unit = {}
+        def showEmpty(width: Double, height: Double): Unit = {}
         def videoSource: Option[VideoSource] = None
       })
 

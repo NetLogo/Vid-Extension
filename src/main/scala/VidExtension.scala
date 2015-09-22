@@ -32,6 +32,10 @@ class VidExtension(files: MovieFactory, cameras: CameraFactory, player: Player)
     manager.addPrimitive("stop",          new StopSource(this))
   }
 
+  override def unload(em: ExtensionManager) = {
+    _videoSource.foreach(_.close())
+  }
+
   var _videoSource: Option[VideoSource] = None
 
   def videoSource: Option[VideoSource] =
