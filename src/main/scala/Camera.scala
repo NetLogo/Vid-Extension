@@ -104,7 +104,7 @@ class Camera(val webcam: Webcam) extends VideoSource {
   }
 
   override def showInPlayer(player: Player) = {
-    player.show(cameraScene(), this)
+    player.setScene(cameraScene(), Some(this))
   }
 
   override def showInPlayer(player: Player, width: Double, height: Double): Unit = {
@@ -113,6 +113,6 @@ class Camera(val webcam: Webcam) extends VideoSource {
       iv.setFitHeight(height)
       iv
     }
-    player.show(scene, this)
+    player.setScene(scene, Some(this))
   }
 }

@@ -33,7 +33,7 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
         def preferredBound: ObservableValue[Dimension] =
           null
       }
-      player.show(scene, this)
+      player.setScene(scene, Some(this))
     }
 
     override def showInPlayer(player: Player, width: Double, height: Double): Unit = {
@@ -45,7 +45,7 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
         def preferredBound: ObservableValue[Dimension] =
           null
       }
-      player.show(scene, this)
+      player.setScene(scene, Some(this))
     }
     }
 
@@ -75,6 +75,10 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
       }
     }
 
+    val dummyEmptyScene = new Scene(new Group()) with BoundsPreference {
+      def preferredBound = ???
+    }
+
     override val player = new Player {
       import javafx.scene.Scene
 
@@ -86,19 +90,19 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
 
       def hide() = { isShowing = false }
 
-      def showEmpty() = {
-        showEmpty(0, 0)
-      }
+      def show(): Unit = { isShowing = true }
+
+      def emptyScene(width: Double, height: Double): Scene with BoundsPreference =
+        dummyEmptyScene
 
       def showEmpty(width: Double, height: Double) = {
         videoSource = None
         isShowing = true
       }
 
-      def show(showThisScene: Scene with BoundsPreference, source: VideoSource) = {
+      def setScene(showThisScene: Scene with BoundsPreference, source: Option[VideoSource]) = {
         scene = showThisScene
-        isShowing = true
-        videoSource = Some(source)
+        videoSource = source
       }
     }
 

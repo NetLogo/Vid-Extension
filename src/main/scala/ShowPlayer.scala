@@ -23,6 +23,7 @@ class ShowPlayer(player: Player, vidExtension: VideoSourceContainer) extends Def
     else if (vidExtension.videoSource.nonEmpty)
       vidExtension.videoSource.foreach(_.showInPlayer(player))
     else
-      player.showEmpty()
+      player.setScene(player.emptyScene, None)
+    player.show()
   }
 }

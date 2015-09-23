@@ -156,11 +156,13 @@ class MovieTest extends FunSuite with AsyncAssertions {
 
       movie.showInPlayer(new Player {
         def isShowing = false
+        def show(): Unit = {}
         def hide(): Unit = {}
-        def show(scene: Scene with BoundsPreference, video: VideoSource): Unit =
+        def setScene(scene: Scene with BoundsPreference, video: Option[VideoSource]): Unit =
           shownScene = scene
         def showEmpty(): Unit = {}
         def showEmpty(width: Double, height: Double): Unit = {}
+        def emptyScene(width: Double, height: Double): Scene with BoundsPreference = ???
         def videoSource: Option[VideoSource] = None
       })
 

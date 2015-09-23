@@ -85,7 +85,7 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
   }
 
   def showInPlayer(player: Player): Unit =
-    player.show(movieScene(), this)
+    player.setScene(movieScene(), Some(this))
 
   override def showInPlayer(player: Player, width: Double, height: Double): Unit = {
     val scene = movieScene { view =>
@@ -93,7 +93,7 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
       view.setFitHeight(height)
       view
     }
-    player.show(scene, this)
+    player.setScene(scene, Some(this))
   }
 }
 

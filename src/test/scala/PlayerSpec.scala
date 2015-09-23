@@ -27,6 +27,7 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
         vid.close()
 
         Then("I should see that the player is playing empty")
+        assert(player.scene == dummyEmptyScene)
         assert(player.videoSource.isEmpty)
       }
     }
@@ -60,6 +61,7 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
 
         Then("I should see a player showing with no video")
         assert(player.isShowing)
+        assert(player.scene == dummyEmptyScene)
         assert(player.videoSource.isEmpty)
       }
     }

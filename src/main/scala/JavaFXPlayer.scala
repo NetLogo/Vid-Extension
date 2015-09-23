@@ -17,45 +17,64 @@ import javax.swing.{ JFrame, SwingUtilities }
 import util.FunctionToCallback.{ function2Callable, function2Runnable, function2ChangeListener }
 
 class JavaFXPlayer extends Player {
+  type BoundedScene = Scene with BoundsPreference
   new JFXPanel() // init JavaFX
 
-  private var frame                       = Option.empty[PlayerFrame]
-  var videoSource                         = Option.empty[VideoSource]
-  private var currentScene: Scene with BoundsPreference = null
+  var videoSource: Option[VideoSource]   = None
 
-  private val emptySceneRectangle = new Rectangle(0, 0)
+  private var frame: Option[PlayerFrame] = None
+  private var currentScene: BoundedScene = _
 
-  private val emptyScene =
-    new Scene(new Group(emptySceneRectangle)) with BoundsPreference {
+  private val resizeListener: ChangeListener[Dimension] =
+    function2ChangeListener { (oldDim: Dimension, newDim: Dimension) =>
+      onSwing { () =>
+        withFrame { f =>
+          f.jfxPanel.setPreferredSize(newDim)
+          f.pack()
+        }
+      }
+    }
+
+  setScene(emptyScene(640, 480), None)
+
+  def emptyScene(width: Double, height: Double) = {
+    val rectangle = new Rectangle(width, height)
+    new Scene(new Group(rectangle)) with BoundsPreference {
       val preferredBound: ObservableValue[Dimension] =
         Bindings.createObjectBinding[Dimension](
           () =>
-            new Dimension(emptySceneRectangle.getWidth.toInt, emptySceneRectangle.getHeight.toInt),
-          emptySceneRectangle.widthProperty, emptySceneRectangle.heightProperty)
+            new Dimension(rectangle.getWidth.toInt, rectangle.getHeight.toInt),
+            rectangle.widthProperty, rectangle.heightProperty)
     }
+  }
 
-  def isShowing: Boolean = frame.exists(_.isVisible)
+  override def show(): Unit =
+    onSwing(() => withFrame(f => f.setVisible(true)))
 
-  def hide(): Unit = {
+  override def isShowing: Boolean = frame.exists(_.isVisible)
+
+  override def hide(): Unit =
     frame.foreach { f =>
       onSwing { () =>
         f.dispatchEvent(new WindowEvent(f, WindowEvent.WINDOW_CLOSING))
-        frame = None
       }
     }
-  }
 
-  def show(scene: Scene with BoundsPreference, video: VideoSource): Unit = {
-    videoSource = Some(video)
-    showScene(scene)
-  }
-
-  def showEmpty(): Unit = showEmpty(640, 480)
-
-  def showEmpty(width: Double, height: Double): Unit = {
-    emptySceneRectangle.setWidth(width)
-    emptySceneRectangle.setHeight(height)
-    showScene(emptyScene)
+  override def setScene(scene: BoundedScene, video: Option[VideoSource]): Unit = {
+    if (scene != currentScene) {
+      onJavaFX { () =>
+        if (currentScene != null)
+          currentScene.preferredBound.removeListener(resizeListener)
+        scene.preferredBound.addListener(resizeListener)
+        currentScene = scene
+        onSwing { () =>
+          withFrame { f =>
+            f.jfxPanel.setScene(scene)
+            f.pack()
+          }
+        }
+      }
+    }
   }
 
   class PlayerFrame extends JFrame("NetLogo - vid extension") {
@@ -70,12 +89,6 @@ class JavaFXPlayer extends Player {
     })
   }
 
-  private val resizeListener: ChangeListener[Dimension] =
-    function2ChangeListener {
-      (oldDim: Dimension, newDim: Dimension) =>
-        onSwing { () => withFrame(f => f.pack()) }
-    }
-
   private def withFrame(f: PlayerFrame => Unit) = {
     for {
       currentFrame <- frame orElse Some(new PlayerFrame)
@@ -84,20 +97,6 @@ class JavaFXPlayer extends Player {
       f(currentFrame)
     }
   }
-
-  private def showScene(scene: Scene with BoundsPreference): Unit =
-    if (scene != currentScene) {
-      withFrame { f =>
-        f.setVisible(true)
-        onJavaFX { () =>
-          if (currentScene != null)
-            currentScene.preferredBound.removeListener(resizeListener)
-          scene.preferredBound.addListener(resizeListener)
-          f.jfxPanel.setScene(scene)
-          onSwing { () => f.pack() }
-        }
-      }
-    }
 
   private def onJavaFX(runnable: Runnable) =
     Platform.runLater(runnable)

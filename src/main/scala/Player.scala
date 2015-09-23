@@ -12,8 +12,9 @@ trait BoundsPreference {
 trait Player {
   def videoSource: Option[VideoSource]
   def isShowing: Boolean
+  def show(): Unit
   def hide(): Unit
-  def show(scene: Scene with BoundsPreference, video: VideoSource): Unit
-  def showEmpty(): Unit
-  def showEmpty(width: Double, height: Double): Unit
+  def setScene(scene: Scene with BoundsPreference, video: Option[VideoSource]): Unit
+  def emptyScene: Scene with BoundsPreference = emptyScene(640, 480)
+  def emptyScene(width: Double, height: Double): Scene with BoundsPreference
 }
