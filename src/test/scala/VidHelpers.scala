@@ -23,30 +23,16 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
       override def stop(): Unit = { isPlaying = false }
       def close(): Unit = { isClosed = true }
       def captureImage() = dummyImage
-      def setTime(time: Double): Unit =
+      def setTime(time: Double): Unit = {
         if (time < 0)
           throw new IllegalArgumentException("bad time!")
-
-    override def showInPlayer(player: Player) = {
-      val g = new Group()
-      val scene = new Scene(g) with BoundsPreference {
-        def preferredBound: ObservableValue[Dimension] =
-          null
       }
-      player.setScene(scene, Some(this))
-    }
 
-    override def showInPlayer(player: Player, width: Double, height: Double): Unit = {
-      val r = new Rectangle()
-      r.setWidth(width)
-      r.setHeight(height)
-      val g = new Group(r)
-      val scene = new Scene(g) with BoundsPreference {
-        def preferredBound: ObservableValue[Dimension] =
-          null
+      override def showInPlayer(player: Player, bounds: Option[(Double, Double)]) = {
+        val (w: Double, h: Double) = bounds.getOrElse((1080.0d, 900.0d))
+        val scene = new MovieScene(w, h, bounds.nonEmpty)
+        player.setScene(scene, Some(this))
       }
-      player.setScene(scene, Some(this))
-    }
     }
 
     val dummyMovie = new DummySource(false)
@@ -75,36 +61,7 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
       }
     }
 
-    val dummyEmptyScene = new Scene(new Group()) with BoundsPreference {
-      def preferredBound = ???
-    }
-
-    override val player = new Player {
-      import javafx.scene.Scene
-
-      var videoSource: Option[VideoSource] = None
-
-      var scene: Scene = null
-
-      var isShowing = false
-
-      def hide() = { isShowing = false }
-
-      def show(): Unit = { isShowing = true }
-
-      def emptyScene(width: Double, height: Double): Scene with BoundsPreference =
-        dummyEmptyScene
-
-      def showEmpty(width: Double, height: Double) = {
-        videoSource = None
-        isShowing = true
-      }
-
-      def setScene(showThisScene: Scene with BoundsPreference, source: Option[VideoSource]) = {
-        scene = showThisScene
-        videoSource = source
-      }
-    }
+    override val player = new DummyPlayer()
 
     def givenOpenMovie(started: Boolean = false): Unit = {
       suite.Given("I have opened a movie")
@@ -153,3 +110,42 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
     }
   }
 }
+
+class DummyPlayer extends Player {
+  import javafx.scene.Scene
+
+  var videoSource: Option[VideoSource] = None
+
+  var scene: Scene with BoundsPreference = null
+
+  def boundedSize = Option(scene).flatMap(_.enforcedBounds)
+
+  var isShowing = false
+
+  def hide() = { isShowing = false }
+
+  def show(): Unit = { isShowing = true }
+
+  def emptyScene(bounds: Option[(Double, Double)]): Scene with BoundsPreference =
+    bounds.map {
+      case (w, h) => new EmptyScene(w, h, true)
+    }.getOrElse(new EmptyScene(640, 480, false))
+
+  def setScene(showThisScene: Scene with BoundsPreference, source: Option[VideoSource]) = {
+    scene = showThisScene
+    videoSource = source
+  }
+}
+
+class DummyScene(width: Double, height: Double, enforce: Boolean)
+  extends Scene(new Group(new Rectangle(width, height)))
+  with BoundsPreference {
+    def enforcedBounds = if (enforce) Some((width, height)) else None
+    def preferredSize = ???
+}
+
+class EmptyScene(width: Double, height: Double, enforce: Boolean = false)
+  extends DummyScene(width, height, enforce)
+
+class MovieScene(width: Double, height: Double, enforce: Boolean = false)
+  extends DummyScene(width, height, enforce)

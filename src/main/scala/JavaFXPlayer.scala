@@ -22,6 +22,8 @@ class JavaFXPlayer extends Player {
 
   var videoSource: Option[VideoSource]   = None
 
+  def boundedSize = Option(currentScene).flatMap(_.enforcedBounds)
+
   private var frame: Option[PlayerFrame] = None
   private var currentScene: BoundedScene = _
 
@@ -35,12 +37,14 @@ class JavaFXPlayer extends Player {
       }
     }
 
-  setScene(emptyScene(640, 480), None)
+  setScene(emptyScene(None), None)
 
-  def emptyScene(width: Double, height: Double) = {
+  def emptyScene(bounds: Option[(Double, Double)]) = {
+    val (width, height) = bounds.getOrElse((640d, 480d))
     val rectangle = new Rectangle(width, height)
     new Scene(new Group(rectangle)) with BoundsPreference {
-      val preferredBound: ObservableValue[Dimension] =
+      val enforcedBounds = bounds
+      val preferredSize: ObservableValue[Dimension] =
         Bindings.createObjectBinding[Dimension](
           () =>
             new Dimension(rectangle.getWidth.toInt, rectangle.getHeight.toInt),
@@ -64,10 +68,10 @@ class JavaFXPlayer extends Player {
     if (scene != currentScene) {
       onJavaFX { () =>
         if (currentScene != null)
-          currentScene.preferredBound.removeListener(resizeListener)
-        scene.preferredBound.addListener(resizeListener)
+          currentScene.preferredSize.removeListener(resizeListener)
+        scene.preferredSize.addListener(resizeListener)
         currentScene = scene
-        val preferredSize = scene.preferredBound.getValue
+        val preferredSize = scene.preferredSize.getValue
         onSwing { () =>
           withFrame { f =>
             f.jfxPanel.setScene(scene)

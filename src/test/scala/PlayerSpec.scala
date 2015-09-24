@@ -27,7 +27,7 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
         vid.close()
 
         Then("I should see that the player is playing empty")
-        assert(player.scene == dummyEmptyScene)
+        assert(player.scene.isInstanceOf[EmptyScene])
         assert(player.videoSource.isEmpty)
       }
     }
@@ -61,7 +61,7 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
 
         Then("I should see a player showing with no video")
         assert(player.isShowing)
-        assert(player.scene == dummyEmptyScene)
+        assert(player.scene.isInstanceOf[EmptyScene])
         assert(player.videoSource.isEmpty)
       }
     }
@@ -91,6 +91,42 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
         assert(player.scene.getRoot.getBoundsInLocal.getWidth == 640)
         assert(player.scene.getRoot.getBoundsInLocal.getHeight == 480)
       }
+    }
+  }
+
+  scenario("player maintains specified dimensions when a new source is opened") {
+    new VidSpecHelpers {
+      When("I run vid:show-player 100 100")
+      vid.`show-player`(Double.box(100), Double.box(100))
+
+      Then("I should see a scene of the specified size")
+      assert(player.scene != null)
+      assert(player.scene.getRoot.getBoundsInLocal.getWidth <= 100)
+      assert(player.scene.getRoot.getBoundsInLocal.getHeight <= 100)
+
+      When("I open a movie")
+      vid.`movie-open`("foobar.mp4")
+
+      Then("I should see that the player has fit the movie to the specified dimensions")
+      assert(player.scene != null)
+      assert(player.scene.getRoot.getBoundsInLocal.getWidth <= 100)
+      assert(player.scene.getRoot.getBoundsInLocal.getWidth <= 100)
+    }
+  }
+
+  scenario("player maintains dimensions after source is closed") {
+    new VidSpecHelpers {
+      givenOpenMovie()
+      And("I run vid:show-player 100 100")
+      vid.`show-player`(Double.box(100), Double.box(100))
+
+      When("I run vid:close")
+      vid.`close`()
+
+      Then("I should see the player still fits the specified dimensions")
+      assert(player.scene != null)
+      assert(player.scene.getRoot.getBoundsInLocal.getWidth <= 100)
+      assert(player.scene.getRoot.getBoundsInLocal.getWidth <= 100)
     }
   }
 }

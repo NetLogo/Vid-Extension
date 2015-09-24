@@ -18,12 +18,16 @@ class ShowPlayer(player: Player, vidExtension: VideoSourceContainer) extends Def
     else if (args.length == 2 && (width <= 0 || height <= 0))
       throw new ExtensionException("vid: invalid dimensions")
 
-    if (vidExtension.videoSource.nonEmpty && args.length == 2)
-      vidExtension.videoSource.foreach(_.showInPlayer(player, width, height))
-    else if (vidExtension.videoSource.nonEmpty)
-      vidExtension.videoSource.foreach(_.showInPlayer(player))
-    else
-      player.setScene(player.emptyScene, None)
+    (args.length, vidExtension.videoSource) match {
+      case (2, Some(videoSource)) =>
+        videoSource.showInPlayer(player, Some((width, height)))
+      case (_, Some(videoSource)) =>
+        videoSource.showInPlayer(player, None)
+      case (2, None) =>
+        player.setScene(player.emptyScene(Some((width, height))), None)
+      case _ =>
+        player.setScene(player.emptyScene(None), None)
+    }
     player.show()
   }
 }

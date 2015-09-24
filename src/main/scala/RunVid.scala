@@ -26,8 +26,10 @@ object RunVid extends App with VideoSourceContainer {
   val context = new util.CurrentDirContext()
 
   lazy val commandOptions = Map[String, () => Unit](
-    "showPlayer"  ->
+    "Show Player"  ->
     { () => new ShowPlayer(player, this).perform(Array[Argument](), context) },
+    "Show Small Player" ->
+    { () => new ShowPlayer(player, this).perform(Array[Argument](new util.FakeArgument(Double.box(100)), new util.FakeArgument(Double.box(100))), context) },
     "hidePlayer"  ->
     { () => new HidePlayer(player).perform(Array[Argument](), context) },
     "openMovie"   ->
@@ -73,9 +75,9 @@ object RunVid extends App with VideoSourceContainer {
   def videoSource_=(source: Option[VideoSource]): Unit = {
     try {
       if (player.isShowing && source.nonEmpty)
-        source.foreach(_.showInPlayer(player))
+        source.foreach(_.showInPlayer(player, player.boundedSize))
       else if (player.isShowing)
-        player.setScene(player.emptyScene, None)
+        player.setScene(player.emptyScene(player.boundedSize), None)
       _videoSource.foreach(_.close())
     } catch {
       case e: Exception =>

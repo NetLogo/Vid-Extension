@@ -86,33 +86,28 @@ class Camera(val webcam: Webcam) extends VideoSource {
     }
   }
 
-  class CameraScene(imageView: ImageView) extends Scene(new Group(imageView)) with BoundsPreference {
-    val preferredBound: ObservableValue[Dimension] =
-      Bindings.createObjectBinding[Dimension](
-        () => new Dimension(imageView.boundsInLocalProperty.get.getWidth.toInt, imageView.boundsInLocalProperty.get.getHeight.toInt),
-        imageView.boundsInLocalProperty)
-  }
-
-  private def cameraScene(f: ImageView => ImageView = identity): CameraScene = {
-    val iv = new ImageView()
-    val imageView = f(iv)
+  private def cameraScene(enforcedBounds: Option[(Double, Double)] = None): CameraScene = {
+    val imageView = new ImageView()
+    enforcedBounds.foreach {
+      case (w, h) =>
+        imageView.setFitWidth(w)
+        imageView.setFitHeight(h)
+    }
     val updateImage = new UpdateImage
     val onUpdate = new OnUpdateSuccess(imageView, updateImage)
     updateImage.setOnSucceeded(onUpdate)
     updateImage.start()
-    new CameraScene(imageView)
+    new CameraScene(imageView, enforcedBounds)
   }
 
-  override def showInPlayer(player: Player) = {
-    player.setScene(cameraScene(), Some(this))
-  }
+  override def showInPlayer(player: Player, bounds: Option[(Double, Double)]): Unit =
+    player.setScene(cameraScene(bounds), Some(this))
+}
 
-  override def showInPlayer(player: Player, width: Double, height: Double): Unit = {
-    val scene = cameraScene { iv =>
-      iv.setFitWidth(width)
-      iv.setFitHeight(height)
-      iv
-    }
-    player.setScene(scene, Some(this))
-  }
+class CameraScene(imageView: ImageView, val enforcedBounds: Option[(Double, Double)] = None)
+  extends Scene(new Group(imageView)) with BoundsPreference {
+  val preferredSize: ObservableValue[Dimension] =
+    Bindings.createObjectBinding[Dimension](
+      () => new Dimension(imageView.boundsInLocalProperty.get.getWidth.toInt, imageView.boundsInLocalProperty.get.getHeight.toInt),
+      imageView.boundsInLocalProperty)
 }

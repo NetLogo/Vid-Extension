@@ -38,9 +38,9 @@ class VidExtension(movies: MovieFactory, cameras: CameraFactory, player: Player)
   def videoSource_=(source: Option[VideoSource]): Unit = {
     try {
       if (player.isShowing && source.nonEmpty)
-        source.foreach(_.showInPlayer(player))
+        source.foreach(_.showInPlayer(player, player.boundedSize))
       else if (player.isShowing)
-        player.setScene(player.emptyScene, None)
+        player.setScene(player.emptyScene(player.boundedSize), None)
       _videoSource.foreach(_.close())
     } catch {
       case e: Exception =>
