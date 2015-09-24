@@ -67,9 +67,11 @@ class JavaFXPlayer extends Player {
           currentScene.preferredBound.removeListener(resizeListener)
         scene.preferredBound.addListener(resizeListener)
         currentScene = scene
+        val preferredSize = scene.preferredBound.getValue
         onSwing { () =>
           withFrame { f =>
             f.jfxPanel.setScene(scene)
+            f.jfxPanel.setPreferredSize(preferredSize)
             f.pack()
           }
         }

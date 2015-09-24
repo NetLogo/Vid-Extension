@@ -100,7 +100,8 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
 class MovieScene(mediaView: MediaView) extends Scene(new Group(mediaView)) with BoundsPreference {
   val preferredBound: ObservableValue[Dimension] =
     Bindings.createObjectBinding[Dimension](
-      () => new Dimension(mediaView.getFitWidth.toInt, mediaView.getFitHeight.toInt),
-      mediaView.fitWidthProperty, mediaView.fitHeightProperty)
+      () =>
+        new Dimension(mediaView.getBoundsInLocal.getWidth.toInt, mediaView.getBoundsInLocal.getHeight.toInt),
+      mediaView.boundsInLocalProperty)
 }
 
