@@ -2,7 +2,7 @@ package org.nlogo.extensions.vid
 
 import org.nlogo.api._
 
-class StartSource(vid: VidExtension) extends DefaultCommand {
+class StartSource(vid: VideoSourceContainer) extends DefaultCommand {
   def perform(args: Array[Argument], context: Context): Unit = {
     if (vid.videoSource.isEmpty)
       throw new ExtensionException("vid: no selected source")

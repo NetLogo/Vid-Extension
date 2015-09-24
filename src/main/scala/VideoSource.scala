@@ -19,3 +19,8 @@ trait VideoSource {
 
   def showInPlayer(player: Player, width: Double, height: Double): Unit
 }
+
+trait VideoSourceContainer {
+  def videoSource: Option[VideoSource]
+  def videoSource_=(source: Option[VideoSource]): Unit
+}

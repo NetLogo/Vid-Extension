@@ -4,13 +4,7 @@ import org.nlogo.api._
 
 import javafx.embed.swing.JFXPanel
 
-
-trait VideoSourceContainer {
-  def videoSource: Option[VideoSource]
-  def videoSource_=(source: Option[VideoSource]): Unit
-}
-
-class VidExtension(files: MovieFactory, cameras: CameraFactory, player: Player)
+class VidExtension(movies: MovieFactory, cameras: CameraFactory, player: Player)
   extends DefaultClassManager with VideoSourceContainer {
 
   def this() = this(Movie, Camera, new JavaFXPlayer())
@@ -24,7 +18,7 @@ class VidExtension(files: MovieFactory, cameras: CameraFactory, player: Player)
     manager.addPrimitive("capture-image", new CaptureImage(this))
     manager.addPrimitive("close",         new CloseVideoSource(this))
     manager.addPrimitive("hide-player",   new HidePlayer(player))
-    manager.addPrimitive("movie-open",    new MovieOpen(this, files))
+    manager.addPrimitive("movie-open",    new MovieOpen(this, movies))
     manager.addPrimitive("set-time",      new SetTime(this))
     manager.addPrimitive("show-player",   new ShowPlayer(player, this))
     manager.addPrimitive("start",         new StartSource(this))

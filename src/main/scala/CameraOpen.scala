@@ -2,7 +2,7 @@ package org.nlogo.extensions.vid
 
 import org.nlogo.api._
 
-class CameraOpen(vid: VidExtension, cameras: CameraFactory) extends DefaultCommand {
+class CameraOpen(vid: VideoSourceContainer, cameras: CameraFactory) extends DefaultCommand {
   def perform(args: Array[Argument], context: Context): Unit = {
     val cameraName =
       if (args.length == 0)

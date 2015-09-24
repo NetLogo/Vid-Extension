@@ -16,7 +16,7 @@ class CommandPrimitiveLoader extends PrimitiveManager with Dynamic {
   }
 
   def applyDynamic(name: String)(args: AnyRef*): AnyRef = {
-    val arguments = args.map(v => new FakeArgument(v).asInstanceOf[Argument]).toArray
+    val arguments = args.map(v => new util.FakeArgument(v).asInstanceOf[Argument]).toArray
     val context = new FakeContext()
     commands.get(name).map(cmd => { cmd.perform(arguments, context); null }).orElse(
       reporters.get(name).map(rep => rep.report(arguments, context))).getOrElse(
