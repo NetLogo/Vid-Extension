@@ -1,5 +1,9 @@
 # NetLogo Vid Extension
 
+## Running
+
+Requires a 5.3 preview release of NetLogo.
+
 ## Building
 
 Build with `sbt package`. `sbt test` runs tests.
@@ -26,7 +30,7 @@ When a source is "stopped", each call to `vid:capture-image` will return the sam
 
 ### `vid:camera-select`
 
-Prompts the user to select a camera as video source
+Prompts the user to select a camera as video source. This command does not error if the user cancels. Use `vid:status` to see if a user selected a camera.
 
 Example:
 ```NetLogo
@@ -68,6 +72,8 @@ Errors:
 
 Prompts the user to select a movie to use as a video source.
 The formats supported are those [supported by JavaFX2](https://docs.oracle.com/javafx/2/api/javafx/scene/media/package-summary.html#SupportedMediaTypes).
+This command does not error if the user cancels.
+Use `vid:status` to see if the user selected a movie.
 
 Example:
 
@@ -77,7 +83,6 @@ vid:movie-select
 
 Errors:
 
-* Message `"vid: no movie selected"`: the user did not select a movie.
 * Message `"vid: format not supported"`: the user selected a movie with an unsupported format.
 
 ### `vid:movie-open`
@@ -156,10 +161,10 @@ Example:
 
 ```NetLogo
 ; when camera open, take an image
-vid:camera-image ;=> returns image suitable for use with bitmap extension
+vid:capture-image ;=> returns image suitable for use with bitmap extension
 
-; capture an image if the camera is open, have the user
-; select a camera if no camera is open
+; capture an image if a video source is open,
+; have the user select a camera if no video source found
 carefully [
   vid:capture-image 640 480
 ] [
@@ -223,5 +228,5 @@ vid:hide-player
 
 [![CC0](http://i.creativecommons.org/p/zero/1.0/88x31.png)](http://creativecommons.org/publicdomain/zero/1.0/)
 
-The NetLogo Extension Activator Template is in the public domain.  To the extent possible under law, Uri Wilensky has waived all copyright and related or neighboring rights.
+The NetLogo Vid Extension is in the public domain.  To the extent possible under law, Uri Wilensky has waived all copyright and related or neighboring rights.
 

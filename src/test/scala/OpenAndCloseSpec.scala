@@ -95,5 +95,68 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
         andStatusShouldBe("inactive")
       }
     }
+
+    scenario("camera-select when no cameras available") {
+      new VidSpecHelpers with ExpectError {
+        Given("There are no available cameras")
+        cameraFactory.cameraNames = Seq()
+        whenRunForError("vid:camera-select", vid.`camera-select`())
+        thenShouldSeeError("vid: no cameras found")
+      }
+    }
+
+    scenario("camera-select selects available camera") {
+      new VidSpecHelpers {
+        When("I run vid:camera-select")
+        And("I select a camera")
+        selector.select("camera")
+        vid.`camera-select`()
+
+        Then("I should see that the camera is open")
+        thenStatusShouldBe("playing")
+      }
+    }
+
+    scenario("camera doesn't open if I don't select a camera") {
+      new VidSpecHelpers {
+        When("I run vid:camera-select")
+        And("I do not select a camera")
+        selector.cancel()
+        vid.`camera-select`()
+        Then("I should see that no camera is open")
+        thenStatusShouldBe("inactive")
+      }
+    }
+
+    scenario("movie select doesn't open a movie if user doesn't select one") {
+      new VidSpecHelpers {
+        When("I run vid:movie-select")
+        And("I do not select a movie")
+        selector.cancel()
+        vid.`movie-select`()
+        Then("I should see that no movie is open")
+        thenStatusShouldBe("inactive")
+      }
+    }
+
+    scenario("movie select opens a movie when selected") {
+      new VidSpecHelpers {
+        When("I run vid:movie-select")
+        And("I select a movie")
+        selector.select("/currentdir/foobar.mp4")
+        vid.`movie-select`()
+        Then("I should see an open movie")
+        thenStatusShouldBe("stopped")
+      }
+    }
+
+    scenario("movie select errors if a user selects a bad format") {
+      new VidSpecHelpers with ExpectError {
+        selector.select("/currentdir/unsupported.ogg")
+        whenRunForError("vid:movie-select", vid.`movie-select`())
+        And("I select a movie with an unsupported format")
+        thenShouldSeeError("vid: format not supported")
+      }
+    }
   }
 }

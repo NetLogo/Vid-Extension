@@ -49,8 +49,9 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
     }
 
     val cameraFactory = new CameraFactory {
-      val cameraNames = Seq("camera")
-      var defaultCameraName: Option[String] = Some("camera")
+      var cameraNames = Seq("camera")
+
+      var defaultCameraName: Option[String] = cameraNames.headOption
 
       override def open(cameraName: String): Option[VideoSource] = {
         cameraName match {
@@ -61,6 +62,8 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
     }
 
     override val player = new DummyPlayer()
+
+    val selector = new DummySelector()
 
     def givenOpenMovie(started: Boolean = false): Unit = {
       suite.Given("I have opened a movie")
@@ -114,21 +117,27 @@ class DummyPlayer extends Player {
   import javafx.scene.Scene
 
   var activeNode: BoundedNode = null
-
   def boundedSize = Option(activeNode).flatMap(_.enforcedBounds)
-
   var isShowing = false
-
   def hide() = { isShowing = false }
-
   def show(): Unit = { isShowing = true }
-
   def emptyNode(bounds: Option[(Double, Double)]): BoundedNode =
     new EmptyNode(bounds)
-
-  def present(theNode: BoundedNode) = {
+  def present(theNode: BoundedNode) =
     activeNode = theNode
-  }
+}
+
+class DummySelector extends Selector {
+  var selected: Option[String] = None
+
+  override def selectOneOf(choices: Seq[String]): Option[String] = selected
+
+  override def selectFile: Option[String] = selected
+
+  def select(name: String) = { selected = Some(name) }
+
+  def cancel(): Unit =
+    selected = None
 }
 
 class DummyNode(bds: Option[(Double, Double)])
