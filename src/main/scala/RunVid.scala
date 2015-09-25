@@ -74,10 +74,12 @@ object RunVid extends App with VideoSourceContainer {
 
   def videoSource_=(source: Option[VideoSource]): Unit = {
     try {
-      if (player.isShowing && source.nonEmpty)
-        source.foreach(_.showInPlayer(player, player.boundedSize))
-      else if (player.isShowing)
-        player.setScene(player.emptyScene(player.boundedSize), None)
+      if (player.isShowing) {
+        val videoNode = source.map(n => s => n.videoNode(s))
+          .getOrElse(player.emptyNode(_))
+          .apply(player.boundedSize)
+        player.present(videoNode)
+      }
       _videoSource.foreach(_.close())
     } catch {
       case e: Exception =>

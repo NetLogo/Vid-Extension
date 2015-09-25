@@ -149,12 +149,4 @@ class MovieTest extends FunSuite with AsyncAssertions {
       }
     }
   }
-
-  test("showInPlayer shows the movie in the player") {
-    new MovieFixture {
-      var player: DummyPlayer = new DummyPlayer()
-      movie.showInPlayer(player, None)
-      assert(player.scene != null)
-    }
-  }
 }

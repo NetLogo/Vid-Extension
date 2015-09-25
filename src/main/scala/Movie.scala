@@ -69,20 +69,28 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
       }
     }
 
-    Platform.runLater(
-      () => movieScene(None).snapshot(callback, null))
+    Platform.runLater { () =>
+      val node = movieNode(None).node
+      val scene = new Scene(new Group(node))
+      scene.snapshot(callback, null)
+    }
 
     chan.read
   }
 
-  private def movieScene(bounds: Option[(Double, Double)] = None): MovieScene = {
+  private def movieNode(bounds: Option[(Double, Double)] = None): BoundedNode = {
     val mediaView = new MediaView(mediaPlayer)
     bounds.foreach {
       case (w, h) =>
         mediaView.setFitWidth(w)
         mediaView.setFitHeight(h)
     }
-    new MovieScene(mediaView, bounds)
+    val preferredSize: ObservableValue[Dimension] =
+      Bindings.createObjectBinding[Dimension](
+        () =>
+          new Dimension(mediaView.getBoundsInLocal.getWidth.toInt, mediaView.getBoundsInLocal.getHeight.toInt),
+          mediaView.boundsInLocalProperty)
+    BoundedNode(mediaView, preferredSize, bounds)
   }
 
   override def setTime(timeInSeconds: Double): Unit = {
@@ -92,17 +100,6 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
     mediaPlayer.seek(requestedTime)
   }
 
-  def showInPlayer(player: Player, bounds: Option[(Double, Double)]): Unit =
-    player.setScene(movieScene(bounds), Some(this))
-
-  class MovieScene(val mediaView: MediaView,
-    val enforcedBounds: Option[(Double, Double)] = None)
-  extends Scene(new Group(mediaView)) with BoundsPreference {
-
-    val preferredSize: ObservableValue[Dimension] =
-      Bindings.createObjectBinding[Dimension](
-        () =>
-          new Dimension(mediaView.getBoundsInLocal.getWidth.toInt, mediaView.getBoundsInLocal.getHeight.toInt),
-          mediaView.boundsInLocalProperty)
-  }
+  def videoNode(bounds: Option[(Double, Double)]): BoundedNode =
+    movieNode(bounds)
 }

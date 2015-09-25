@@ -17,15 +17,12 @@ import javax.swing.{ JFrame, SwingUtilities }
 import util.FunctionToCallback.{ function2Callable, function2Runnable, function2ChangeListener }
 
 class JavaFXPlayer extends Player {
-  type BoundedScene = Scene with BoundsPreference
   new JFXPanel() // init JavaFX
 
-  var videoSource: Option[VideoSource]   = None
-
-  def boundedSize = Option(currentScene).flatMap(_.enforcedBounds)
+  def boundedSize = Option(currentNode).flatMap(_.enforcedBounds)
 
   private var frame: Option[PlayerFrame] = None
-  private var currentScene: BoundedScene = _
+  private var currentNode: BoundedNode = _
 
   private val resizeListener: ChangeListener[Dimension] =
     function2ChangeListener { (oldDim: Dimension, newDim: Dimension) =>
@@ -37,19 +34,17 @@ class JavaFXPlayer extends Player {
       }
     }
 
-  setScene(emptyScene(None), None)
+  present(emptyNode(None))
 
-  def emptyScene(bounds: Option[(Double, Double)]) = {
+  def emptyNode(bounds: Option[(Double, Double)]): BoundedNode = {
     val (width, height) = bounds.getOrElse((640d, 480d))
     val rectangle = new Rectangle(width, height)
-    new Scene(new Group(rectangle)) with BoundsPreference {
-      val enforcedBounds = bounds
-      val preferredSize: ObservableValue[Dimension] =
-        Bindings.createObjectBinding[Dimension](
-          () =>
-            new Dimension(rectangle.getWidth.toInt, rectangle.getHeight.toInt),
-            rectangle.widthProperty, rectangle.heightProperty)
-    }
+    val preferredSize: ObservableValue[Dimension] =
+      Bindings.createObjectBinding[Dimension](
+        () =>
+          new Dimension(rectangle.getWidth.toInt, rectangle.getHeight.toInt),
+          rectangle.widthProperty, rectangle.heightProperty)
+    BoundedNode(rectangle, preferredSize, bounds)
   }
 
   override def show(): Unit =
@@ -64,19 +59,23 @@ class JavaFXPlayer extends Player {
       }
     }
 
-  override def setScene(scene: BoundedScene, video: Option[VideoSource]): Unit = {
-    if (scene != currentScene) {
+  override def present(boundedNode: BoundedNode): Unit = {
+    if (boundedNode != currentNode) {
       onJavaFX { () =>
-        if (currentScene != null)
-          currentScene.preferredSize.removeListener(resizeListener)
-        scene.preferredSize.addListener(resizeListener)
-        currentScene = scene
-        val preferredSize = scene.preferredSize.getValue
-        onSwing { () =>
-          withFrame { f =>
-            f.jfxPanel.setScene(scene)
-            f.jfxPanel.setPreferredSize(preferredSize)
-            f.pack()
+        if (currentNode != null)
+          currentNode.preferredSize.removeListener(resizeListener)
+        boundedNode.preferredSize.addListener(resizeListener)
+        currentNode = boundedNode
+        val preferredSize =
+          boundedNode.preferredSize.getValue
+        onJavaFX { () =>
+          val scene = new Scene(new Group(boundedNode.node))
+          onSwing { () =>
+            withFrame { f =>
+              f.jfxPanel.setScene(scene)
+              f.jfxPanel.setPreferredSize(preferredSize)
+              f.pack()
+            }
           }
         }
       }

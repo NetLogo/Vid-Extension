@@ -27,8 +27,7 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
         vid.close()
 
         Then("I should see that the player is playing empty")
-        assert(player.scene.isInstanceOf[EmptyScene])
-        assert(player.videoSource.isEmpty)
+        assert(player.activeNode.isInstanceOf[EmptyNode])
       }
     }
 
@@ -42,7 +41,7 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
         vid.`camera-open`()
 
         Then("I should see that the player is playing from the camera's source")
-        assert(player.videoSource.get == dummyCamera)
+        assert(player.activeNode.isInstanceOf[CameraNode])
       }
     }
 
@@ -61,8 +60,7 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
 
         Then("I should see a player showing with no video")
         assert(player.isShowing)
-        assert(player.scene.isInstanceOf[EmptyScene])
-        assert(player.videoSource.isEmpty)
+        assert(player.activeNode.isInstanceOf[EmptyNode])
       }
     }
 
@@ -75,7 +73,8 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
 
         Then("I should see a player running with native dimensions matching the video")
         assert(player.isShowing)
-        assert(player.videoSource.get == dummyMovie)
+        assert(player.activeNode.isInstanceOf[MovieNode])
+        assert(player.activeNode.enforcedBounds.isEmpty)
       }
     }
 
@@ -87,9 +86,9 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
         vid.`show-player`(Double.box(640), Double.box(480))
 
         Then("I should see a player with the specified dimensions")
-        assert(player.scene != null)
-        assert(player.scene.getRoot.getBoundsInLocal.getWidth == 640)
-        assert(player.scene.getRoot.getBoundsInLocal.getHeight == 480)
+        assert(player.activeNode != null)
+        assert(player.activeNode.node.getBoundsInLocal.getWidth == 640)
+        assert(player.activeNode.node.getBoundsInLocal.getHeight == 480)
       }
     }
   }
@@ -100,17 +99,17 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       vid.`show-player`(Double.box(100), Double.box(100))
 
       Then("I should see a scene of the specified size")
-      assert(player.scene != null)
-      assert(player.scene.getRoot.getBoundsInLocal.getWidth <= 100)
-      assert(player.scene.getRoot.getBoundsInLocal.getHeight <= 100)
+      assert(player.activeNode != null)
+      assert(player.activeNode.node.getBoundsInLocal.getWidth <= 100)
+      assert(player.activeNode.node.getBoundsInLocal.getHeight <= 100)
 
       When("I open a movie")
       vid.`movie-open`("foobar.mp4")
 
       Then("I should see that the player has fit the movie to the specified dimensions")
-      assert(player.scene != null)
-      assert(player.scene.getRoot.getBoundsInLocal.getWidth <= 100)
-      assert(player.scene.getRoot.getBoundsInLocal.getWidth <= 100)
+      assert(player.activeNode != null)
+      assert(player.activeNode.node.getBoundsInLocal.getWidth <= 100)
+      assert(player.activeNode.node.getBoundsInLocal.getWidth <= 100)
     }
   }
 
@@ -124,9 +123,9 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       vid.`close`()
 
       Then("I should see the player still fits the specified dimensions")
-      assert(player.scene != null)
-      assert(player.scene.getRoot.getBoundsInLocal.getWidth <= 100)
-      assert(player.scene.getRoot.getBoundsInLocal.getWidth <= 100)
+      assert(player.activeNode != null)
+      assert(player.activeNode.node.getBoundsInLocal.getWidth <= 100)
+      assert(player.activeNode.node.getBoundsInLocal.getWidth <= 100)
     }
   }
 }

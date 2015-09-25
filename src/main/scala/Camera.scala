@@ -14,7 +14,6 @@ import javafx.geometry.Bounds
 import javafx.concurrent.{ Service, Task, WorkerStateEvent }
 import javafx.embed.swing.SwingFXUtils
 import javafx.event.EventHandler
-import javafx.scene.{ Group, Scene }
 import javafx.scene.image.{ Image, ImageView }
 
 import scala.collection.JavaConversions._
@@ -86,7 +85,7 @@ class Camera(val webcam: Webcam) extends VideoSource {
     }
   }
 
-  private def cameraScene(enforcedBounds: Option[(Double, Double)] = None): CameraScene = {
+  private def cameraNode(enforcedBounds: Option[(Double, Double)] = None): BoundedNode = {
     val imageView = new ImageView()
     enforcedBounds.foreach {
       case (w, h) =>
@@ -97,17 +96,15 @@ class Camera(val webcam: Webcam) extends VideoSource {
     val onUpdate = new OnUpdateSuccess(imageView, updateImage)
     updateImage.setOnSucceeded(onUpdate)
     updateImage.start()
-    new CameraScene(imageView, enforcedBounds)
+
+    val preferredSize: ObservableValue[Dimension] =
+      Bindings.createObjectBinding[Dimension](
+        () => new Dimension(imageView.boundsInLocalProperty.get.getWidth.toInt, imageView.boundsInLocalProperty.get.getHeight.toInt),
+        imageView.boundsInLocalProperty)
+
+    BoundedNode(imageView, preferredSize, enforcedBounds)
   }
 
-  override def showInPlayer(player: Player, bounds: Option[(Double, Double)]): Unit =
-    player.setScene(cameraScene(bounds), Some(this))
-}
-
-class CameraScene(imageView: ImageView, val enforcedBounds: Option[(Double, Double)] = None)
-  extends Scene(new Group(imageView)) with BoundsPreference {
-  val preferredSize: ObservableValue[Dimension] =
-    Bindings.createObjectBinding[Dimension](
-      () => new Dimension(imageView.boundsInLocalProperty.get.getWidth.toInt, imageView.boundsInLocalProperty.get.getHeight.toInt),
-      imageView.boundsInLocalProperty)
+  override def videoNode(bounds: Option[(Double, Double)]): BoundedNode =
+    cameraNode(bounds)
 }

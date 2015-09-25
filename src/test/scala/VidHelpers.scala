@@ -16,7 +16,9 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
 
     val dummyImage = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB)
 
-    class DummySource(val startPlaying: Boolean) extends VideoSource {
+    class DummySource(
+      val startPlaying: Boolean,
+      nodeConstructor: Option[(Double, Double)] => BoundedNode) extends VideoSource {
       var isPlaying = startPlaying
       var isClosed  = false
       override def play(): Unit = { isPlaying = true }
@@ -28,16 +30,13 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
           throw new IllegalArgumentException("bad time!")
       }
 
-      override def showInPlayer(player: Player, bounds: Option[(Double, Double)]) = {
-        val (w: Double, h: Double) = bounds.getOrElse((1080.0d, 900.0d))
-        val scene = new MovieScene(w, h, bounds.nonEmpty)
-        player.setScene(scene, Some(this))
-      }
+      override def videoNode(bounds: Option[(Double, Double)]) =
+        nodeConstructor(bounds)
     }
 
-    val dummyMovie = new DummySource(false)
+    val dummyMovie = new DummySource(false, new MovieNode(_))
 
-    val dummyCamera = new DummySource(true)
+    val dummyCamera = new DummySource(true, new CameraNode(_))
 
     val movieFactory = new MovieFactory {
       override def open(filePath: String): Option[VideoSource] = {
@@ -114,11 +113,9 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
 class DummyPlayer extends Player {
   import javafx.scene.Scene
 
-  var videoSource: Option[VideoSource] = None
+  var activeNode: BoundedNode = null
 
-  var scene: Scene with BoundsPreference = null
-
-  def boundedSize = Option(scene).flatMap(_.enforcedBounds)
+  def boundedSize = Option(activeNode).flatMap(_.enforcedBounds)
 
   var isShowing = false
 
@@ -126,26 +123,23 @@ class DummyPlayer extends Player {
 
   def show(): Unit = { isShowing = true }
 
-  def emptyScene(bounds: Option[(Double, Double)]): Scene with BoundsPreference =
-    bounds.map {
-      case (w, h) => new EmptyScene(w, h, true)
-    }.getOrElse(new EmptyScene(640, 480, false))
+  def emptyNode(bounds: Option[(Double, Double)]): BoundedNode =
+    new EmptyNode(bounds)
 
-  def setScene(showThisScene: Scene with BoundsPreference, source: Option[VideoSource]) = {
-    scene = showThisScene
-    videoSource = source
+  def present(theNode: BoundedNode) = {
+    activeNode = theNode
   }
 }
 
-class DummyScene(width: Double, height: Double, enforce: Boolean)
-  extends Scene(new Group(new Rectangle(width, height)))
-  with BoundsPreference {
-    def enforcedBounds = if (enforce) Some((width, height)) else None
-    def preferredSize = ???
-}
+class DummyNode(bds: Option[(Double, Double)])
+  extends BoundedNode(
+    new Rectangle(bds.map(_._1).getOrElse(640), bds.map(_._2).getOrElse(480)), null, bds)
 
-class EmptyScene(width: Double, height: Double, enforce: Boolean = false)
-  extends DummyScene(width, height, enforce)
+class EmptyNode(enforcedBounds: Option[(Double, Double)])
+  extends DummyNode(enforcedBounds)
 
-class MovieScene(width: Double, height: Double, enforce: Boolean = false)
-  extends DummyScene(width, height, enforce)
+class MovieNode(enforcedBounds: Option[(Double, Double)])
+  extends DummyNode(enforcedBounds)
+
+class CameraNode(enforcedBounds: Option[(Double, Double)])
+  extends DummyNode(enforcedBounds)
