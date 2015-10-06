@@ -11,8 +11,25 @@ import org.scalatest.{ FeatureSpec, GivenWhenThen }
 
 import org.nlogo.api.ExtensionException
 
+import scala.language.dynamics
+
 trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
   trait VidSpecHelpers extends WithLoadedVidExtension {
+
+    class GivenWhenThenAndRunner(backing: CommandPrimitiveLoader, gwta: (String) => Unit) extends Dynamic {
+      def applyDynamic(name: String)(args: AnyRef*): AnyRef = {
+        val argStrings = args.map {
+          case s: String => s""""$s""""
+          case other => other.toString
+        }
+        gwta(s"I run vid:$name ${argStrings.mkString(" ")}")
+        backing.applyDynamic(name)(args: _*)
+      }
+    }
+
+    lazy val givenIHave = new GivenWhenThenAndRunner(vid, Given _)
+    lazy val andIRun    = new GivenWhenThenAndRunner(vid, And _)
+    lazy val whenIRun   = new GivenWhenThenAndRunner(vid, When _)
 
     val dummyImage = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB)
 
@@ -44,6 +61,15 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
           case "/currentdir/foobar.mp4"      => Some(dummyMovie)
           case "/currentdir/unsupported.ogg" => throw new InvalidFormatException
           case "/tmp/foobar.mp4"             => Some(dummyMovie)
+          case _ => None
+        }
+      }
+
+      override def openRemote(uri: String): Option[VideoSource] = {
+        uri match {
+          case "http://example.org/somevideo.mp4"  => Some(dummyMovie)
+          case "https://example.org/somevideo.mp4" => throw new InvalidProtocolException()
+          case "http://example.org/somevideo.ogv"  => throw new InvalidFormatException()
           case _ => None
         }
       }

@@ -27,6 +27,11 @@ class MovieTest extends FunSuite with AsyncAssertions {
   val NotFoundMoviePath = "/tmp/notreal"
   val InvalidMoviePath  = "src/test/resources/small.ogv"
 
+  val ValidMovieURL = "http://download.wavetlan.com/SVV/Media/HTTP/H264/Other_Media/H264_test8_voiceclip_mp4_480x320.mp4"
+  val InvalidMovieURL = "http://v2v.cc/~j/samples/failed_vorbis_size.ogv"
+  val HttpsMovieURL = "https://raw.githubusercontent.com/NetLogo/vid/master/src/test/resources/small.mp4"
+  val NotFoundMovieURL = "http://raw.githubusercontent.com/NetLogo/vid/master/src/test/resources/notreal.mp4"
+
   trait MovieFixture {
     val isReady = new Channel[Boolean]
     val media = new Media(new File(ValidMoviePath).toURI.toString)
@@ -54,6 +59,27 @@ class MovieTest extends FunSuite with AsyncAssertions {
 
   test("when a movie exists and is in a supported format, returns a Movie") {
     val m = Movie.open(ValidMoviePath)
+    assert(m.nonEmpty)
+  }
+
+  test("when a movie opened remotely doesn't exist, returns None") {
+    assert(Movie.openRemote(NotFoundMovieURL).isEmpty)
+  }
+
+  test("when a movie is opened remotely with a bad protocol, raised InvalidProtocolException") {
+    intercept[InvalidProtocolException] {
+      Movie.openRemote(HttpsMovieURL)
+    }
+  }
+
+  test("when a movie exists remotely, but has invalid format, raises InvalidFormatException") {
+    intercept[InvalidFormatException] {
+      Movie.openRemote(InvalidMovieURL)
+    }
+  }
+
+  test("opens a movie at a remote location") {
+    val m = Movie.openRemote(ValidMovieURL)
     assert(m.nonEmpty)
   }
 

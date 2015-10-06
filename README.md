@@ -104,6 +104,22 @@ Errors:
 * Message `"vid: no movie found"`: the movie could not be found.
 * Message `"vid: format not supported"`: the user selected a movie with an unsupported format.
 
+### `vid:movie-open-remote`
+
+Opens a remote video from a website or ftp server.
+
+Example:
+
+```NetLogo
+vid:movie-open-remote "http://example.org/foo.mp4"
+```
+
+Errors:
+
+* Message `"vid: no movie found"`: The specified URL could not be loaded or errored while loading.
+* Message `"vid: format not supported"`: The file type of the remote movie is not supported.
+* Message `"vid: protocol not supported"`: The movie was at an upsupported URL protocol. Supported protocols are `ftp` and `http`.
+
 ### `vid:close`
 
 Closes the currently selected video source.
