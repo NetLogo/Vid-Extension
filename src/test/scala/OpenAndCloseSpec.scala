@@ -21,6 +21,15 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
+    scenario("opens a movie at an absolute path") {
+      new VidSpecHelpers {
+        When("""I run vid:movie-open "/tmp/foobar.mp4"""")
+        vid.`movie-open`("/tmp/foobar.mp4")
+
+        thenStatusShouldBe("stopped")
+      }
+    }
+
     scenario("opening a new source closes the first source") {
       new VidSpecHelpers {
         givenOpenMovie()

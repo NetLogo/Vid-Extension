@@ -87,12 +87,16 @@ Errors:
 
 ### `vid:movie-open`
 
-Opens a video from the given path relative to the current model directory.
+Opens a video from the file system.
+If the provided path is not absolute the extension searches for the given path relative to the current model directory.
+If the provided path is absolute the extension opens the file.
 
 Example:
 
 ```NetLogo
-vid:movie-open "foo.mp4"
+vid:movie-open "foo.mp4"      ; Opens foo.mp4 in the directory containing the model
+vid:movie-open user-file      ; Opens a dialog for the user to select a movie
+vid:movie-open "/tmp/foo.mp4" ; Opens a movie from the "/tmp" directory
 ```
 
 Errors:

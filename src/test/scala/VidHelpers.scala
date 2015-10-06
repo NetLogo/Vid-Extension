@@ -43,6 +43,7 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
         filePath match {
           case "/currentdir/foobar.mp4"      => Some(dummyMovie)
           case "/currentdir/unsupported.ogg" => throw new InvalidFormatException
+          case "/tmp/foobar.mp4"             => Some(dummyMovie)
           case _ => None
         }
       }
