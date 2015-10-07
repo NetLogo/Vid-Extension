@@ -87,18 +87,38 @@ Errors:
 
 ### `vid:movie-open`
 
-Opens a video from the given path relative to the current model directory.
+Opens a video from the file system.
+If the provided path is not absolute the extension searches for the given path relative to the current model directory.
+If the provided path is absolute the extension opens the file.
 
 Example:
 
 ```NetLogo
-vid:movie-open "foo.mp4"
+vid:movie-open "foo.mp4"      ; Opens foo.mp4 in the directory containing the model
+vid:movie-open user-file      ; Opens a dialog for the user to select a movie
+vid:movie-open "/tmp/foo.mp4" ; Opens a movie from the "/tmp" directory
 ```
 
 Errors:
 
 * Message `"vid: no movie found"`: the movie could not be found.
 * Message `"vid: format not supported"`: the user selected a movie with an unsupported format.
+
+### `vid:movie-open-remote`
+
+Opens a remote video from a website or ftp server.
+
+Example:
+
+```NetLogo
+vid:movie-open-remote "http://example.org/foo.mp4"
+```
+
+Errors:
+
+* Message `"vid: no movie found"`: The specified URL could not be loaded or errored while loading.
+* Message `"vid: format not supported"`: The file type of the remote movie is not supported.
+* Message `"vid: protocol not supported"`: The movie was at an upsupported URL protocol. Supported protocols are `ftp` and `http`.
 
 ### `vid:close`
 

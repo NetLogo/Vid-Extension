@@ -28,10 +28,10 @@ ticks
 30.0
 
 BUTTON
-13
-63
-181
-96
+10
+55
+185
+88
 open test video
 vid:movie-open \"src/test/resources/small.mp4\"
 NIL
@@ -45,10 +45,10 @@ NIL
 1
 
 BUTTON
-13
-110
-195
-143
+10
+135
+185
+168
 copy to drawing
 bitmap:copy-to-drawing (vid:capture-image (world-width * patch-size) (world-height * patch-size)) 0 0
 NIL
@@ -62,10 +62,10 @@ NIL
 1
 
 BUTTON
-41
-213
-181
-246
+55
+235
+170
+268
 NIL
 (vid:show-player)
 NIL
@@ -79,10 +79,10 @@ NIL
 1
 
 BUTTON
-119
-326
-201
-359
+115
+345
+197
+378
 NIL
 vid:start
 NIL
@@ -96,10 +96,10 @@ NIL
 1
 
 BUTTON
-21
-325
-102
-358
+20
+345
+101
+378
 NIL
 vid:stop
 NIL
@@ -113,10 +113,10 @@ NIL
 1
 
 BUTTON
-49
-266
-174
-299
+55
+280
+170
+313
 NIL
 vid:hide-player\n
 NIL
@@ -147,12 +147,29 @@ NIL
 1
 
 BUTTON
-71
-164
-157
-197
+55
+190
+170
+223
 NIL
 vid:close
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+10
+95
+185
+128
+open remote test video
+vid:movie-open-remote \"http://download.wavetlan.com/SVV/Media/HTTP/H264/Other_Media/H264_test8_voiceclip_mp4_480x320.mp4\"
 NIL
 1
 T
@@ -506,7 +523,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 5.2.1-M3
+NetLogo 5.2.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
@@ -524,5 +541,5 @@ Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
 
 @#$#@#$#@
-0
+1
 @#$#@#$#@

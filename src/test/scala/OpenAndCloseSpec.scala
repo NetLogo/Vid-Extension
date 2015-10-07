@@ -14,9 +14,14 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
 
     scenario("opens a movie") {
       new VidSpecHelpers {
-        When("""I run vid:movie-open "foobar.mp4"""")
-        vid.`movie-open`("foobar.mp4")
+        whenIRun.`movie-open`("foobar.mp4")
+        thenStatusShouldBe("stopped")
+      }
+    }
 
+    scenario("opens a movie at an absolute path") {
+      new VidSpecHelpers {
+        whenIRun.`movie-open`("/tmp/foobar.mp4")
         thenStatusShouldBe("stopped")
       }
     }
@@ -24,19 +29,47 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
     scenario("opening a new source closes the first source") {
       new VidSpecHelpers {
         givenOpenMovie()
-        When("""I run vid:camera-open "camera"""")
-        vid.`camera-open`("camera")
+        whenIRun.`camera-open`("camera")
 
         Then("the movie should be closed")
         assert(dummyMovie.isClosed)
       }
     }
 
+    scenario("opens movie from a remote source") {
+      new VidSpecHelpers {
+        whenIRun.`movie-open-remote`("http://example.org/somevideo.mp4")
+        thenStatusShouldBe("stopped")
+      }
+    }
+
+    scenario("attempt opening not found movie from remote source") {
+      new VidSpecHelpers with ExpectError {
+        whenRunForError("""vid:movie-open-remote "http://example.org/notfound.mp4"""",
+          vid.`movie-open-remote`("http://example.org/notfound.mp4"))
+        thenShouldSeeError("""vid: no movie found""")
+      }
+    }
+
+    scenario("attempt opening invalid movie type from remote source") {
+      new VidSpecHelpers with ExpectError {
+        whenRunForError("""vid:movie-open-remote "http://example.org/somevideo.ogv"""",
+          vid.`movie-open-remote`("http://example.org/somevideo.ogv"))
+        thenShouldSeeError("vid: format not supported")
+      }
+    }
+
+    scenario("attempt opening invalid movie protocol from remote source") {
+      new VidSpecHelpers with ExpectError {
+        whenRunForError("""vid:movie-open-remote "https://example.org/somevideo.mp4"""",
+          vid.`movie-open-remote`("https://example.org/somevideo.mp4"))
+        thenShouldSeeError("vid: protocol not supported")
+      }
+    }
+
     scenario("open a camera") {
       new VidSpecHelpers {
-        When("""I run vid:camera-open "camera"""")
-        vid.`camera-open`("camera")
-
+        whenIRun.`camera-open`("camera")
         thenStatusShouldBe("playing")
       }
     }
@@ -52,8 +85,7 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
 
     scenario("opens a default camera") {
       new VidSpecHelpers {
-        When("I run vid:camera-open")
-        vid.`camera-open`()
+        whenIRun.`camera-open`()
         thenStatusShouldBe("playing")
       }
     }
@@ -71,8 +103,7 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
     scenario("closes an opened movie") {
       new VidSpecHelpers {
         givenOpenMovie()
-        When("I run movie:close")
-        vid.close()
+        whenIRun.close()
         thenStatusShouldBe("inactive")
         assert(dummyMovie.isClosed)
       }

@@ -2,43 +2,69 @@ package org.nlogo.extensions.vid
 
 import java.awt.Dimension
 import java.awt.image.BufferedImage
-import java.lang.{ Void => JVoid }
 import java.io.File
+import java.lang.{ Void => JVoid }
 
 import javafx.embed.swing.SwingFXUtils
 import javafx.application.Platform
 import javafx.beans.binding.Bindings
-import javafx.beans.value.ObservableValue
+import javafx.beans.value.{ ChangeListener, ObservableValue }
 import javafx.scene.{ Group, Scene, SnapshotResult }
 import javafx.scene.image.WritableImage
-import javafx.scene.media.{ Media, MediaException, MediaPlayer, MediaView }
+import javafx.scene.media.{ Media, MediaException, MediaPlayer, MediaView },
+  MediaPlayer.Status.UNKNOWN
 import javafx.util.{ Callback, Duration }
 
 import scala.concurrent.Channel
 
-import util.FunctionToCallback.{ function2Callable, function2Runnable }
+import util.FunctionToCallback.{ function2Callable, function2Runnable, function2ChangeListener }
 
 trait MovieFactory {
   // throws InvalidFormatException when the filePath points to a file
   // whose format cannot be understood
   def open(filePath: String): Option[VideoSource]
+  // throws InvalidProtocolException when the uri is not a supported protocol
+  def openRemote(uri: String): Option[VideoSource]
 }
 
 class InvalidFormatException extends Exception("Invalid file format")
+
+class InvalidProtocolException extends Exception("Invalid protocol")
 
 object Movie extends MovieFactory {
   def open(filePath: String): Option[VideoSource] = {
     val file = new File(filePath)
     if (file.exists) {
       try {
-        val media = new Media(file.toURI.toString)
-        Some(new Movie(media, new MediaPlayer(media)))
+        Some(buildMovie(file.toURI.toString))
       } catch {
         case me: MediaException if me.getMessage == "Unrecognized file signature!" =>
           throw new InvalidFormatException()
       }
     } else
       None
+  }
+
+  def openRemote(uri: String): Option[VideoSource] = {
+    try {
+      val m = buildMovie(uri)
+      m.awaitLoad match {
+        case None    => Some(m)
+        case Some(e) => e.getType match {
+          case MediaException.Type.MEDIA_UNSUPPORTED =>
+            throw new InvalidFormatException()
+          case _ => None
+        }
+      }
+    } catch {
+      case e: UnsupportedOperationException if e.getMessage.startsWith("Unsupported protocol") =>
+        throw new InvalidProtocolException()
+    }
+  }
+
+  private def buildMovie(uri: String): Movie = {
+    val media = new Media(uri)
+    new Movie(media, new MediaPlayer(media))
   }
 }
 
@@ -54,6 +80,32 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
   override def close(): Unit = {
     mediaPlayer.stop()
     mediaPlayer.dispose()
+  }
+
+  def awaitLoad(): Option[MediaException] = {
+    val openException = new Channel[Option[MediaException]]
+
+    media.setOnError { () =>
+      openException.write(Option(media.getError))
+    }
+
+    val listener: ChangeListener[MediaPlayer.Status] = {
+      (oldStatus: MediaPlayer.Status, newStatus: MediaPlayer.Status) =>
+        if (newStatus != UNKNOWN)
+          openException.write(None)
+    }
+
+    mediaPlayer.statusProperty.addListener(listener)
+
+    val returnValue =
+      if (mediaPlayer.getStatus != null && mediaPlayer.getStatus != UNKNOWN)
+        None
+      else
+        openException.read
+
+    mediaPlayer.statusProperty.removeListener(listener)
+    media.setOnError({ () => })
+    returnValue
   }
 
   override def isPlaying: Boolean =
