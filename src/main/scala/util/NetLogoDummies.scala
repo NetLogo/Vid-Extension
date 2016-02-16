@@ -1,5 +1,6 @@
 package org.nlogo.extensions.vid.util
 
+import org.nlogo.core.{ LogoList, Token }
 import org.nlogo.api._
 
 class CurrentDirContext extends Context {
@@ -8,10 +9,12 @@ class CurrentDirContext extends Context {
   def attachModelDir(filePath: String): String = ???
   def getAgent: org.nlogo.api.Agent = ???
   def getDrawing: java.awt.image.BufferedImage = ???
-  def getRNG: org.nlogo.util.MersenneTwisterFast = ???
+  def getRNG: MersenneTwisterFast = ???
   def importPcolors(image: java.awt.image.BufferedImage,asNetLogoColors: Boolean): Unit = ???
   def logCustomGlobals(nameValuePairs: Seq[(String, String)]): Unit = ???
   def logCustomMessage(msg: String): Unit = ???
+  def activation: org.nlogo.api.Activation = ???
+  def world: org.nlogo.api.World = ???
 }
 
 class FakeArgument(val underlying: AnyRef) extends Argument {
@@ -20,7 +23,7 @@ class FakeArgument(val underlying: AnyRef) extends Argument {
   def getAgentSet: org.nlogo.api.AgentSet = ???
   def getBoolean: java.lang.Boolean = ???
   def getBooleanValue: Boolean = ???
-  def getCode: java.util.List[org.nlogo.api.Token] = ???
+  def getCode: java.util.List[Token] = ???
   def getCommandTask: org.nlogo.api.CommandTask = ???
   def getDoubleValue: Double = underlying match {
     case d: java.lang.Double => d.doubleValue
@@ -28,7 +31,7 @@ class FakeArgument(val underlying: AnyRef) extends Argument {
   }
   def getIntValue: Int = ???
   def getLink: org.nlogo.api.Link = ???
-  def getList: org.nlogo.api.LogoList = ???
+  def getList: LogoList = ???
   def getPatch: org.nlogo.api.Patch = ???
   def getReporterTask: org.nlogo.api.ReporterTask = ???
   def getString: String =
@@ -36,5 +39,7 @@ class FakeArgument(val underlying: AnyRef) extends Argument {
       case s: String => s
       case _ => throw new ExtensionException(s"expected a string, but got $underlying")
     }
+  def getCodeBlock: java.util.List[org.nlogo.core.Token] = ???
+  def getSymbol: org.nlogo.core.Token = ???
   def getTurtle: org.nlogo.api.Turtle = ???
 }

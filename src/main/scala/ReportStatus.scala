@@ -1,8 +1,12 @@
 package org.nlogo.extensions.vid
 
-import org.nlogo.api._
+import org.nlogo.core.Syntax
+import org.nlogo.api.{ Argument, Context, Reporter }
 
-class ReportStatus(vid: VideoSourceContainer) extends DefaultReporter {
+class ReportStatus(vid: VideoSourceContainer) extends Reporter {
+
+  def getSyntax = Syntax.reporterSyntax(right = List(), ret = Syntax.StringType)
+
   def report(args: Array[Argument], context: Context): AnyRef = {
     vid.videoSource match {
       case Some(source) if source.isPlaying => "playing"

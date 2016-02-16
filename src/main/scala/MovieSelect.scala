@@ -2,7 +2,7 @@ package org.nlogo.extensions.vid
 
 import org.nlogo.api._
 
-class MovieSelect(videoSourceContainer: VideoSourceContainer, movies: MovieFactory, selector: Selector) extends DefaultCommand {
+class MovieSelect(videoSourceContainer: VideoSourceContainer, movies: MovieFactory, selector: Selector) extends Command {
   override def getSyntax = Syntax.commandSyntax(Array[Int]())
 
   override def perform(args: Array[Argument], context: Context): Unit = {

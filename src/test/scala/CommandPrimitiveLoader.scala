@@ -2,6 +2,7 @@ package org.nlogo.extensions.vid
 
 import scala.language.dynamics
 
+import org.nlogo.core.Primitive
 import org.nlogo.api._
 
 class CommandPrimitiveLoader extends PrimitiveManager with Dynamic {

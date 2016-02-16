@@ -1,9 +1,10 @@
 package org.nlogo.extensions.vid
 
-import org.nlogo.api._
+import org.nlogo.core.Syntax
+import org.nlogo.api.{ Argument, Command, Context, ExtensionException }
 
-class CameraSelect(videoContainer: VideoSourceContainer, cameras: CameraFactory, selector: Selector) extends DefaultCommand {
-  override def getSyntax = Syntax.commandSyntax(Array[Int]())
+class CameraSelect(videoContainer: VideoSourceContainer, cameras: CameraFactory, selector: Selector) extends Command {
+  override def getSyntax = Syntax.commandSyntax(List[Int]())
 
   override def perform(args: Array[Argument], context: Context): Unit = {
     if (cameras.cameraNames.isEmpty)

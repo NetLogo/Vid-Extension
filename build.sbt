@@ -10,7 +10,7 @@ scalacOptions ++=
 resolvers += "Sonatype OSS Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies +=
-  "org.nlogo" % "NetLogo" % "5.3" from "http://ccl.northwestern.edu/devel/NetLogo-5.3-LevelSpace-3a6b9b4.jar"
+  "org.nlogo" % "NetLogo" % "6.0-PREVIEW" changing() from "file:///Users/rgg284/IdeaProjects/NetLogo/netlogo-gui/target/NetLogo.jar"
 
 libraryDependencies ++= Seq(
   "com.github.sarxos" % "webcam-capture" % "0.3.10",

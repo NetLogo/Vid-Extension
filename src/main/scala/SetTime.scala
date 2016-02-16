@@ -2,7 +2,7 @@ package org.nlogo.extensions.vid
 
 import org.nlogo.api._
 
-class SetTime(vid: VideoSourceContainer) extends DefaultCommand {
+class SetTime(vid: VideoSourceContainer) extends Command {
   override def getSyntax =
     Syntax.commandSyntax(Array[Int](Syntax.NumberType))
 

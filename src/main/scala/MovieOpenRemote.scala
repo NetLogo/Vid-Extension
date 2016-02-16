@@ -4,7 +4,7 @@ import java.io.File
 
 import org.nlogo.api._
 
-class MovieOpenRemote(vid: VideoSourceContainer, files: MovieFactory) extends DefaultCommand {
+class MovieOpenRemote(vid: VideoSourceContainer, files: MovieFactory) extends Command {
   override def getSyntax = Syntax.commandSyntax(Array[Int](Syntax.StringType))
 
   override def perform(args: Array[Argument], context: Context): Unit = {
