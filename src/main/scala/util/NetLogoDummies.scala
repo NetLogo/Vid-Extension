@@ -14,6 +14,7 @@ class CurrentDirContext extends Context {
   def logCustomGlobals(nameValuePairs: Seq[(String, String)]): Unit = ???
   def logCustomMessage(msg: String): Unit = ???
   def activation: org.nlogo.api.Activation = ???
+  def workspace: org.nlogo.api.Workspace = ???
   def world: org.nlogo.api.World = ???
 }
 

@@ -3,9 +3,10 @@ package org.nlogo.extensions.vid
 import java.io.File
 
 import org.nlogo.api._
+import org.nlogo.core.Syntax
 
 class MovieOpen(vid: VideoSourceContainer, files: MovieFactory) extends Command {
-  override def getSyntax = Syntax.commandSyntax(Array[Int](Syntax.StringType))
+  override def getSyntax = Syntax.commandSyntax(right = List[Int](Syntax.StringType))
 
   def perform(args: Array[Argument], context: Context): Unit = {
     val providedPath = args(0).getString
