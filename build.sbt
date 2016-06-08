@@ -21,7 +21,9 @@ scalacOptions ++=
 resolvers += "Sonatype OSS Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies ++= Seq(
-  "com.github.sarxos" % "webcam-capture" % "0.3.10",
+  "com.github.sarxos" % "webcam-capture" % "0.3.11",
+  "org.jcodec" % "jcodec" % "0.1.9",
+  "org.jcodec" % "jcodec-javase" % "0.1.9",
   "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 )
 
@@ -30,3 +32,5 @@ isSnapshot := true
 // necessary for testing camera functionality.
 // See https://groups.google.com/forum/#!topic/nativelibs4java/WNmOZPknRiU
 fork in Test := true
+
+netLogoVersion := "6.0.0-M8"

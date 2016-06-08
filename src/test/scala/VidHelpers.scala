@@ -90,6 +90,8 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
 
     override val player = new DummyPlayer()
 
+    val recorder = new DummyRecorder()
+
     val selector = new DummySelector()
 
     def givenOpenMovie(started: Boolean = false): Unit = {
@@ -137,6 +139,33 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
       assert(_error.nonEmpty)
       assert(_error.get.getMessage.contains(errorMessage))
     }
+  }
+}
+
+class DummyRecorder extends Recorder {
+  import java.nio.file.{ Files, Path }
+  var isRecording = false
+  var lastFrame: BufferedImage = null
+  def start(): Unit = {
+    if (isRecording)
+      throw Recorder.AlreadyStarted
+    isRecording = true
+  }
+  def reset(): Unit = {
+    isRecording = false
+  }
+  def recordFrame(image: BufferedImage): Unit = {
+    lastFrame = image
+  }
+  def save(dest: Path): Unit = {
+    if (!isRecording)
+      throw Recorder.NotRecording
+    val d =
+      if (dest.startsWith("/currentdir")) dest.subpath(1, dest.getNameCount)
+      else dest
+    if (! Files.exists(d.toAbsolutePath.getParent))
+      throw new java.io.FileNotFoundException("no such directory: " + d.toString)
+    Files.write(d, "test".getBytes)
   }
 }
 
