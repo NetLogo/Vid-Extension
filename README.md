@@ -173,28 +173,39 @@ vid:movie-start
 vid:status       ; => "playing"
 ```
 
-### `vid:capture-image *width* *height*`
+
+### `vid:capture-image`
+### <tt>(vid:capture-image <i>width height</i>)</tt>
 
 Captures an image from the currently selected active source.
+
+If width and height are not specified, the image is captured at the current source resolution.
 
 Example:
 
 ```NetLogo
-; when camera open, take an image
-vid:capture-image ;=> returns image suitable for use with bitmap extension
+extensions [ vid bitmap ]
 
-; capture an image if a video source is open,
-; have the user select a camera if no video source found
-carefully [
-  vid:capture-image 640 480
-] [
-  if errormessage = "vid: no selected source" [
-    vid:camera-select
-    vid:start
-    vid:capture-image 640 480
+to capture
+  ; capture an image if a video source is open,
+  ; have the user select a camera if no video source found
+  carefully [
+    ; when camera open, take an image
+    let image vid:capture-image ; returns image suitable for use with bitmap extension
+    bitmap:copy-to-drawing image 0 0
+  ] [
+    if error-message = "Extension exception: vid: no selected source" [
+      vid:camera-select
+      vid:start
+      let image vid:capture-image
+      bitmap:copy-to-drawing image 0 0
+    ]
   ]
-]
+end
 ```
+
+If you want to capture images at a different resolution, simply replace `vid:capture-image` with, e.g., `(vid:capture-image 640 480)`.
+
 
 Errors:
 
@@ -216,7 +227,8 @@ Errors:
 * Message `"vid: no selected source"`: There is no currently selected video source. Select a source with `vid:movie-open`, `vid:movie-select`, `vid:camera-open`, or `vid:camera-select`.
 * Message `"vid: invalid time"`: The currently active video does not contain the specified second. The second may be negative, or greater than the length of the video.
 
-### `vid:show-player *width* *height*`
+### `vid:show-player`
+### <tt>(vid:show-player <i>width height</i>)</tt>
 
 Shows a player in a separate window.
 If there is no video source, the window will be an empty black frame.
@@ -224,10 +236,16 @@ If there is an active video source, it will be displayed in the window with the 
 If there is a playing video source, it will be displayed in the window at its specified width and height.
 If width and height are omitted, the video will be displayed in its native resolution.
 
-Example:
+Example with native resolution:
 
 ```NetLogo
-vid:show-player 640 480
+vid:show-player
+```
+
+Example with custom resolution:
+
+```NetLogo
+(vid:show-player 640 480)
 ```
 
 Errors:
