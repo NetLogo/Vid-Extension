@@ -65,6 +65,16 @@ class MP4RecorderTest extends FunSuite {
     }
   }
 
+  test("different resolution images can be recorded") {
+    new Helper {
+      recorder.start()
+      recorder.recordFrame(dummyFrame)
+      val differentResFrame = new BufferedImage(640, 640, BufferedImage.TYPE_INT_ARGB)
+      recorder.recordFrame(differentResFrame)
+      recorder.save(tempFile)
+    }
+  }
+
   test("saving to a file whose parent directory doesn't exist raises FileNotFoundException") {
     new Helper {
       recorder.start()

@@ -6,6 +6,7 @@ import java.nio.file.Path
 trait Recorder {
   def isRecording: Boolean
   def start(): Unit
+  def setResolution(width: Int, height: Int): Unit
   def reset(): Unit
   def recordFrame(image: BufferedImage): Unit
   def save(dest: Path): Unit

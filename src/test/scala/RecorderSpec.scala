@@ -12,6 +12,7 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
     def givenRecorderNotStarted(): Unit = {
       Given("the recorder has not been started")
     }
+
     def givenRecorderStarted(): Unit = {
       Given("the recorder has been started")
       vid.`start-recorder`()
@@ -56,6 +57,22 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
         givenRecorderStarted()
         whenRunForError("vid:start-recorder", vid.`start-recorder`())
         thenShouldSeeError("vid: recorder already started")
+      }
+    }
+
+    scenario("start-recorder errors if supplied with negative width/height") {
+      new Helpers with ExpectError {
+        whenRunForError("vid:start-recorder -1 -1", vid.`start-recorder`(Double.box(-1), Double.box(-1)))
+        thenShouldSeeError("vid: invalid dimensions")
+      }
+    }
+
+    scenario("start-recorder sets dimensions of recording") {
+      new Helpers {
+        Given("I have started the recorder with dimensions 640 x 480")
+        vid.`start-recorder`(Double.box(640), Double.box(480))
+        Then("The recording resolution should be 640 x 480")
+        assertResult((640, 480))(recorder.recordingResolution)
       }
     }
   }

@@ -319,16 +319,20 @@ vid:recorder-status ; => "inactive"
 
 Starts the recorder.
 If the recorder is already running this will cause an error to be raised.
+If desired, a recording width and height can be supplied.
+If height and width are not supplied, they will be determined from the first frame recorded.
 
 Example:
 
 ```NetLogo
-vid:start-recorder
+(vid:start-recorder)
+(vid:start-recorder 640 480)
 ```
 
 Errors:
 
 * Message `"vid: recorder already started"`: The recorder has already been started. The existing recording should be saved or reset before starting the recording.
+* Message `"vid: invalid dimensions"`: The selected dimensions are invalid (one of the dimensions is zero or negative).
 
 ### `vid:save-recording`
 

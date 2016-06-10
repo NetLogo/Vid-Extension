@@ -146,6 +146,7 @@ class DummyRecorder extends Recorder {
   import java.nio.file.{ Files, Path }
   var isRecording = false
   var lastFrame: BufferedImage = null
+  var recordingResolution: (Int, Int) = (-1, -1)
   def start(): Unit = {
     if (isRecording)
       throw Recorder.AlreadyStarted
@@ -156,6 +157,9 @@ class DummyRecorder extends Recorder {
   }
   def recordFrame(image: BufferedImage): Unit = {
     lastFrame = image
+  }
+  def setResolution(width: Int, height: Int): Unit = {
+    recordingResolution = (width, height)
   }
   def save(dest: Path): Unit = {
     if (!isRecording)
