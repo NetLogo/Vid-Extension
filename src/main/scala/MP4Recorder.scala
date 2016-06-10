@@ -43,7 +43,9 @@ class MP4Recorder extends Recorder {
   def recordFrame(image: BufferedImage): Unit = {
     if (activeRecording.isDefined)
       activeRecording.foreach { recording =>
-        recording.encodeNativeFrame(AWTUtil.fromBufferedImage(image))
+        val rgbImage = new BufferedImage(image.getWidth, image.getHeight, BufferedImage.TYPE_INT_RGB)
+        rgbImage.getGraphics.drawImage(image, 0, 0, null)
+        recording.encodeNativeFrame(AWTUtil.fromBufferedImage(rgbImage))
       }
     else
       throw new RuntimeException("No recording has been started!")
