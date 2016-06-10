@@ -6,7 +6,8 @@ import org.nlogo.api.{ Argument, Context, Command, ExtensionException }
 class StartRecorder(recorder: Recorder) extends Command {
 
   def getSyntax = Syntax.commandSyntax(
-    right = List(Syntax.NumberType, Syntax.NumberType),
+    right = List(Syntax.NumberType | Syntax.RepeatableType),
+    defaultOption = Some(2),
     minimumOption = Some(0))
 
   def perform(args: Array[Argument], context: Context): Unit = {
