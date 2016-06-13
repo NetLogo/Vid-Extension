@@ -1,11 +1,12 @@
 package org.nlogo.extensions.vid
 
 import org.nlogo.api._
+import org.nlogo.core.Syntax
 import java.awt.image.BufferedImage
 import java.awt.{ Image => JImage }
 
-class CaptureImage(vid: VideoSourceContainer) extends DefaultReporter {
-  override def getSyntax = Syntax.reporterSyntax(Array[Int](Syntax.NumberType | Syntax.RepeatableType), Syntax.WildcardType)
+class CaptureImage(vid: VideoSourceContainer) extends Reporter {
+  override def getSyntax = Syntax.reporterSyntax(right = List[Int](Syntax.NumberType | Syntax.RepeatableType), ret = Syntax.WildcardType)
 
   def report(args: Array[Argument], context: Context): AnyRef = {
     vid.videoSource.map { source =>

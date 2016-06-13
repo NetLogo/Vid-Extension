@@ -1,9 +1,10 @@
 package org.nlogo.extensions.vid
 
 import org.nlogo.api._
+import org.nlogo.core.Syntax
 
-class MovieSelect(videoSourceContainer: VideoSourceContainer, movies: MovieFactory, selector: Selector) extends DefaultCommand {
-  override def getSyntax = Syntax.commandSyntax(Array[Int]())
+class MovieSelect(videoSourceContainer: VideoSourceContainer, movies: MovieFactory, selector: Selector) extends Command {
+  override def getSyntax = Syntax.commandSyntax()
 
   override def perform(args: Array[Argument], context: Context): Unit = {
     selector.selectFile.foreach { path =>

@@ -5,6 +5,7 @@ import org.scalatest.{ FeatureSpec, GivenWhenThen }
 import java.io.{ File => JFile }
 import java.awt.image.BufferedImage
 
+import org.nlogo.core.LogoList
 import org.nlogo.api._
 
 // this is for all the features which don't justify their own spec yet

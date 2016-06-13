@@ -1,12 +1,13 @@
 package org.nlogo.extensions.vid
 
 import org.nlogo.api._
+import org.nlogo.core.Syntax
 
 import javafx.embed.swing.JFXPanel
 
-class ShowPlayer(player: Player, vidExtension: VideoSourceContainer) extends DefaultCommand {
+class ShowPlayer(player: Player, vidExtension: VideoSourceContainer) extends Command {
   override def getSyntax =
-    Syntax.commandSyntax(Array[Int](Syntax.NumberType | Syntax.RepeatableType))
+    Syntax.commandSyntax(right = List[Int](Syntax.NumberType | Syntax.RepeatableType))
 
   override def perform(args: Array[Argument], context: Context): Unit = {
 

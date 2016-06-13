@@ -21,6 +21,7 @@ object RunVid extends App with VideoSourceContainer {
 
   val movies: MovieFactory   = Movie
   val cameras: CameraFactory = Camera
+  val recorder: Recorder     = new MP4Recorder()
   lazy val player: Player    = new JavaFXPlayer()
 
   val context = new util.CurrentDirContext()
@@ -37,7 +38,14 @@ object RunVid extends App with VideoSourceContainer {
     "openCamera"  ->
     { () => new CameraOpen(this, cameras).perform(Array[Argument](), context) },
     "closeSource" ->
-    { () => new CloseVideoSource(this).perform(Array[Argument](), context) })
+    { () => new CloseVideoSource(this).perform(Array[Argument](), context) },
+    "Start Recorder" ->
+    { () => new StartRecorder(recorder).perform(Array[Argument](), context) },
+    "Record Source" ->
+    { () => new RecordSource(recorder, this).perform(Array[Argument](), context) },
+    "Save Recording" ->
+    { () => new SaveRecording(recorder).perform(Array[Argument](new util.FakeArgument("testrecording.mp4")), context) }
+    )
 
   class MyApp extends Application {
     import javafx.event.{ ActionEvent, EventHandler }

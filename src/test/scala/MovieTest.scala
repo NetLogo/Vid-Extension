@@ -29,7 +29,7 @@ class MovieTest extends FunSuite with AsyncAssertions {
 
   val ValidMovieURL = "http://download.wavetlan.com/SVV/Media/HTTP/H264/Other_Media/H264_test8_voiceclip_mp4_480x320.mp4"
   val InvalidMovieURL = "http://v2v.cc/~j/samples/failed_vorbis_size.ogv"
-  val HttpsMovieURL = "https://raw.githubusercontent.com/NetLogo/vid/master/src/test/resources/small.mp4"
+  val RssMovieURL = "rss://raw.githubusercontent.com/NetLogo/vid/master/src/test/resources/small.mp4"
   val NotFoundMovieURL = "http://raw.githubusercontent.com/NetLogo/vid/master/src/test/resources/notreal.mp4"
 
   trait MovieFixture {
@@ -68,7 +68,7 @@ class MovieTest extends FunSuite with AsyncAssertions {
 
   test("when a movie is opened remotely with a bad protocol, raised InvalidProtocolException") {
     intercept[InvalidProtocolException] {
-      Movie.openRemote(HttpsMovieURL)
+      Movie.openRemote(RssMovieURL)
     }
   }
 

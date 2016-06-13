@@ -1,10 +1,11 @@
 package org.nlogo.extensions.vid
 
 import org.nlogo.api._
+import org.nlogo.core.Syntax
 
-class SetTime(vid: VideoSourceContainer) extends DefaultCommand {
+class SetTime(vid: VideoSourceContainer) extends Command {
   override def getSyntax =
-    Syntax.commandSyntax(Array[Int](Syntax.NumberType))
+    Syntax.commandSyntax(right = List[Int](Syntax.NumberType))
 
   def perform(args: Array[Argument], context: Context): Unit = {
     if (vid.videoSource.isEmpty)

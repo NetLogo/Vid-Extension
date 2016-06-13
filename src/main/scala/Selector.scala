@@ -8,10 +8,11 @@ trait Selector {
 object NetLogoSelector extends Selector {
   import javax.swing.JFileChooser
 
-  import org.nlogo.api.{ I18N, ReporterRunnable }
+  import org.nlogo.api.ReporterRunnable
   import org.nlogo.app.App
   import org.nlogo.awt.UserCancelException
   import org.nlogo.awt.EventQueue.invokeLater
+  import org.nlogo.core.I18N
   import org.nlogo.swing.{ FileDialog, OptionDialog }
   import org.nlogo.window.GUIWorkspace
 
