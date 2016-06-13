@@ -6,7 +6,10 @@ import java.awt.image.BufferedImage
 import java.awt.{ Image => JImage }
 
 class CaptureImage(vid: VideoSourceContainer) extends Reporter {
-  override def getSyntax = Syntax.reporterSyntax(right = List[Int](Syntax.NumberType | Syntax.RepeatableType), ret = Syntax.WildcardType)
+  override def getSyntax = Syntax.reporterSyntax(
+    right = List[Int](Syntax.NumberType | Syntax.RepeatableType),
+    defaultOption = Some(0),
+    ret = Syntax.WildcardType)
 
   def report(args: Array[Argument], context: Context): AnyRef = {
     vid.videoSource.map { source =>
