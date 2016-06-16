@@ -2,7 +2,7 @@
 
 ## Running
 
-Requires a 5.3 preview release of NetLogo.
+Requires a 6.0 preview release of NetLogo.
 
 ## Building
 
