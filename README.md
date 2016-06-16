@@ -53,6 +53,7 @@ vid:camera-names => ["Logitech Camera"]
 ```
 
 ### `vid:camera-open`
+### <tt>(vid:camera-open <i>camera-name</i>)</tt>
 
 Opens the named camera as a video source.
 If no name is provided, opens the first camera that would be listed by `camera-names`.
@@ -60,7 +61,7 @@ If no name is provided, opens the first camera that would be listed by `camera-n
 Example:
 ```NetLogo
 vid:camera-open ; opens first camera
-vid:camera-open "Logitech Camera"
+(vid:camera-open "Logitech Camera")
 ```
 
 Errors:
