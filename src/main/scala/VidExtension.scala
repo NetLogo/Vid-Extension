@@ -4,10 +4,23 @@ import org.nlogo.api._
 
 import javafx.embed.swing.JFXPanel
 
+
+object VidExtension {
+  def guiOrHeadless[A](gui: => A, headless: => A): A = {
+    if (System.getProperty("java.awt.headless") == "true") headless
+    else gui
+  }
+
+  lazy val movie: MovieFactory   = guiOrHeadless(Movie, Headless.Movie)
+  lazy val camera: CameraFactory = guiOrHeadless(Camera, Headless.Camera)
+  lazy val player: Player        = guiOrHeadless(new JavaFXPlayer(), Headless.HeadlessPlayer)
+  lazy val selector: Selector    = guiOrHeadless(NetLogoSelector, Headless.HeadlessSelector)
+}
 class VidExtension(movies: MovieFactory, cameras: CameraFactory, player: Player, selector: Selector, recorder: Recorder)
   extends DefaultClassManager with VideoSourceContainer {
 
-  def this() = this(Movie, Camera, new JavaFXPlayer(), NetLogoSelector, new MP4Recorder())
+  def this() =
+    this(VidExtension.movie, VidExtension.camera, VidExtension.player, VidExtension.selector, new MP4Recorder())
 
   override def runOnce(em: ExtensionManager): Unit = {
   }
