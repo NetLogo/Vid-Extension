@@ -12,7 +12,7 @@ Build with `sbt package`. `sbt test` runs tests.
 
 ### Video Source
 
-The `vid` extension has a built in concept of a video source.
+The `vid` extension has a built-in concept of a video source.
 At the moment, the only video sources available are movies in the directory the model lives in and cameras attached to the computer.
 The `vid` extension opens a new video source with the `vid:<source>-open` and `vid:<source>-select`.
 These primitives change the source to the selected source.
@@ -25,6 +25,15 @@ Camera sources start off as "playing" after being created by `vid:camera-select`
 If a source is in status "stopped" it can be started with `vid:start`.
 Conversely, if the source is "playing" it can be stopped with `vid:stop`.
 When a source is "stopped", each call to `vid:capture-image` will return the same image.
+
+### Video Recorder
+
+The `vid` extension also has the concept of a recording, a series of frames which can be sewn into an "mp4" movie.
+The recorder status can be queried using `vid:recorder-status`.
+The recorder status is "inactive" until started with `vid:start-recorder`, which sets it to "recording".
+While the recorder is "recording" the `vid:record-view`, `vid:record-interface`, and `vid:record-source` can be used to save frames to the recording.
+You can choose to save the recording while recording using `vid:save-recording` which saves the movie to the specified file and reset the recording status to "inactive".
+If you would prefer to throw away the recorded frames without saving, use `vid:reset-recorder`.
 
 ## Primitives
 
@@ -159,7 +168,7 @@ vid:stop
 ### `vid:status`
 
 Reports the current status of an active video.
-Note that calling `vid:movie-open` or `vid:movie-select` the status will be set to "stopped",
+Note that after calling `vid:movie-open` or `vid:movie-select` the status will be set to "stopped",
 while after calling `vid:camera-open` or `vid:camera-select` the status will be "playing".
 
 Example:
@@ -262,6 +271,109 @@ Example:
 ```NetLogo
 vid:hide-player
 ```
+
+### `vid:record-view`
+
+Records the current image shown in the NetLogo view to the active recording.
+
+Example:
+
+```NetLogo
+vid:record-view
+```
+
+Errors:
+
+* Message `"vid: recorder not started"`: The recorder has not been started. Start the recorder with `vid:start-recorder`.
+
+### `vid:record-interface`
+
+Records the NetLogo interface view to the active recording.
+
+Example:
+
+```NetLogo
+vid:record-interface
+```
+
+Errors:
+
+* Message `"vid: recorder not started"`: The recorder has not been started. Start the recorder with `vid:start-recorder`.
+* Message `"vid: export interface not supported"`: The calling NetLogo version does not support interface exports. This will occur when running NetLogo headlessly.
+
+### `vid:record-source`
+
+Records a frame to the active recording from the currently active source.
+
+Example:
+
+```NetLogo
+vid:record-source
+```
+
+Errors:
+
+* Message `"vid: recorder not started"`: The recorder has not been started. Start the recorder with `vid:start-recorder`.
+* Message `"vid: no selected source"`: There is no currently selected video source. Select a source with `vid:movie-open`, `vid:movie-select`, `vid:camera-open`, or `vid:camera-select`.
+
+### `vid:recorder-status`
+
+Reports the current status of the recorder.
+Initially and after the recorder is saved (via `vid:save-recording`) or reset (via `vid:reset-recorder`) the recorder status is "inactive".
+After calling `vid:start-recorder` the status will be "recording".
+
+Example:
+
+```NetLogo
+vid:recorder-status ; => "inactive"
+
+vid:start-recorder
+vid:recorder-status ; => "recording"
+
+vid:reset-recorder
+vid:recorder-status ; => "inactive"
+```
+
+### `vid:start-recorder`
+
+Starts the recorder.
+If the recorder is already running this will cause an error to be raised.
+If desired, a recording width and height can be supplied.
+If height and width are not supplied, they will be determined from the first frame recorded.
+
+Example:
+
+```NetLogo
+(vid:start-recorder)
+(vid:start-recorder 640 480)
+```
+
+Errors:
+
+* Message `"vid: recorder already started"`: The recorder has already been started. The existing recording should be saved or reset before starting the recording.
+* Message `"vid: invalid dimensions"`: The selected dimensions are invalid (one of the dimensions is zero or negative).
+
+### `vid:save-recording`
+
+Saves the recording to the specified path.
+If the recorder is not running this will cause an error to be raised.
+Note that at present the recording will always be saved in the "mp4" format.
+If the supplied filename does not end in ".mp4", the ".mp4" suffix will be added.
+Note that `vid:save-recording` *will* overwrite existing files of the same name.
+`vid:save-recording` will error if the recorder has not been started or if the file cannot be written since the containing directory does not exist.
+
+Example:
+
+```NetLogo
+vid:save-recording "foo.mp4"      ; Saves to foo.mp4 in the directory containing the model
+vid:save-recording user-new-file  ; Opens a dialog for the user to select a save path
+vid:save-recording "/tmp/foo.mp4" ; Saves the recording to the "/tmp" directory
+```
+
+Errors:
+
+* Message `"vid: recorder not started"`: The recorder has not been started. Start the recorder with `vid:start-recorder`.
+* Message `"vid: no such directory"`: The directory containing the specified save file does not exist.
 
 ## Terms of Use
 

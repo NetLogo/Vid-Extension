@@ -4,10 +4,10 @@ import org.nlogo.api._
 
 import javafx.embed.swing.JFXPanel
 
-class VidExtension(movies: MovieFactory, cameras: CameraFactory, player: Player, selector: Selector)
+class VidExtension(movies: MovieFactory, cameras: CameraFactory, player: Player, selector: Selector, recorder: Recorder)
   extends DefaultClassManager with VideoSourceContainer {
 
-  def this() = this(Movie, Camera, new JavaFXPlayer(), NetLogoSelector)
+  def this() = this(Movie, Camera, new JavaFXPlayer(), NetLogoSelector, new MP4Recorder())
 
   override def runOnce(em: ExtensionManager): Unit = {
   }
@@ -22,15 +22,23 @@ class VidExtension(movies: MovieFactory, cameras: CameraFactory, player: Player,
     manager.addPrimitive("movie-open",        new MovieOpen(this, movies))
     manager.addPrimitive("movie-open-remote", new MovieOpenRemote(this, movies))
     manager.addPrimitive("movie-select",      new MovieSelect(this, movies, selector))
+    manager.addPrimitive("recorder-status",   new RecorderStatus(recorder))
+    manager.addPrimitive("record-interface",  new RecordInterface(recorder))
+    manager.addPrimitive("record-source",     new RecordSource(recorder, this))
+    manager.addPrimitive("record-view",       new RecordView(recorder))
+    manager.addPrimitive("reset-recorder",    new ResetRecorder(recorder))
+    manager.addPrimitive("save-recording",    new SaveRecording(recorder))
     manager.addPrimitive("set-time",          new SetTime(this))
     manager.addPrimitive("show-player",       new ShowPlayer(player, this))
     manager.addPrimitive("start",             new StartSource(this))
+    manager.addPrimitive("start-recorder",    new StartRecorder(recorder))
     manager.addPrimitive("status",            new ReportStatus(this))
     manager.addPrimitive("stop",              new StopSource(this))
   }
 
   override def unload(em: ExtensionManager) = {
     _videoSource.foreach(_.close())
+    recorder.reset()
   }
 
   var _videoSource: Option[VideoSource] = None

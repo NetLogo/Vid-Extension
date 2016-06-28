@@ -30,7 +30,7 @@ class FakeArgument(val underlying: AnyRef) extends Argument {
     case d: java.lang.Double => d.doubleValue
     case _ => throw new ExtensionException(s"expected a double, got $underlying")
   }
-  def getIntValue: Int = ???
+  def getIntValue: Int = getDoubleValue.toInt
   def getLink: org.nlogo.api.Link = ???
   def getList: LogoList = ???
   def getPatch: org.nlogo.api.Patch = ???
