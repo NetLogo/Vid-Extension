@@ -7,7 +7,7 @@ import javafx.embed.swing.JFXPanel
 
 class ShowPlayer(player: Player, vidExtension: VideoSourceContainer) extends Command {
   override def getSyntax =
-    Syntax.commandSyntax(right = List[Int](Syntax.NumberType | Syntax.RepeatableType))
+    Syntax.commandSyntax(right = List[Int](Syntax.NumberType | Syntax.RepeatableType), defaultOption = Some(0))
 
   override def perform(args: Array[Argument], context: Context): Unit = {
 
