@@ -344,7 +344,7 @@ If height and width are not supplied, they will be determined from the first fra
 Example:
 
 ```NetLogo
-(vid:start-recorder)
+vid:start-recorder
 (vid:start-recorder 640 480)
 ```
 
