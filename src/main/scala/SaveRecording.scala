@@ -21,6 +21,7 @@ class SaveRecording(recorder: Recorder) extends Command {
     } catch {
       case _: FileNotFoundException => throw new ExtensionException("vid: no such directory")
       case Recorder.NotRecording    => throw new ExtensionException("vid: recorder not started")
+      case Recorder.NoFrames        => throw new ExtensionException("vid: no frames recorded")
     }
   }
 }
