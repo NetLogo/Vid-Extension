@@ -35,9 +35,14 @@ class MP4Recorder extends Recorder {
       throw Recorder.NotRecording
     if (! Files.exists(dest.toAbsolutePath.getParent))
       throw new FileNotFoundException("no such directory: " + dest.toAbsolutePath.toString)
-    activeRecording.foreach(_.finish())
-    recordingPath.foreach(src => Files.copy(src, dest, REPLACE_EXISTING))
-    reset()
+    try {
+      activeRecording.foreach(_.finish())
+      recordingPath.foreach(src => Files.copy(src, dest, REPLACE_EXISTING))
+    } catch {
+      case e: IndexOutOfBoundsException => throw Recorder.NoFrames
+    } finally {
+      reset()
+    }
   }
 
   def reset(): Unit = {

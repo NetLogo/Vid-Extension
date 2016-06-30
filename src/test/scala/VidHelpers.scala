@@ -169,6 +169,8 @@ class DummyRecorder extends Recorder {
       else dest
     if (! Files.exists(d.toAbsolutePath.getParent))
       throw new java.io.FileNotFoundException("no such directory: " + d.toString)
+    if (lastFrame == null)
+      throw Recorder.NoFrames
     Files.write(d, "test".getBytes)
   }
 }

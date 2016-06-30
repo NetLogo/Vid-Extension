@@ -15,4 +15,5 @@ trait Recorder {
 object Recorder {
   object AlreadyStarted extends Exception("Recorder is already recording")
   object NotRecording extends Exception("Recorder is not recording")
+  object NoFrames extends Exception("Recorder has not recorded anything")
 }

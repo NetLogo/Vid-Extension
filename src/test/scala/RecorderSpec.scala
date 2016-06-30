@@ -119,6 +119,14 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
         assert(Files.exists(Paths.get("foo.mp4")))
       }
     }
+
+    scenario("save-recording throws an exception if no frames have been recorded") {
+      new Helpers with ExpectError {
+        givenRecorderStarted
+        whenRunForError("vid:save-recording", vid.`save-recording`("error.mp4"))
+        thenShouldSeeError("vid: no frames recorded")
+      }
+    }
   }
 
   feature("record-view") {

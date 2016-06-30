@@ -374,6 +374,7 @@ Errors:
 
 * Message `"vid: recorder not started"`: The recorder has not been started. Start the recorder with `vid:start-recorder`.
 * Message `"vid: no such directory"`: The directory containing the specified save file does not exist.
+* Message `"vid: no frames recorded"`: You tried to save a recording with no frames recorded. Check that you are recording properly or use `vid:reset-recording` to to change the recording format without saving.
 
 ## Terms of Use
 

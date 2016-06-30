@@ -88,4 +88,11 @@ class MP4RecorderTest extends FunSuite {
       intercept[Recorder.NotRecording.type] { recorder.save(tempFile) }
     }
   }
+
+  test("saving with no frames raises Recorder.NoFrames") {
+    new Helper {
+      recorder.start()
+      intercept[Recorder.NoFrames.type] { recorder.save(tempFile) }
+    }
+  }
 }
