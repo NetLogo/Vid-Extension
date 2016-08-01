@@ -222,7 +222,7 @@ Errors:
 * Message `"vid: no selected source"`: There is no currently selected video source. Select a source with `vid:movie-open`, `vid:movie-select`, `vid:camera-open`, or `vid:camera-select`.
 * Message `"vid: invalid dimensions"`: The selected dimensions are invalid (one of the dimensions is zero or negative).
 
-### `vid:set-time *seconds*`
+### <tt>vid:set-time <i>seconds</i></tt>
 
 Sets the time of the current video source to `*seconds*`.
 This has no effect when the current video source is a camera.
