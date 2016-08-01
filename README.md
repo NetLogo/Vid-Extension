@@ -37,6 +37,26 @@ If you would prefer to throw away the recorded frames without saving, use `vid:r
 
 ## Primitives
 
+[`vid:camera-names`](#vidcamera-names),
+[`vid:camera-open`](#vidcamera-open),
+[`vid:camera-select`](#vidcamera-select),
+[`vid:capture-image`](#vidcapture-image),
+[`vid:close`](#vidclose),
+[`vid:hide-player`](#vidhide-player),
+[`vid:movie-open`](#vidmovie-open),
+[`vid:movie-open-remote`](#vidmovie-open-remote),
+[`vid:movie-select`](#vidmovie-select),
+[`vid:record-interface`](#vidrecord-interface),
+[`vid:record-source`](#vidrecord-source),
+[`vid:record-view`](#vidrecord-view),
+[`vid:recorder-status`](#vidrecorder-status),
+[`vid:save-recording`](#vidsave-recording),
+[`vid:set-time`](#vidset-time-seconds),
+[`vid:show-player`](#vidshow-player),
+[`vid:start-recorder`](#vidstart-recorder),
+[`vid:status`](#vidstatus),
+[`vid:stop`](#vidstop)
+
 ### `vid:camera-select`
 
 Prompts the user to select a camera as video source. This command does not error if the user cancels. Use `vid:status` to see if a user selected a camera.
