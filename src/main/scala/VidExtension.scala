@@ -6,8 +6,9 @@ import javafx.embed.swing.JFXPanel
 
 
 object VidExtension {
+  // we use two headless variables. The java one forces headless, the other one says NetLogo would like it if you ran headlessly
   def guiOrHeadless[A](gui: => A, headless: => A): A = {
-    if (System.getProperty("java.awt.headless") == "true") headless
+    if (System.getProperty("java.awt.headless") == "true" || System.getProperty("org.nlogo.preferHeadless") == "true") headless
     else gui
   }
 
