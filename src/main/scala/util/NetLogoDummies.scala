@@ -25,7 +25,7 @@ class FakeArgument(val underlying: AnyRef) extends Argument {
   def getBoolean: java.lang.Boolean = ???
   def getBooleanValue: Boolean = ???
   def getCode: java.util.List[Token] = ???
-  def getCommandTask: org.nlogo.api.CommandTask = ???
+  def getCommand: org.nlogo.api.AnonymousCommand = ???
   def getDoubleValue: Double = underlying match {
     case d: java.lang.Double => d.doubleValue
     case _ => throw new ExtensionException(s"expected a double, got $underlying")
@@ -34,7 +34,7 @@ class FakeArgument(val underlying: AnyRef) extends Argument {
   def getLink: org.nlogo.api.Link = ???
   def getList: LogoList = ???
   def getPatch: org.nlogo.api.Patch = ???
-  def getReporterTask: org.nlogo.api.ReporterTask = ???
+  def getReporter: org.nlogo.api.AnonymousReporter = ???
   def getString: String =
     underlying match {
       case s: String => s
