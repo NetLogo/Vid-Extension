@@ -1,6 +1,6 @@
-import org.nlogo.build.NetLogoExtension
+import org.nlogo.build.{ NetLogoExtension, ExtensionDocumentationPlugin}
 
-enablePlugins(NetLogoExtension)
+enablePlugins(NetLogoExtension, ExtensionDocumentationPlugin)
 
 organization := "org.nlogo"
 
