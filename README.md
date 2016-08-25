@@ -1,3 +1,4 @@
+
 # NetLogo Vid Extension
 
 ## Running
@@ -35,6 +36,27 @@ If you would prefer to throw away the recorded frames without saving, use `vid:r
 
 ## Primitives
 
+[`vid:camera-names`](#vidcamera-names)
+[`vid:camera-open`](#vidcamera-open)
+[`vid:camera-select`](#vidcamera-select)
+[`vid:movie-select`](#vidmovie-select)
+[`vid:movie-open`](#vidmovie-open)
+[`vid:movie-open-remote`](#vidmovie-open-remote)
+[`vid:close`](#vidclose)
+[`vid:start`](#vidstart)
+[`vid:stop`](#vidstop)
+[`vid:status`](#vidstatus)
+[`vid:capture-image`](#vidcapture-image)
+[`vid:set-time`](#vidset-time)
+[`vid:show-player`](#vidshow-player)
+[`vid:hide-player`](#vidhide-player)
+[`vid:record-view`](#vidrecord-view)
+[`vid:record-interface`](#vidrecord-interface)
+[`vid:record-source`](#vidrecord-source)
+[`vid:recorder-status`](#vidrecorder-status)
+[`vid:start-recorder`](#vidstart-recorder)
+[`vid:save-recording`](#vidsave-recording)
+
 
 ### `vid:camera-names`
 
@@ -66,7 +88,7 @@ Errors:
 
 * Message `"vid: no cameras found"`: no cameras are available.
 * Message `"vid: camera "\<name\>" not found"`: if the named camera is not available.
-    
+
 
 
 ### `vid:camera-select`
