@@ -163,7 +163,7 @@ Errors:
 
 * Message `"vid: no movie found"`: The specified URL could not be loaded or errored while loading.
 * Message `"vid: format not supported"`: The file type of the remote movie is not supported.
-* Message `"vid: protocol not supported"`: The movie was at an upsupported URL protocol. Supported protocols are `ftp` and `http`.
+* Message `"vid: protocol not supported"`: The movie was at an unsupported URL protocol. Supported protocols are `ftp` and `http`.
 
 
 
