@@ -27,7 +27,14 @@ class MP4Recorder extends Recorder {
 
   def setResolution(width: Int, height: Int): Unit = {
     if (activeResolution.isEmpty)
-      activeResolution = Some((width, height))
+      activeResolution = Some(roundResolution(width, height))
+  }
+
+  private def roundResolution(width: Int, height: Int): (Int, Int) = {
+    if (width % 2 == 1 && height % 2 == 1) (width + 1, height + 1)
+    else if (width % 2 == 1)               (width + 1, height)
+    else if (height % 2 == 1)              (width,     height + 1)
+    else                                   (width,     height)
   }
 
   def save(dest: Path): Unit = {
@@ -53,12 +60,12 @@ class MP4Recorder extends Recorder {
 
   def recordFrame(image: BufferedImage): Unit = {
     if (activeResolution.isEmpty)
-      activeResolution = Some((image.getWidth, image.getHeight))
+      activeResolution = Some(roundResolution(image.getWidth, image.getHeight))
     if (activeRecording.isDefined)
       activeRecording.foreach { recording =>
         activeResolution.foreach { res =>
           val rgbImage = new BufferedImage(res._1, res._2, BufferedImage.TYPE_INT_RGB)
-          rgbImage.getGraphics.drawImage(image, 0, 0, res._1, res._2, 0, 0, image.getHeight, image.getWidth, null)
+          rgbImage.getGraphics.drawImage(image, 0, 0, res._1, res._2, 0, 0, image.getWidth, image.getHeight, null)
           recording.encodeNativeFrame(AWTUtil.fromBufferedImage(rgbImage))
         }
       }
