@@ -58,7 +58,7 @@ class MP4Recorder extends Recorder {
       activeRecording.foreach { recording =>
         activeResolution.foreach { res =>
           val rgbImage = new BufferedImage(res._1, res._2, BufferedImage.TYPE_INT_RGB)
-          rgbImage.getGraphics.drawImage(image, 0, 0, res._1, res._2, 0, 0, image.getHeight, image.getWidth, null)
+          rgbImage.getGraphics.drawImage(image, 0, 0, res._1, res._2, 0, 0, image.getWidth, image.getHeight, null)
           recording.encodeNativeFrame(AWTUtil.fromBufferedImage(rgbImage))
         }
       }

@@ -46,6 +46,7 @@ class FakeWorkspace extends org.nlogo.api.Workspace {
   // Members declared in org.nlogo.api.RandomServices
   def auxRNG: org.nlogo.api.MersenneTwisterFast = ???
   def mainRNG: org.nlogo.api.MersenneTwisterFast = ???
+  def seedRNGs(seed: Int): Unit = ???
 
   // Members declared in org.nlogo.api.ViewSettings
   def drawSpotlight: Boolean = ???
@@ -70,6 +71,7 @@ class FakeWorkspace extends org.nlogo.api.Workspace {
   def clearTicks(): Unit = ???
   def compilerTestingMode: Boolean = ???
   def dispose(): Unit = ???
+  def getCompilationEnvironment: org.nlogo.core.CompilationEnvironment = ???
   def exportAllPlots(path: String): Unit = ???
   def exportDrawing(path: String,format: String): Unit = ???
   def exportInterface(path: String): Unit = {

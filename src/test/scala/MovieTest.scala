@@ -27,7 +27,7 @@ class MovieTest extends FunSuite with AsyncAssertions {
   val NotFoundMoviePath = "/tmp/notreal"
   val InvalidMoviePath  = "src/test/resources/small.ogv"
 
-  val ValidMovieURL = "http://download.wavetlan.com/SVV/Media/HTTP/H264/Other_Media/H264_test8_voiceclip_mp4_480x320.mp4"
+  val ValidMovieURL = "http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_1mb.mp4"
   val InvalidMovieURL = "http://v2v.cc/~j/samples/failed_vorbis_size.ogv"
   val RssMovieURL = "rss://raw.githubusercontent.com/NetLogo/vid/master/src/test/resources/small.mp4"
   val NotFoundMovieURL = "http://raw.githubusercontent.com/NetLogo/vid/master/src/test/resources/notreal.mp4"
