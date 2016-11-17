@@ -16,7 +16,7 @@ import javafx.embed.swing.SwingFXUtils
 import javafx.event.EventHandler
 import javafx.scene.image.{ Image, ImageView }
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 import util.FunctionToCallback.function2Callable
 
@@ -37,7 +37,7 @@ object Camera extends CameraFactory {
 
   override def cameraNames: Seq[String] =
     withContextClassLoader {
-      Webcam.getWebcams(500, TimeUnit.MILLISECONDS).map(_.getName)
+      Webcam.getWebcams(500, TimeUnit.MILLISECONDS).asScala.map(_.getName)
     }
 
   override def defaultCameraName: Option[String] =
@@ -45,7 +45,7 @@ object Camera extends CameraFactory {
 
   override def open(cameraName: String): Option[VideoSource] =
     withContextClassLoader {
-      Webcam.getWebcams.find(_.getName == cameraName).map(new Camera(_))
+      Webcam.getWebcams.asScala.find(_.getName == cameraName).map(new Camera(_))
     }
 }
 

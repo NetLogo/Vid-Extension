@@ -4,7 +4,7 @@ enablePlugins(NetLogoExtension, ExtensionDocumentationPlugin)
 
 organization := "org.nlogo"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.0"
 
 netLogoExtName := "vid"
 
@@ -24,7 +24,7 @@ libraryDependencies ++= Seq(
   "com.github.sarxos" % "webcam-capture" % "0.3.11",
   "org.jcodec" % "jcodec" % "0.1.9",
   "org.jcodec" % "jcodec-javase" % "0.1.9",
-  "org.scalatest" %% "scalatest" % "2.2.4" % "test"
+  "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 )
 
 isSnapshot := true
