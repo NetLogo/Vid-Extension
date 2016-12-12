@@ -35,7 +35,7 @@ class CaptureImage(vid: VideoSourceContainer) extends Reporter {
     image match {
       case bi: BufferedImage => bi
       case _ =>
-        val bi = new BufferedImage(image.getHeight(null), image.getWidth(null), BufferedImage.TYPE_INT_ARGB)
+        val bi = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB)
 
         val bGr = bi.createGraphics()
         bGr.drawImage(image, 0, 0, null)
