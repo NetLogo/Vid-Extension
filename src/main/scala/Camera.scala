@@ -37,7 +37,7 @@ object Camera extends CameraFactory {
 
   override def cameraNames: Seq[String] =
     withContextClassLoader {
-      Webcam.getWebcams(500, TimeUnit.MILLISECONDS).asScala.map(_.getName)
+      Webcam.getWebcams(1500, TimeUnit.MILLISECONDS).asScala.map(_.getName)
     }
 
   override def defaultCameraName: Option[String] =
