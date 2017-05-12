@@ -44,7 +44,7 @@ object NetLogoSelector extends Selector {
         override def run(): Option[String] =
           try {
             val path =
-              FileDialog.show(frame, "Select a movie to open", JFileChooser.FILES_ONLY)
+              FileDialog.showFiles(frame, "Select a movie to open", JFileChooser.FILES_ONLY)
             Some(path)
           } catch {
             case e: UserCancelException => None
