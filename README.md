@@ -410,7 +410,7 @@ vid:recorder-status ; => "inactive"
 Starts the recorder.
 If the recorder is already running this will cause an error to be raised.
 If desired, a recording width and height can be supplied.
-If height and width are not supplied, they will be determined from the first frame recorded.
+If width and height are not supplied, they will be determined from the first frame recorded.
 
 Example:
 
