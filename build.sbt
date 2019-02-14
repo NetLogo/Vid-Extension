@@ -35,4 +35,4 @@ isSnapshot := true
 // See https://groups.google.com/forum/#!topic/nativelibs4java/WNmOZPknRiU
 fork in Test := true
 
-netLogoVersion := "6.0.2-M1"
+netLogoVersion := "6.0.4-9328ba6"
