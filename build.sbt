@@ -4,7 +4,7 @@ enablePlugins(NetLogoExtension, ExtensionDocumentationPlugin)
 
 organization := "org.nlogo"
 
-scalaVersion := "2.12.0"
+scalaVersion := "2.12.8"
 
 version := "1.0.0"
 
