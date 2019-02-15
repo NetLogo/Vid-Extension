@@ -24,7 +24,7 @@ class MovieTest extends FunSuite with Waiters {
   val NotFoundMoviePath = "/tmp/notreal"
   val InvalidMoviePath  = "src/test/resources/small.ogv"
 
-  val ValidMovieURL = "http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_1mb.mp4"
+  val ValidMovieURL = "https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"
   val InvalidMovieURL = "http://v2v.cc/~j/samples/failed_vorbis_size.ogv"
   val RssMovieURL = "rss://raw.githubusercontent.com/NetLogo/vid/master/src/test/resources/small.mp4"
   val NotFoundMovieURL = "http://raw.githubusercontent.com/NetLogo/vid/master/src/test/resources/notreal.mp4"
