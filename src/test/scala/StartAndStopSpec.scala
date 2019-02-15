@@ -3,7 +3,6 @@ package org.nlogo.extensions.vid
 import org.scalatest.{ FeatureSpec, GivenWhenThen }
 
 class StartAndStopSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
-  import scala.language.reflectiveCalls
 
   feature("Starting and stopping") {
     scenario("no source selected") {

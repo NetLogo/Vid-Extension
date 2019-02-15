@@ -1,9 +1,7 @@
 package org.nlogo.extensions.vid
 
-import org.nlogo.api._
+import org.nlogo.api.{ Argument, Command, Context, ExtensionException }
 import org.nlogo.core.Syntax
-
-import javafx.embed.swing.JFXPanel
 
 class ShowPlayer(player: Player, vidExtension: VideoSourceContainer) extends Command {
   override def getSyntax =

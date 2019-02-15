@@ -1,46 +1,52 @@
 package org.nlogo.extensions.vid.util
 
+import java.awt.image.BufferedImage
+import java.io.File
+import java.lang.{ Boolean => JBoolean, Double => JDouble }
+import java.util.{ List => JList }
+
+import org.nlogo.api.{ Activation, Agent, AgentSet, AnonymousCommand, AnonymousReporter, Argument, Context
+                     , ExtensionException, Link, MersenneTwisterFast, Patch, Turtle, Workspace, World }
 import org.nlogo.core.{ LogoList, Token }
-import org.nlogo.api._
 
 class CurrentDirContext extends Context {
   def attachCurrentDirectory(path: String): String =
-    new java.io.File(path).getCanonicalPath
+    new File(path).getCanonicalPath
   def attachModelDir(filePath: String): String = ???
-  def getAgent: org.nlogo.api.Agent = ???
-  def getDrawing: java.awt.image.BufferedImage = ???
+  def getAgent: Agent = ???
+  def getDrawing: BufferedImage = ???
   def getRNG: MersenneTwisterFast = ???
-  def importPcolors(image: java.awt.image.BufferedImage,asNetLogoColors: Boolean): Unit = ???
+  def importPcolors(image: BufferedImage,asNetLogoColors: Boolean): Unit = ???
   def logCustomGlobals(nameValuePairs: Seq[(String, String)]): Unit = ???
   def logCustomMessage(msg: String): Unit = ???
-  def activation: org.nlogo.api.Activation = ???
-  def workspace: org.nlogo.api.Workspace = ???
-  def world: org.nlogo.api.World = ???
+  def activation: Activation = ???
+  def workspace: Workspace = ???
+  def world: World = ???
 }
 
 class FakeArgument(val underlying: AnyRef) extends Argument {
   def get: AnyRef = ???
-  def getAgent: org.nlogo.api.Agent = ???
-  def getAgentSet: org.nlogo.api.AgentSet = ???
-  def getBoolean: java.lang.Boolean = ???
+  def getAgent: Agent = ???
+  def getAgentSet: AgentSet = ???
+  def getBoolean: JBoolean = ???
   def getBooleanValue: Boolean = ???
-  def getCode: java.util.List[Token] = ???
-  def getCommand: org.nlogo.api.AnonymousCommand = ???
+  def getCode: JList[Token] = ???
+  def getCommand: AnonymousCommand = ???
   def getDoubleValue: Double = underlying match {
-    case d: java.lang.Double => d.doubleValue
+    case d: JDouble => d.doubleValue
     case _ => throw new ExtensionException(s"expected a double, got $underlying")
   }
   def getIntValue: Int = getDoubleValue.toInt
-  def getLink: org.nlogo.api.Link = ???
+  def getLink: Link = ???
   def getList: LogoList = ???
-  def getPatch: org.nlogo.api.Patch = ???
-  def getReporter: org.nlogo.api.AnonymousReporter = ???
+  def getPatch: Patch = ???
+  def getReporter: AnonymousReporter = ???
   def getString: String =
     underlying match {
       case s: String => s
       case _ => throw new ExtensionException(s"expected a string, but got $underlying")
     }
-  def getCodeBlock: java.util.List[org.nlogo.core.Token] = ???
-  def getSymbol: org.nlogo.core.Token = ???
-  def getTurtle: org.nlogo.api.Turtle = ???
+  def getCodeBlock: List[org.nlogo.core.Token] = ???
+  def getSymbol: Token = ???
+  def getTurtle: Turtle = ???
 }

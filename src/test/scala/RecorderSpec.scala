@@ -2,11 +2,9 @@ package org.nlogo.extensions.vid
 
 import java.nio.file.{ Files, Paths }
 
-import org.nlogo.api.ExtensionException
 import org.scalatest.{ FeatureSpec, GivenWhenThen }
 
 class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
-  import scala.language.reflectiveCalls
 
   trait Helpers extends VidSpecHelpers {
     def givenRecorderNotStarted(): Unit = {

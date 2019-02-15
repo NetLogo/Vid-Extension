@@ -1,21 +1,15 @@
 package org.nlogo.extensions.vid
 
-import javax.swing.{ JFrame, SwingUtilities }
-
-import javafx.application.{ Application, Platform }
+import javafx.application.Application
 import javafx.concurrent.Task
-import javafx.scene.{ Group, Scene }
+import javafx.scene.Scene
+import javafx.scene.control.ButtonBuilder
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
-import javafx.scene.control.ButtonBuilder
-import javafx.embed.swing.JFXPanel
 
-import org.nlogo.api._
+import org.nlogo.api.Argument
 
-import scala.App
 import scala.language.existentials
-
-import util.FunctionToCallback.function2Runnable
 
 object RunVid extends App with VideoSourceContainer {
 

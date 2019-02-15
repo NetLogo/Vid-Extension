@@ -1,13 +1,12 @@
 package org.nlogo.extensions.vid
 
+import javafx.embed.swing.JFXPanel
+
 import com.github.sarxos.webcam.Webcam
 
 import org.scalatest.{ BeforeAndAfter, FunSuite }
 
-import org.bridj.Platform
-
 class CameraTest extends FunSuite with BeforeAndAfter {
-  import javafx.embed.swing.JFXPanel
   val _ = new JFXPanel() // init JavaFX
 
   def hasCameras = Camera.cameraNames.nonEmpty
@@ -72,4 +71,3 @@ class CameraTest extends FunSuite with BeforeAndAfter {
     }
   }
 }
-

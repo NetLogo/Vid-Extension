@@ -1,12 +1,8 @@
 package org.nlogo.extensions.vid
 
-import org.scalatest.{ FeatureSpec, GivenWhenThen }
-
-import java.io.{ File => JFile }
-import java.awt.image.BufferedImage
-
 import org.nlogo.core.LogoList
-import org.nlogo.api._
+
+import org.scalatest.{ FeatureSpec, GivenWhenThen }
 
 // this is for all the features which don't justify their own spec yet
 // as features get larger, they should get moved out.

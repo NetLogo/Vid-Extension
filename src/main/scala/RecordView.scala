@@ -2,9 +2,9 @@ package org.nlogo.extensions.vid
 
 import java.awt.image.BufferedImage
 
+import org.nlogo.api.{ Argument, Context, Command, ExtensionException, ReporterRunnable }
 import org.nlogo.core.Syntax
 import org.nlogo.window.GUIWorkspace
-import org.nlogo.api.{ Argument, Context, Command, ExtensionException, ReporterRunnable }
 
 class RecordView(recorder: Recorder) extends Command {
 

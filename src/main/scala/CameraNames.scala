@@ -1,7 +1,7 @@
 package org.nlogo.extensions.vid
 
-import org.nlogo.core.{ LogoList, Syntax }
 import org.nlogo.api.{ Argument, Context, Reporter }
+import org.nlogo.core.{ LogoList, Syntax }
 
 class CameraNames(cameras: CameraFactory) extends Reporter {
   override def getSyntax =

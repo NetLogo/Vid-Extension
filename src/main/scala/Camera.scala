@@ -1,28 +1,22 @@
 package org.nlogo.extensions.vid
 
-import com.github.sarxos.webcam.{ Webcam, WebcamEvent, WebcamListener }
+import com.github.sarxos.webcam.Webcam
 
 import java.util.concurrent.TimeUnit
 
 import java.awt.image.BufferedImage
 import java.awt.Dimension
 
-import javafx.application.Platform
 import javafx.beans.binding.Bindings
 import javafx.beans.value.ObservableValue
-import javafx.geometry.Bounds
 import javafx.concurrent.{ Service, Task, WorkerStateEvent }
 import javafx.embed.swing.SwingFXUtils
 import javafx.event.EventHandler
 import javafx.scene.image.{ Image, ImageView }
 
-import scala.collection.JavaConverters._
-
-import util.FunctionToCallback.function2Callable
-
 trait CameraFactory {
-  def cameraNames:              Seq[String]
-  def defaultCameraName:        Option[String]
+  var cameraNames:              Seq[String]
+  var defaultCameraName:        Option[String]
   def open(cameraName: String): Option[VideoSource]
 }
 
@@ -35,18 +29,23 @@ object Camera extends CameraFactory {
     result
   }
 
-  override def cameraNames: Seq[String] =
+  override var cameraNames: Seq[String] = {
+    import scala.collection.JavaConverters.collectionAsScalaIterableConverter
     withContextClassLoader {
-      Webcam.getWebcams(1500, TimeUnit.MILLISECONDS).asScala.map(_.getName)
+      Webcam.getWebcams(1500, TimeUnit.MILLISECONDS).asScala.toSeq.map(_.getName)
     }
+  }
 
-  override def defaultCameraName: Option[String] =
+  override var defaultCameraName: Option[String] =
     cameraNames.headOption
 
-  override def open(cameraName: String): Option[VideoSource] =
+  override def open(cameraName: String): Option[VideoSource] = {
+    import scala.collection.JavaConverters.collectionAsScalaIterableConverter
     withContextClassLoader {
-      Webcam.getWebcams.asScala.find(_.getName == cameraName).map(new Camera(_))
+      Webcam.getWebcams.asScala.toSeq.find(_.getName == cameraName).map(new Camera(_))
     }
+  }
+
 }
 
 class Camera(val webcam: Webcam) extends VideoSource {
@@ -85,7 +84,7 @@ class Camera(val webcam: Webcam) extends VideoSource {
     }
   }
 
-  private def cameraNode(enforcedBounds: Option[(Double, Double)] = None): BoundedNode = {
+  private def cameraNode(enforcedBounds: Option[(Double, Double)]): BoundedNode = {
     val imageView = new ImageView()
     enforcedBounds.foreach {
       case (w, h) =>

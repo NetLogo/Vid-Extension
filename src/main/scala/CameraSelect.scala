@@ -1,7 +1,7 @@
 package org.nlogo.extensions.vid
 
-import org.nlogo.core.Syntax
 import org.nlogo.api.{ Argument, Command, Context, ExtensionException }
+import org.nlogo.core.Syntax
 
 class CameraSelect(videoContainer: VideoSourceContainer, cameras: CameraFactory, selector: Selector) extends Command {
   override def getSyntax = Syntax.commandSyntax(List[Int]())

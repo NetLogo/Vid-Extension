@@ -1,6 +1,6 @@
 package org.nlogo.extensions.vid
 
-import org.nlogo.api._
+import org.nlogo.api.{ Argument, Context, Command, ExtensionException }
 import org.nlogo.core.Syntax
 
 class MovieSelect(videoSourceContainer: VideoSourceContainer, movies: MovieFactory, selector: Selector) extends Command {

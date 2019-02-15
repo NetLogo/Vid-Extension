@@ -5,7 +5,6 @@ import java.awt.image.BufferedImage
 import org.scalatest.{ FeatureSpec, GivenWhenThen }
 
 class CaptureImageSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
-  import scala.language.reflectiveCalls
 
   feature("capture-image") {
     scenario("capture-image errors when no movie") {

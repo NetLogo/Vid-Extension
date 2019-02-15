@@ -1,24 +1,19 @@
 package org.nlogo.extensions.vid
 
+import javax.swing.JFileChooser
+
+import org.nlogo.api.ReporterRunnable
+import org.nlogo.app.App
+import org.nlogo.awt.UserCancelException
+import org.nlogo.core.I18N
+import org.nlogo.swing.{ FileDialog, OptionDialog }
+
 trait Selector {
   def selectOneOf(choices: Seq[String]): Option[String]
   def selectFile: Option[String]
 }
 
 object NetLogoSelector extends Selector {
-  import javax.swing.JFileChooser
-
-  import org.nlogo.api.ReporterRunnable
-  import org.nlogo.app.App
-  import org.nlogo.awt.UserCancelException
-  import org.nlogo.awt.EventQueue.invokeLater
-  import org.nlogo.core.I18N
-  import org.nlogo.swing.{ FileDialog, OptionDialog }
-  import org.nlogo.window.GUIWorkspace
-
-  import scala.concurrent.SyncVar
-
-  import util.FunctionToCallback.function2Runnable
 
   val frame = App.app.frame
   def workspace = App.app.workspace

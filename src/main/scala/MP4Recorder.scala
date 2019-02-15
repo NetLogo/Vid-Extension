@@ -1,11 +1,10 @@
 package org.nlogo.extensions.vid
 
-import java.io.{ File, FileNotFoundException }
-import java.nio.file.{ Files, Path, StandardCopyOption },
-  StandardCopyOption.REPLACE_EXISTING
 import java.awt.image.BufferedImage
+import java.io.FileNotFoundException
+import java.nio.file.{ Files, Path }
+import java.nio.file.StandardCopyOption.REPLACE_EXISTING
 
-import org.jcodec.common.model.{ ColorSpace, Picture }
 import org.jcodec.api.SequenceEncoder
 import org.jcodec.scale.AWTUtil
 

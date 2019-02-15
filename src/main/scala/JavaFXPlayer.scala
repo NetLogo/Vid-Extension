@@ -2,19 +2,17 @@ package org.nlogo.extensions.vid
 
 import java.awt.Dimension
 import java.awt.event.{ WindowAdapter, WindowEvent }
-import java.lang.{ Number => JNumber }
 
 import javafx.application.Platform
 import javafx.beans.binding.Bindings
 import javafx.beans.value.{ ChangeListener, ObservableValue }
 import javafx.embed.swing.JFXPanel
-import javafx.geometry.Bounds
 import javafx.scene.{ Group, Scene }
 import javafx.scene.shape.Rectangle
 
 import javax.swing.{ JFrame, SwingUtilities }
 
-import util.FunctionToCallback.{ function2Callable, function2Runnable, function2ChangeListener }
+import util.FunctionToCallback.function2ChangeListener
 
 class JavaFXPlayer extends Player {
   new JFXPanel() // init JavaFX

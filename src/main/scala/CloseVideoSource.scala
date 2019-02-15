@@ -1,7 +1,7 @@
 package org.nlogo.extensions.vid
 
-import org.nlogo.core.Syntax
 import org.nlogo.api.{ Argument, Command, Context }
+import org.nlogo.core.Syntax
 
 class CloseVideoSource(vid: VideoSourceContainer) extends Command {
   override def getSyntax = Syntax.commandSyntax(List())

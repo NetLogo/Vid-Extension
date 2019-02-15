@@ -1,10 +1,10 @@
 package org.nlogo.extensions.vid
 
-import java.nio.file.{ Files, Paths }
 import java.io.FileNotFoundException
+import java.nio.file.Paths
 
-import org.nlogo.core.Syntax
 import org.nlogo.api.{ Argument, Context, Command, ExtensionException }
+import org.nlogo.core.Syntax
 
 class SaveRecording(recorder: Recorder) extends Command {
 

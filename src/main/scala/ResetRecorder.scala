@@ -1,7 +1,7 @@
 package org.nlogo.extensions.vid
 
-import org.nlogo.core.Syntax
 import org.nlogo.api.{ Argument, Context, Command }
+import org.nlogo.core.Syntax
 
 class ResetRecorder(recorder: Recorder) extends Command {
 

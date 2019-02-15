@@ -1,26 +1,23 @@
 package org.nlogo.extensions.vid
 
-import org.scalatest.FunSuite
-import org.scalatest.concurrent.AsyncAssertions
-import org.scalatest.time.{ Millis, Span }
-
-import java.io.File
-import java.nio.file.Files
-import javafx.util.Duration
-
 import java.awt.image.BufferedImage
-import java.util.Arrays
+import java.io.File
 
-import javafx.scene.Scene
-import javafx.scene.media.{ Media, MediaException, MediaPlayer },
-  MediaPlayer.{ Status => MPStatus }
+import javafx.embed.swing.JFXPanel
+import javafx.scene.media.{ Media, MediaPlayer }
+import javafx.scene.media.MediaPlayer.{ Status => MPStatus }
+import javafx.util.Duration
 
 import scala.concurrent.Channel
 
-import util.FunctionToCallback.{ function2Runnable, function2ChangeListener }
+import org.scalatest.FunSuite
+import org.scalatest.concurrent.Waiters
+import org.scalatest.time.{ Millis, Span }
 
-class MovieTest extends FunSuite with AsyncAssertions {
-  import javafx.embed.swing.JFXPanel
+import util.FunctionToCallback.function2ChangeListener
+
+class MovieTest extends FunSuite with Waiters {
+
   val _ = new JFXPanel() // init JavaFX
 
   val ValidMoviePath    = "src/test/resources/small.mp4"
@@ -40,8 +37,12 @@ class MovieTest extends FunSuite with AsyncAssertions {
     val movie = new Movie(media, mediaPlayer)
 
     def expectTransition(status: MPStatus, w: Waiter) =
-      mediaPlayer.statusProperty.addListener((_: MPStatus, newStatus: MPStatus) =>
-          if (newStatus == status) w.dismiss())
+      mediaPlayer.statusProperty.addListener(
+        function2ChangeListener {
+          (_: MPStatus, newStatus: MPStatus) =>
+            if (newStatus == status) w.dismiss()
+        }
+      )
 
     if (! (mediaPlayer.getStatus == MediaPlayer.Status.READY))
       isReady.read
@@ -115,8 +116,12 @@ class MovieTest extends FunSuite with AsyncAssertions {
     new MovieFixture {
       val w = new Waiter()
       assert(! movie.isPlaying)
-      mediaPlayer.statusProperty.addListener((oldStatus: MediaPlayer.Status, newStatus: MediaPlayer.Status) =>
-          if (newStatus == MediaPlayer.Status.PLAYING) movie.stop())
+      mediaPlayer.statusProperty.addListener(
+        function2ChangeListener {
+          (oldStatus: MediaPlayer.Status, newStatus: MediaPlayer.Status) =>
+            if (newStatus == MediaPlayer.Status.PLAYING) movie.stop()
+        }
+      )
       movie.play()
       expectTransition(MPStatus.PAUSED, w)
       w.await(timeout(Span(100, Millis)), dismissals(1))
@@ -145,6 +150,7 @@ class MovieTest extends FunSuite with AsyncAssertions {
       val expectedOutput = new java.io.FileInputStream(new File("src/test/resources/captured-image.png"))
 
       class VerifyingOutputStream extends java.io.OutputStream {
+
         var position: Int = 0
 
         val IMAGE_SIZE = 179775 // if the image ever changes, this should also change

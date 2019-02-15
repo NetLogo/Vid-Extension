@@ -1,9 +1,6 @@
 package org.nlogo.extensions.vid
 
-import org.nlogo.api._
-
-import javafx.embed.swing.JFXPanel
-
+import org.nlogo.api.{ DefaultClassManager, ExtensionManager, PrimitiveManager }
 
 object VidExtension {
   // we use two headless variables. The java one forces headless, the other one says NetLogo would like it if you ran headlessly

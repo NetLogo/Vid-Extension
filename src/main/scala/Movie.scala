@@ -5,19 +5,18 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.lang.{ Void => JVoid }
 
-import javafx.embed.swing.SwingFXUtils
 import javafx.application.Platform
 import javafx.beans.binding.Bindings
 import javafx.beans.value.{ ChangeListener, ObservableValue }
+import javafx.embed.swing.SwingFXUtils
 import javafx.scene.{ Group, Scene, SnapshotResult }
-import javafx.scene.image.WritableImage
-import javafx.scene.media.{ Media, MediaException, MediaPlayer, MediaView },
-  MediaPlayer.Status.UNKNOWN
+import javafx.scene.media.{ Media, MediaException, MediaPlayer, MediaView }
+import javafx.scene.media.MediaPlayer.Status.UNKNOWN
 import javafx.util.{ Callback, Duration }
 
 import scala.concurrent.Channel
 
-import util.FunctionToCallback.{ function2Callable, function2Runnable, function2ChangeListener }
+import util.FunctionToCallback.function2ChangeListener
 
 trait MovieFactory {
   // throws InvalidFormatException when the filePath points to a file
@@ -90,9 +89,11 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
     }
 
     val listener: ChangeListener[MediaPlayer.Status] = {
-      (oldStatus: MediaPlayer.Status, newStatus: MediaPlayer.Status) =>
-        if (newStatus != UNKNOWN)
-          openException.write(None)
+      function2ChangeListener {
+        (oldStatus: MediaPlayer.Status, newStatus: MediaPlayer.Status) =>
+          if (newStatus != UNKNOWN)
+            openException.write(None)
+      }
     }
 
     mediaPlayer.statusProperty.addListener(listener)
@@ -130,7 +131,7 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
     chan.read
   }
 
-  private def movieNode(bounds: Option[(Double, Double)] = None): BoundedNode = {
+  private def movieNode(bounds: Option[(Double, Double)]): BoundedNode = {
     val mediaView = new MediaView(mediaPlayer)
     bounds.foreach {
       case (w, h) =>

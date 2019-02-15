@@ -1,10 +1,7 @@
 package org.nlogo.extensions.vid
 
-import java.nio.file.Files
-import javax.imageio.ImageIO
-
-import org.nlogo.core.Syntax
 import org.nlogo.api.{ Argument, Context, Command, ExtensionException }
+import org.nlogo.core.Syntax
 
 class RecordSource(recorder: Recorder, vid: VideoSourceContainer) extends Command {
 

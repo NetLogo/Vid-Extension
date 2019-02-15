@@ -1,11 +1,8 @@
 package org.nlogo.extensions.vid
 
 import java.awt.image.BufferedImage
-import java.awt.Dimension
 
-import javafx.scene.{ Group, Scene }
 import javafx.scene.shape.Rectangle
-import javafx.beans.value.ObservableValue
 
 import org.scalatest.{ FeatureSpec, GivenWhenThen }
 
@@ -76,10 +73,8 @@ trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
     }
 
     val cameraFactory = new CameraFactory {
-      var cameraNames = Seq("camera")
-
-      var defaultCameraName: Option[String] = cameraNames.headOption
-
+      override var cameraNames = Seq("camera")
+      override var defaultCameraName: Option[String] = cameraNames.headOption
       override def open(cameraName: String): Option[VideoSource] = {
         cameraName match {
           case "camera" => Some(dummyCamera)
@@ -176,7 +171,6 @@ class DummyRecorder extends Recorder {
 }
 
 class DummyPlayer extends Player {
-  import javafx.scene.Scene
 
   var activeNode: BoundedNode = null
   def boundedSize = Option(activeNode).flatMap(_.enforcedBounds)

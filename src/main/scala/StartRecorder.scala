@@ -1,7 +1,7 @@
 package org.nlogo.extensions.vid
 
-import org.nlogo.core.Syntax
 import org.nlogo.api.{ Argument, Context, Command, ExtensionException }
+import org.nlogo.core.Syntax
 
 class StartRecorder(recorder: Recorder) extends Command {
 

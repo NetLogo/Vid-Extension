@@ -3,7 +3,6 @@ package org.nlogo.extensions.vid
 import org.scalatest.{ FeatureSpec, GivenWhenThen }
 
 class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
-  import scala.language.reflectiveCalls
 
   feature("show-player") {
     scenario("player can be hidden even if it has not been shown") {

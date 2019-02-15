@@ -3,7 +3,6 @@ package org.nlogo.extensions.vid
 import org.scalatest.{ FeatureSpec, GivenWhenThen }
 
 class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
-  import scala.language.reflectiveCalls
 
   feature("opening and closing") {
     scenario("no movie open") {

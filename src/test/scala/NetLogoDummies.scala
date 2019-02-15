@@ -58,7 +58,7 @@ class FakeWorkspace extends org.nlogo.api.Workspace {
   def viewOffsetX: Double = ???
   def viewOffsetY: Double = ???
   def viewWidth: Double = ???
-  
+
   // Members declared in org.nlogo.api.Workspace
   def behaviorSpaceRunNumber(n: Int): Unit = ???
   def behaviorSpaceRunNumber: Int = ???
@@ -84,6 +84,7 @@ class FakeWorkspace extends org.nlogo.api.Workspace {
   def exportWorld(path: String): Unit = ???
   def getAndCreateDrawing(): java.awt.image.BufferedImage = ???
   def getExtensionManager: org.nlogo.api.ExtensionManager = ???
+  def getLibraryManager: org.nlogo.api.LibraryManager = ???
   def getModelDir: String = ???
   def getModelFileName: String = ???
   def getModelPath: String = ???
@@ -92,8 +93,8 @@ class FakeWorkspace extends org.nlogo.api.Workspace {
   def importWorld(path: String): Unit = ???
   def importWorld(reader: java.io.Reader): Unit = ???
   def lastLogoException: org.nlogo.api.LogoException = ???
-  def open(modelPath: String): Unit = ???
-  def openModel(model: org.nlogo.core.Model): Unit = ???
+  def open(modelPath: String, shouldAutoInstallLibs: Boolean = false): Unit = ???
+  def openModel(model: org.nlogo.core.Model, shouldAutoInstallLibs: Boolean = false): Unit = ???
   def outputObject(obj: AnyRef,owner: AnyRef,addNewline: Boolean,readable: Boolean,destination: org.nlogo.api.OutputDestination): Unit = ???
   def patchSize: Double = ???
   def plotManager: AnyRef = ???

@@ -1,7 +1,7 @@
 package org.nlogo.extensions.vid
 
-import org.nlogo.core.Syntax
 import org.nlogo.api.{ Argument, Command, Context, ExtensionException }
+import org.nlogo.core.Syntax
 
 class CameraOpen(vid: VideoSourceContainer, cameras: CameraFactory) extends Command {
   override def getSyntax =

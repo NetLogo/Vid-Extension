@@ -1,9 +1,11 @@
 package org.nlogo.extensions.vid
 
-import scala.language.dynamics
-
+import org.nlogo.api.{ Argument, Command, PrimitiveManager, Reporter }
 import org.nlogo.core.Primitive
-import org.nlogo.api._
+
+import util.FakeArgument
+
+import scala.language.dynamics
 
 class CommandPrimitiveLoader extends PrimitiveManager with Dynamic {
   var commands  = Map[String, Command]()
@@ -17,7 +19,7 @@ class CommandPrimitiveLoader extends PrimitiveManager with Dynamic {
   }
 
   def applyDynamic(name: String)(args: AnyRef*): AnyRef = {
-    val arguments = args.map(v => new util.FakeArgument(v).asInstanceOf[Argument]).toArray
+    val arguments = args.map(v => new FakeArgument(v).asInstanceOf[Argument]).toArray
     val context = new FakeContext()
     commands.get(name).map(cmd => { cmd.perform(arguments, context); null }).orElse(
       reporters.get(name).map(rep => rep.report(arguments, context))).getOrElse(

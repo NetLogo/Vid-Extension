@@ -1,9 +1,10 @@
 package org.nlogo.extensions.vid
 
-import org.nlogo.api._
-import org.nlogo.core.Syntax
-import java.awt.image.BufferedImage
 import java.awt.{ Image => JImage }
+import java.awt.image.BufferedImage
+
+import org.nlogo.api.{ Argument, Context, ExtensionException, Reporter }
+import org.nlogo.core.Syntax
 
 class CaptureImage(vid: VideoSourceContainer) extends Reporter {
   override def getSyntax = Syntax.reporterSyntax(
