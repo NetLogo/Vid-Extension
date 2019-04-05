@@ -6,7 +6,7 @@ organization := "org.nlogo"
 
 scalaVersion := "2.12.8"
 
-version := "1.0.0"
+version := "1.0.1"
 
 netLogoExtName := "vid"
 
@@ -35,4 +35,4 @@ isSnapshot := true
 // See https://groups.google.com/forum/#!topic/nativelibs4java/WNmOZPknRiU
 fork in Test := true
 
-netLogoVersion := "6.0.4-9328ba6"
+netLogoVersion := "6.1.0-RC1"
