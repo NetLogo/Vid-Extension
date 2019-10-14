@@ -32,6 +32,7 @@ class FakeArgument(val underlying: AnyRef) extends Argument {
   def getBooleanValue: Boolean = ???
   def getCode: JList[Token] = ???
   def getCommand: AnonymousCommand = ???
+  def getDouble: JDouble = ???
   def getDoubleValue: Double = underlying match {
     case d: JDouble => d.doubleValue
     case _ => throw new ExtensionException(s"expected a double, got $underlying")
