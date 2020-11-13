@@ -4,7 +4,7 @@ enablePlugins(NetLogoExtension, ExtensionDocumentationPlugin)
 
 organization := "org.nlogo"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.12.12"
 
 version := "1.0.1"
 
@@ -17,10 +17,21 @@ netLogoZipSources := false
 netLogoTarget :=
   NetLogoExtension.directoryTarget(baseDirectory.value)
 
-scalacOptions ++=
-  "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -Xlint -Xfatal-warnings".split(" ").toSeq
+scalacOptions ++= Seq(
+  "-deprecation",
+  "-unchecked",
+  "-feature",
+  "-Xcheckinit",
+  "-encoding",
+  // We're using a deprecated method `ButtonBuilder()` which will be
+  // removed in JDK 9, so we need to update the code in RunVid.scala.
+  // Aaron B November 2020
+  // "-Xfatal-warnings"
+  "us-ascii",
+  "-Xlint"
+)
 
-resolvers += "Sonatype OSS Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies ++= Seq(
   "com.github.sarxos" % "webcam-capture" % "0.3.11",
@@ -29,10 +40,8 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 )
 
-isSnapshot := true
-
 // necessary for testing camera functionality.
 // See https://groups.google.com/forum/#!topic/nativelibs4java/WNmOZPknRiU
 fork in Test := true
 
-netLogoVersion := "6.1.0-RC1"
+netLogoVersion := "6.1.1-c82c397"
