@@ -23,11 +23,11 @@ scalacOptions ++= Seq(
   "-feature",
   "-Xcheckinit",
   "-encoding",
+  "us-ascii",
   // We're using a deprecated method `ButtonBuilder()` which will be
   // removed in JDK 9, so we need to update the code in RunVid.scala.
   // Aaron B November 2020
   // "-Xfatal-warnings"
-  "us-ascii",
   "-Xlint"
 )
 
