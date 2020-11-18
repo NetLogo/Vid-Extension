@@ -24,3 +24,7 @@ The recorder status is "inactive" until started with `vid:start-recorder`, which
 While the recorder is "recording" the `vid:record-view`, `vid:record-interface`, and `vid:record-source` can be used to save frames to the recording.
 You can choose to save the recording while recording using `vid:save-recording` which saves the movie to the specified file and reset the recording status to "inactive".
 If you would prefer to throw away the recorded frames without saving, use `vid:reset-recorder`.
+
+### Known Issues
+
+When running the extension on macOS and using `vid:camera-open` or `vid:camera-select` and then starting a different program (like Zoom) and using the same camera will crash NetLogo.  If you start the other program first and then start NetLogo things should work better.
