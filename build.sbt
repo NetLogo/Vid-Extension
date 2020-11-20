@@ -6,7 +6,7 @@ organization := "org.nlogo"
 
 scalaVersion := "2.12.12"
 
-version := "1.0.1"
+version := "1.0.2"
 
 netLogoExtName := "vid"
 
