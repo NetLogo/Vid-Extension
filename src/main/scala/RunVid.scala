@@ -3,13 +3,11 @@ package org.nlogo.extensions.vid
 import javafx.application.Application
 import javafx.concurrent.Task
 import javafx.scene.Scene
-import javafx.scene.control.ButtonBuilder
+import javafx.scene.control.Button
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
 
 import org.nlogo.api.Argument
-
-import scala.language.existentials
 
 object RunVid extends App with VideoSourceContainer {
 
@@ -41,34 +39,35 @@ object RunVid extends App with VideoSourceContainer {
     { () => new SaveRecording(recorder).perform(Array[Argument](new util.FakeArgument("testrecording.mp4")), context) }
     )
 
-  class MyApp extends Application {
-    import javafx.event.{ ActionEvent, EventHandler }
-    override def start(stage: Stage): Unit = {
-      val buttons = commandOptions.map {
-        case (name, actionThunk) =>
-          val bb = ButtonBuilder.create()
-          bb.text(name)
-            .onAction(new EventHandler[ActionEvent] {
-              def handle(ev: ActionEvent): Unit = {
-                val task = new Task[Unit] {
-                  override def call(): Unit = {
-                    actionThunk()
+    class MyApp extends Application {
+      import javafx.event.{ ActionEvent, EventHandler }
+      override def start(stage: Stage): Unit = {
+        val buttons: Seq[Button] = commandOptions.map {
+          case (name: String, actionThunk: (() => Unit)) => {
+            val button = new Button(name)
+            button.setOnAction(
+              new EventHandler[ActionEvent] {
+                def handle(ev: ActionEvent): Unit = {
+                  val task = new Task[Unit] {
+                    override def call(): Unit = {
+                      actionThunk()
+                    }
                   }
-                }
-                val th = new Thread(task)
-                th.setDaemon(true)
-                th.start()
-              }
-            })
-            .build()
-      }.toSeq
+                  val th = new Thread(task)
+                  th.setDaemon(true)
+                  th.start()
+                }  // end handle
+              }) // end setOnAction
+              button
+            } // end case
+          }.toSeq //end map
 
-      val vbox = new VBox()
-      vbox.getChildren.addAll(buttons: _*)
-      stage.setScene(new Scene(vbox))
-      stage.show()
-    }
-  }
+          val vbox = new VBox()
+          vbox.getChildren.addAll(buttons: _*)
+          stage.setScene(new Scene(vbox))
+          stage.show()
+        }  // end start
+      }
 
   def closeSource(): Unit = {
     _videoSource.foreach(_.close())
