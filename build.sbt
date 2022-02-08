@@ -3,7 +3,7 @@ import org.nlogo.build.{ NetLogoExtension, ExtensionDocumentationPlugin}
 enablePlugins(NetLogoExtension, ExtensionDocumentationPlugin)
 
 organization := "org.nlogo"
-scalaVersion := "2.12.12"
+scalaVersion := "2.12.15"
 version      := "1.1.2"
 isSnapshot   := true
 
@@ -14,10 +14,7 @@ scalacOptions ++= Seq(
   "-Xcheckinit",
   "-encoding",
   "us-ascii",
-  // We're using a deprecated method `ButtonBuilder()` which will be
-  // removed in JDK 9, so we need to update the code in RunVid.scala.
-  // Aaron B November 2020
-  // "-Xfatal-warnings"
+  "-Xfatal-warnings",
   "-Xlint"
 )
 
@@ -64,3 +61,21 @@ libraryDependencies ++= Seq(
 // necessary for testing camera functionality.
 // See https://groups.google.com/forum/#!topic/nativelibs4java/WNmOZPknRiU
 fork in Test := true
+
+resolvers      += "netlogo" at "https://dl.cloudsmith.io/public/netlogo/netlogo/maven/"
+netLogoVersion := "6.2.0-d27b502"
+isSnapshot := true
+
+// Add JavaFX dependencies
+val javaFXVersion = "17.0.1"
+libraryDependencies ++= {
+  // Determine OS version of JavaFX binaries
+  lazy val osName = System.getProperty("os.name") match {
+    case n if n.startsWith("Linux") => "linux"
+    case n if n.startsWith("Mac") => "mac"
+    case n if n.startsWith("Windows") => "win"
+    case _ => throw new Exception("Unknown platform!")
+  }
+  Seq("base", "controls", "fxml", "graphics", "media", "swing", "web")
+    .map(m => "org.openjfx" % s"javafx-$m" % javaFXVersion classifier osName)
+}
