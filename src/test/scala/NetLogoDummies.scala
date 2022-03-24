@@ -98,6 +98,7 @@ class FakeWorkspace extends org.nlogo.api.Workspace {
   def outputObject(obj: AnyRef,owner: AnyRef,addNewline: Boolean,readable: Boolean,destination: org.nlogo.api.OutputDestination): Unit = ???
   def patchSize: Double = ???
   def plotManager: AnyRef = ???
+  def realPlotManager: PlotManagerInterface = ???
   def previewCommands: org.nlogo.api.PreviewCommands = ???
   def profilingEnabled: Boolean = ???
   def renderer: org.nlogo.api.RendererInterface = ???

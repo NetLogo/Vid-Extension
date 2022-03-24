@@ -4,13 +4,14 @@ import java.awt.image.BufferedImage
 
 import javafx.scene.shape.Rectangle
 
-import org.scalatest.{ FeatureSpec, GivenWhenThen }
+import org.scalatest.GivenWhenThen
+import org.scalatest.featurespec.AnyFeatureSpec
 
 import org.nlogo.api.ExtensionException
 
 import scala.language.dynamics
 
-trait VidHelpers { suite: FeatureSpec with GivenWhenThen =>
+trait VidHelpers { suite: AnyFeatureSpec with GivenWhenThen =>
   trait VidSpecHelpers extends WithLoadedVidExtension {
 
     class GivenWhenThenAndRunner(backing: CommandPrimitiveLoader, gwta: (String) => Unit) extends Dynamic {

@@ -1,31 +1,32 @@
 package org.nlogo.extensions.vid
 
-import org.scalatest.{ FeatureSpec, GivenWhenThen }
+import org.scalatest.GivenWhenThen
+import org.scalatest.featurespec.AnyFeatureSpec
 
-class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
+class OpenAndCloseSpec extends AnyFeatureSpec with GivenWhenThen with VidHelpers {
 
-  feature("opening and closing") {
-    scenario("no movie open") {
+  Feature("opening and closing") {
+    Scenario("no movie open") {
       new VidSpecHelpers {
         thenStatusShouldBe("inactive")
       }
     }
 
-    scenario("opens a movie") {
+    Scenario("opens a movie") {
       new VidSpecHelpers {
         whenIRun.`movie-open`("foobar.mp4")
         thenStatusShouldBe("stopped")
       }
     }
 
-    scenario("opens a movie at an absolute path") {
+    Scenario("opens a movie at an absolute path") {
       new VidSpecHelpers {
         whenIRun.`movie-open`("/tmp/foobar.mp4")
         thenStatusShouldBe("stopped")
       }
     }
 
-    scenario("opening a new source closes the first source") {
+    Scenario("opening a new source closes the first source") {
       new VidSpecHelpers {
         givenOpenMovie()
         whenIRun.`camera-open`("camera")
@@ -35,14 +36,14 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("opens movie from a remote source") {
+    Scenario("opens movie from a remote source") {
       new VidSpecHelpers {
         whenIRun.`movie-open-remote`("http://example.org/somevideo.mp4")
         thenStatusShouldBe("stopped")
       }
     }
 
-    scenario("attempt opening not found movie from remote source") {
+    Scenario("attempt opening not found movie from remote source") {
       new VidSpecHelpers with ExpectError {
         whenRunForError("""vid:movie-open-remote "http://example.org/notfound.mp4"""",
           vid.`movie-open-remote`("http://example.org/notfound.mp4"))
@@ -50,7 +51,7 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("attempt opening invalid movie type from remote source") {
+    Scenario("attempt opening invalid movie type from remote source") {
       new VidSpecHelpers with ExpectError {
         whenRunForError("""vid:movie-open-remote "http://example.org/somevideo.ogv"""",
           vid.`movie-open-remote`("http://example.org/somevideo.ogv"))
@@ -58,7 +59,7 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("attempt opening invalid movie protocol from remote source") {
+    Scenario("attempt opening invalid movie protocol from remote source") {
       new VidSpecHelpers with ExpectError {
         whenRunForError("""vid:movie-open-remote "https://example.org/somevideo.mp4"""",
           vid.`movie-open-remote`("https://example.org/somevideo.mp4"))
@@ -66,14 +67,14 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("open a camera") {
+    Scenario("open a camera") {
       new VidSpecHelpers {
         whenIRun.`camera-open`("camera")
         thenStatusShouldBe("playing")
       }
     }
 
-    scenario("open a camera that doesn't exist") {
+    Scenario("open a camera that doesn't exist") {
       new VidSpecHelpers with ExpectError {
         whenRunForError("""vid:camera-open "nocamera"""",
           vid.`camera-open`("nocamera"))
@@ -82,14 +83,14 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("opens a default camera") {
+    Scenario("opens a default camera") {
       new VidSpecHelpers {
         whenIRun.`camera-open`()
         thenStatusShouldBe("playing")
       }
     }
 
-    scenario("tries to open a default camera when none available") {
+    Scenario("tries to open a default camera when none available") {
       new VidSpecHelpers with ExpectError {
         Given("there are no cameras available")
         cameraFactory.defaultCameraName = None
@@ -99,7 +100,7 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("closes an opened movie") {
+    Scenario("closes an opened movie") {
       new VidSpecHelpers {
         givenOpenMovie()
         whenIRun.close()
@@ -108,7 +109,7 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("cannot find movie") {
+    Scenario("cannot find movie") {
       new VidSpecHelpers with ExpectError {
         whenRunForError("""vid:movie-open "not-real.mp4"""",
           vid.`movie-open`("not-real.mp4"))
@@ -117,7 +118,7 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("movie has invalid format") {
+    Scenario("movie has invalid format") {
       new VidSpecHelpers with ExpectError {
         whenRunForError("""vid:movie-open "unsupported.ogg"""",
           vid.`movie-open`("unsupported.ogg"))
@@ -126,7 +127,7 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("camera-select when no cameras available") {
+    Scenario("camera-select when no cameras available") {
       new VidSpecHelpers with ExpectError {
         Given("There are no available cameras")
         cameraFactory.cameraNames = Seq()
@@ -135,7 +136,7 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("camera-select selects available camera") {
+    Scenario("camera-select selects available camera") {
       new VidSpecHelpers {
         When("I run vid:camera-select")
         And("I select a camera")
@@ -147,7 +148,7 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("camera doesn't open if I don't select a camera") {
+    Scenario("camera doesn't open if I don't select a camera") {
       new VidSpecHelpers {
         When("I run vid:camera-select")
         And("I do not select a camera")
@@ -158,7 +159,7 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("movie select doesn't open a movie if user doesn't select one") {
+    Scenario("movie select doesn't open a movie if user doesn't select one") {
       new VidSpecHelpers {
         When("I run vid:movie-select")
         And("I do not select a movie")
@@ -169,7 +170,7 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("movie select opens a movie when selected") {
+    Scenario("movie select opens a movie when selected") {
       new VidSpecHelpers {
         When("I run vid:movie-select")
         And("I select a movie")
@@ -180,7 +181,7 @@ class OpenAndCloseSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("movie select errors if a user selects a bad format") {
+    Scenario("movie select errors if a user selects a bad format") {
       new VidSpecHelpers with ExpectError {
         selector.select("/currentdir/unsupported.ogg")
         whenRunForError("vid:movie-select", vid.`movie-select`())

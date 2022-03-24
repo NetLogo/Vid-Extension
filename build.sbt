@@ -3,19 +3,9 @@ import org.nlogo.build.{ NetLogoExtension, ExtensionDocumentationPlugin}
 enablePlugins(NetLogoExtension, ExtensionDocumentationPlugin)
 
 organization := "org.nlogo"
-
 scalaVersion := "2.12.12"
-
-version := "1.0.2"
-
-netLogoExtName := "vid"
-
-netLogoClassManager := "org.nlogo.extensions.vid.VidExtension"
-
-netLogoZipSources := false
-
-netLogoTarget :=
-  NetLogoExtension.directoryTarget(baseDirectory.value)
+version      := "1.0.2"
+isSnapshot   := true
 
 scalacOptions ++= Seq(
   "-deprecation",
@@ -31,68 +21,45 @@ scalacOptions ++= Seq(
   "-Xlint"
 )
 
-resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+netLogoExtName      := "vid"
+netLogoClassManager := "org.nlogo.extensions.vid.VidExtension"
+netLogoVersion      := "6.2.2"
+netLogoZipSources   := false
 
-resolvers += "bridjhack" at "https://maven.ecs.soton.ac.uk/content/repositories/thirdparty/"
+resolvers += "OpenImaj Snapshots" at "https://maven.ecs.soton.ac.uk/content/repositories/openimaj-snapshots/"
+resolvers += "OpenImaj Maven" at "https://maven.ecs.soton.ac.uk/content/groups/maven.openimaj.org/"
 
-// Here is the tracking issue for why we're using `0.3.13-SNAPSHOT` and the unofficial version of `bridj`:
-//   https://github.com/sarxos/webcam-capture/issues/723
-
-// The stuff for `webcam-capture-driver-openimaj` and `core-video-capture` was the only way to get capture working
-// simultaneously with other applications, like Zoom.  This still pulls in too many jars, I think, but it does work
-// so we'll leave it for now:
-//   https://github.com/sarxos/webcam-capture/issues/757#issuecomment-609102909
-
-// Even with these changes and fixes, you still cannot run `netlogo/run` and test `vid` from an sbt session.  You need
-// to manually test it with a notarized, entitled copy of NetLogo.
-
-// -Jeremy B November 2020
+// settings for the `sbt-javacpp` sbt plugin
+javaCppVersion    :=  "1.5.7"
+// opencv depends on openblas so get those platform-specific binaries, too
+javaCppPresetLibs ++= Seq("opencv" -> "4.5.5", "openblas" -> "0.3.19")
+// only include the supported NetLogo platforms
+javaCppPlatform   :=  Seq("windows-x86_64", "windows-x86", "macosx-arm64", "macosx-x86_64", "linux-x86", "linux-x86_64")
 
 libraryDependencies ++= Seq(
-  "com.github.sarxos" % "webcam-capture" % "0.3.13-SNAPSHOT",
-  "com.github.sarxos" % "webcam-capture-driver-openimaj" % "0.3.13-SNAPSHOT" exclude("org.openimaj", "core-video-capture"),
-  "org.openimaj" % "core-video-capture" % "1.3.10"
-    exclude("net.billylieurance.azuresearch", "azure-bing-search-java")
-    exclude("uk.ac.ed.ph.snuggletex", "snuggletex-core")
-    exclude("uk.ac.ed.ph.snuggletex", "snuggletex-upconversion")
-    exclude("uk.ac.ed.ph.snuggletex", "snuggletex-jeuclid")
-    exclude("com.aetrion.flickr", "flickrapi")
-    exclude("vigna.dsi.unimi.it", "jal")
-    exclude("jama", "jama")
-    exclude("com.googlecode.matrix-toolkits-java", "mtj")
-    exclude("com.googlecode.netlib-java", "netlib-java")
-    exclude("net.sf.jafama", "JaFaMa")
-    exclude("jgrapht", "jgrapht")
-    exclude("ch.akuhn.matrix", "MatrixLib")
-    exclude("gov.sandia.foundry", "gov-sandia-cognition-common-core")
-    exclude("com.thoughtworks.xstream", "xstream")
-    exclude("gov.sandia.foundry", "gov-sandia-cognition-common-data")
-    exclude("gov.sandia.foundry", "gov-sandia-cognition-learning-core")
-    exclude("gov.sandia.foundry", "gov-sandia-cognition-text-core")
-    exclude("gov.sandia.foundry", "gov-sandia-cognition-framework-core")
-    exclude("gov.sandia.foundry", "gov-sandia-cognition-framework-learning")
-    exclude("org.openimaj", "core-citation")
-    exclude("org.jsoup", "jsoup")
-    exclude("net.sf.trove4j", "trove4j")
-    exclude("colt", "colt")
-    exclude("com.esotericsoftware.kryo", "kryo")
-    exclude("org.apache.ant", "ant")
-    exclude("org.apache.httpcomponents", "httpclient")
-    exclude("net.sourceforge.jmatio", "jmatio")
-    exclude("com.caffeineowl.graphics", "BezierUtils")
-    exclude("javax.media", "jai-core")
+  "org.openimaj" % "core-video-capture" % "1.4-SNAPSHOT"
+    exclude("org.openimaj.content", "animation")
+    exclude("org.openimaj", "core-audio")
+    exclude("org.openimaj", "core-math")
+    exclude("com.twelvemonkeys.common", "common-lang")
     exclude("com.sun.media", "jai-codec")
-    ,
-  "com.nativelibs4java" % "bridj" % "0.7-20140918-3",
-  "org.bytedeco" % "javacv" % "1.4.3",
-  "org.jcodec" % "jcodec" % "0.1.9",
-  "org.jcodec" % "jcodec-javase" % "0.1.9",
-  "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+    exclude("javax.media", "jai-core")
+    exclude("net.sourceforge.jeuclid", "jeuclid-core")
+    exclude("uk.ac.ed.ph.snuggletex", "snuggletex-core")
+    exclude("com.googlecode.json-simple", "json-simple")
+    exclude("com.flickr4java", "flickr4java")
+    exclude("uk.ac.ed.ph.snuggletex", "snuggletex-upconversion")
+    exclude("com.caffeineowl", "bezier-utils")
+    exclude("com.twelvemonkeys.imageio", "imageio-core")
+    exclude("uk.ac.ed.ph.snuggletex", "snuggletex-jeuclid")
+    exclude("com.twelvemonkeys.imageio", "imageio-jpeg")
+// only include `javacv` and not `javacv-platform` as we manually specify the native libraries
+// throught the `sbt-javacpp` sbt plugin
+, "org.bytedeco" % "javacv" % "1.5.7"
+, "org.jcodec" % "jcodec" % "0.1.9"
+, "org.jcodec" % "jcodec-javase" % "0.1.9"
 )
 
 // necessary for testing camera functionality.
 // See https://groups.google.com/forum/#!topic/nativelibs4java/WNmOZPknRiU
 fork in Test := true
-
-resolvers      += "netlogo" at "https://dl.cloudsmith.io/public/netlogo/netlogo/maven/"
-netLogoVersion := "6.2.0-d27b502"

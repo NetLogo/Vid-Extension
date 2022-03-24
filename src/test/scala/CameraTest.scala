@@ -2,11 +2,10 @@ package org.nlogo.extensions.vid
 
 import javafx.embed.swing.JFXPanel
 
-import com.github.sarxos.webcam.Webcam
+import org.scalatest.{ BeforeAndAfter }
+import org.scalatest.funsuite.AnyFunSuite
 
-import org.scalatest.{ BeforeAndAfter, FunSuite }
-
-class CameraTest extends FunSuite with BeforeAndAfter {
+class CameraTest extends AnyFunSuite with BeforeAndAfter {
   val _ = new JFXPanel() // init JavaFX
 
   def hasCameras = Camera.cameraNames.nonEmpty
@@ -27,14 +26,14 @@ class CameraTest extends FunSuite with BeforeAndAfter {
 
     test("creating a camera with a webcam opens it") {
       new CameraTestHelper {
-        assert(webcam.isOpen)
+        assert(cam.isOpen)
       }
     }
 
     test("close closes an already-opened camera") {
       new CameraTestHelper {
         cam.close()
-        assert(! webcam.isOpen)
+        assert(!cam.isOpen)
       }
     }
 
@@ -42,11 +41,11 @@ class CameraTest extends FunSuite with BeforeAndAfter {
       new CameraTestHelper {
         assert(cam.isPlaying)
         cam.stop()
-        assert(! cam.isPlaying)
-        assert(webcam.isOpen)
+        assert(!cam.isPlaying)
+        assert(cam.isOpen)
         cam.play()
         assert(cam.isPlaying)
-        assert(webcam.isOpen)
+        assert(cam.isOpen)
       }
     }
 
@@ -66,8 +65,7 @@ class CameraTest extends FunSuite with BeforeAndAfter {
     }
 
     trait CameraTestHelper {
-      val webcam = Webcam.getDefault
-      val cam = new Camera(webcam)
+      val cam = new Camera(0)
     }
   }
 }

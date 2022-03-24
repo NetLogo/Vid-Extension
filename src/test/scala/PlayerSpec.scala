@@ -1,11 +1,12 @@
 package org.nlogo.extensions.vid
 
-import org.scalatest.{ FeatureSpec, GivenWhenThen }
+import org.scalatest.GivenWhenThen
+import org.scalatest.featurespec.AnyFeatureSpec
 
-class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
+class PlayerSpec extends AnyFeatureSpec with GivenWhenThen with VidHelpers {
 
-  feature("show-player") {
-    scenario("player can be hidden even if it has not been shown") {
+  Feature("show-player") {
+    Scenario("player can be hidden even if it has not been shown") {
       new VidSpecHelpers {
         Given("The player is not showing")
         assert(! player.isShowing)
@@ -16,7 +17,7 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("player should be showing empty if a video is closed while open") {
+    Scenario("player should be showing empty if a video is closed while open") {
       new VidSpecHelpers {
         givenOpenMovie()
         And("I have an open player")
@@ -30,7 +31,7 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("changing the video source changes the players video source") {
+    Scenario("changing the video source changes the players video source") {
       new VidSpecHelpers {
         givenOpenMovie()
         And("I have an open player")
@@ -44,7 +45,7 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("player must have valid dimensions") {
+    Scenario("player must have valid dimensions") {
       new VidSpecHelpers with ExpectError {
         whenRunForError("vid:show-player -1 -1",
           vid.`show-player`(Double.box(-1), Double.box(-1)))
@@ -52,7 +53,7 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("player can be started with no source") {
+    Scenario("player can be started with no source") {
       new VidSpecHelpers {
         When("I run vid:show-player")
         vid.`show-player`()
@@ -63,7 +64,7 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("player can be started with no dimensions") {
+    Scenario("player can be started with no dimensions") {
       new VidSpecHelpers {
         givenOpenMovie()
 
@@ -77,7 +78,7 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("player can be started with specific dimensions") {
+    Scenario("player can be started with specific dimensions") {
       new VidSpecHelpers {
         givenOpenMovie()
 
@@ -92,7 +93,7 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
     }
   }
 
-  scenario("player maintains specified dimensions when a new source is opened") {
+  Scenario("player maintains specified dimensions when a new source is opened") {
     new VidSpecHelpers {
       When("I run vid:show-player 100 100")
       vid.`show-player`(Double.box(100), Double.box(100))
@@ -112,7 +113,7 @@ class PlayerSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
     }
   }
 
-  scenario("player maintains dimensions after source is closed") {
+  Scenario("player maintains dimensions after source is closed") {
     new VidSpecHelpers {
       givenOpenMovie()
       And("I run vid:show-player 100 100")

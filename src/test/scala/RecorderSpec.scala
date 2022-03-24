@@ -2,9 +2,10 @@ package org.nlogo.extensions.vid
 
 import java.nio.file.{ Files, Paths }
 
-import org.scalatest.{ FeatureSpec, GivenWhenThen }
+import org.scalatest.GivenWhenThen
+import org.scalatest.featurespec.AnyFeatureSpec
 
-class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
+class RecorderSpec extends AnyFeatureSpec with GivenWhenThen with VidHelpers {
 
   trait Helpers extends VidSpecHelpers {
     def givenRecorderNotStarted(): Unit = {
@@ -23,8 +24,8 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
     }
   }
 
-  feature("recorder-status") {
-    scenario("recorder status is inactive before starting") {
+  Feature("recorder-status") {
+    Scenario("recorder status is inactive before starting") {
       new Helpers {
         givenRecorderNotStarted()
         Then("vid:recorder-status should show \"inactive\"")
@@ -32,7 +33,7 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("recorder status is recording after starting") {
+    Scenario("recorder status is recording after starting") {
       new Helpers {
         givenRecorderStarted()
         Then("vid:recorder-status should show \"recording\"")
@@ -40,7 +41,7 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("recorder status is inactive after reset") {
+    Scenario("recorder status is inactive after reset") {
       new Helpers {
         givenRecorderStartedAndReset()
         Then("vid:recorder-status should show \"inactive\"")
@@ -49,8 +50,8 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
     }
   }
 
-  feature("start-recorder") {
-    scenario("start-recorder errors if a recording has already been started") {
+  Feature("start-recorder") {
+    Scenario("start-recorder errors if a recording has already been started") {
       new Helpers with ExpectError {
         givenRecorderStarted()
         whenRunForError("vid:start-recorder", vid.`start-recorder`())
@@ -58,14 +59,14 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("start-recorder errors if supplied with negative width/height") {
+    Scenario("start-recorder errors if supplied with negative width/height") {
       new Helpers with ExpectError {
         whenRunForError("vid:start-recorder -1 -1", vid.`start-recorder`(Double.box(-1), Double.box(-1)))
         thenShouldSeeError("vid: invalid dimensions")
       }
     }
 
-    scenario("start-recorder sets dimensions of recording") {
+    Scenario("start-recorder sets dimensions of recording") {
       new Helpers {
         Given("I have started the recorder with dimensions 640 x 480")
         vid.`start-recorder`(Double.box(640), Double.box(480))
@@ -75,8 +76,8 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
     }
   }
 
-  feature("save-recording") {
-    scenario("save-recording errors if no recording has been started") {
+  Feature("save-recording") {
+    Scenario("save-recording errors if no recording has been started") {
       new Helpers with ExpectError {
         givenRecorderNotStarted()
         whenRunForError("vid:save-recording", vid.`save-recording`("test.mp4"))
@@ -84,7 +85,7 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("save-recording errors if the specified directory does not exist") {
+    Scenario("save-recording errors if the specified directory does not exist") {
       new Helpers with ExpectError {
         givenRecorderStarted
         whenRunForError("vid:save-recording", vid.`save-recording`("/NoDir/test.mp4"))
@@ -92,7 +93,7 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("save-recording saves the recording to the specified file") {
+    Scenario("save-recording saves the recording to the specified file") {
       new Helpers {
         givenRecorderStarted
         Given("vid:record-view has been run")
@@ -103,7 +104,7 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
         assert(Files.exists(Paths.get("/tmp/recorder-test.mp4")))
       }
     }
-    scenario("save-recording saves the file relative to the current path") {
+    Scenario("save-recording saves the file relative to the current path") {
       new Helpers {
         try {
           Files.delete(Paths.get("foo.mp4"))
@@ -118,7 +119,7 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("save-recording throws an exception if no frames have been recorded") {
+    Scenario("save-recording throws an exception if no frames have been recorded") {
       new Helpers with ExpectError {
         givenRecorderStarted
         whenRunForError("vid:save-recording", vid.`save-recording`("error.mp4"))
@@ -127,8 +128,8 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
     }
   }
 
-  feature("record-view") {
-    scenario("record-view errors if no recording has been started") {
+  Feature("record-view") {
+    Scenario("record-view errors if no recording has been started") {
       new Helpers with ExpectError {
         givenRecorderNotStarted()
         whenRunForError("vid:record-view", vid.`record-view`())
@@ -136,7 +137,7 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("record-view records an image once a recording has been started") {
+    Scenario("record-view records an image once a recording has been started") {
       new Helpers {
         givenRecorderStarted()
         When("vid:record-view is called")
@@ -148,8 +149,8 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
     }
   }
 
-  feature("record-interface") {
-    scenario("record-interface records the NetLogo interface") {
+  Feature("record-interface") {
+    Scenario("record-interface records the NetLogo interface") {
       new Helpers {
         givenRecorderStarted()
         When("vid:record-interface is called")
@@ -161,8 +162,8 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
     }
   }
 
-  feature("record-source") {
-    scenario("errors when no source started") {
+  Feature("record-source") {
+    Scenario("errors when no source started") {
       new Helpers with ExpectError {
         givenRecorderStarted()
         whenRunForError("vid:record-source", vid.`record-source`())
@@ -170,7 +171,7 @@ class RecorderSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("records a frame when a source is active") {
+    Scenario("records a frame when a source is active") {
       new Helpers {
         givenOpenMovie()
         givenRecorderStarted()

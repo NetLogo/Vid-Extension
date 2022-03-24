@@ -1,7 +1,8 @@
 /target
 /project/project
 /project/target
-/vid.zip
+/*.zip
 /*.jar
 /*.mp4
 .bundledFiles
+extensions/

@@ -3,9 +3,9 @@ package org.nlogo.extensions.vid
 import java.awt.image.BufferedImage
 import java.nio.file.{ Files, Paths }
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class MP4RecorderTest extends FunSuite {
+class MP4RecorderTest extends AnyFunSuite {
   trait Helper {
     val recorder = new MP4Recorder()
     val dummyFrame = new BufferedImage(480, 480, BufferedImage.TYPE_INT_ARGB)

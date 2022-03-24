@@ -1,18 +1,19 @@
 package org.nlogo.extensions.vid
 
-import org.scalatest.{ FeatureSpec, GivenWhenThen }
+import org.scalatest.GivenWhenThen
+import org.scalatest.featurespec.AnyFeatureSpec
 
-class StartAndStopSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
+class StartAndStopSpec extends AnyFeatureSpec with GivenWhenThen with VidHelpers {
 
-  feature("Starting and stopping") {
-    scenario("no source selected") {
+  Feature("Starting and stopping") {
+    Scenario("no source selected") {
       new VidSpecHelpers with ExpectError {
         whenRunForError("vid:start", vid.start())
         thenShouldSeeError("vid: no selected source")
       }
     }
 
-    scenario("starts stopped source") {
+    Scenario("starts stopped source") {
       new VidSpecHelpers {
         givenOpenMovie()
 
@@ -23,7 +24,7 @@ class StartAndStopSpec extends FeatureSpec with GivenWhenThen with VidHelpers {
       }
     }
 
-    scenario("start and stop movie") {
+    Scenario("start and stop movie") {
       new VidSpecHelpers {
         givenOpenMovie(started = true)
 

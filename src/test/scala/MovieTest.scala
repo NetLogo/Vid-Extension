@@ -10,13 +10,13 @@ import javafx.util.Duration
 
 import scala.concurrent.Channel
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.concurrent.Waiters
 import org.scalatest.time.{ Millis, Span }
 
 import util.FunctionToCallback.function2ChangeListener
 
-class MovieTest extends FunSuite with Waiters {
+class MovieTest extends AnyFunSuite with Waiters {
 
   val _ = new JFXPanel() // init JavaFX
 

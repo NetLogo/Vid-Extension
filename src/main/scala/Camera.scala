@@ -1,11 +1,11 @@
 package org.nlogo.extensions.vid
 
-import com.github.sarxos.webcam.Webcam
-
-import java.util.concurrent.TimeUnit
-
 import java.awt.image.BufferedImage
 import java.awt.Dimension
+
+import org.openimaj.video.capture.{ Device, VideoCapture }
+
+import org.bytedeco.javacv.{ Java2DFrameUtils, OpenCVFrameGrabber }
 
 import javafx.beans.binding.Bindings
 import javafx.beans.value.ObservableValue
@@ -21,50 +21,89 @@ trait CameraFactory {
 }
 
 object Camera extends CameraFactory {
-  def withContextClassLoader[A](f: => A): A = {
-    val oldccl = Thread.currentThread.getContextClassLoader
-    Thread.currentThread.setContextClassLoader(classOf[Camera].getClassLoader)
-    val result = f
-    Thread.currentThread.setContextClassLoader(oldccl)
+
+  private var devices: Option[Seq[Device]] = None
+  private val cameraCcl = classOf[Camera].getClassLoader
+
+  def withContextClassLoader[A](f: () => A): A = {
+    val oldCcl = Thread.currentThread.getContextClassLoader
+    Thread.currentThread.setContextClassLoader(cameraCcl)
+    val result = f()
+    Thread.currentThread.setContextClassLoader(oldCcl)
     result
   }
 
-  override var cameraNames: Seq[String] = {
-    import scala.collection.JavaConverters.collectionAsScalaIterableConverter
-    withContextClassLoader {
-      Webcam.getWebcams(1500, TimeUnit.MILLISECONDS).asScala.toSeq.map(_.getName)
-    }
+  private def initDevices(): Seq[Device] = {
+    val ds = devices.getOrElse({
+      import scala.collection.JavaConverters.collectionAsScalaIterableConverter
+      withContextClassLoader( () => {
+        VideoCapture.getVideoDevices().asScala.toSeq
+      })
+    })
+    devices = Some(ds)
+    ds
   }
 
-  override var defaultCameraName: Option[String] =
+  override var cameraNames: Seq[String] = {
+    val ds = initDevices()
+    ds.map(_.getNameStr())
+  }
+
+  override var defaultCameraName: Option[String] = {
     cameraNames.headOption
+  }
 
   override def open(cameraName: String): Option[VideoSource] = {
-    import scala.collection.JavaConverters.collectionAsScalaIterableConverter
-    withContextClassLoader {
-      Webcam.getWebcams.asScala.toSeq.find(_.getName == cameraName).map(new Camera(_))
+    val ds = initDevices()
+    val index = ds.indexWhere(_.getNameStr() == cameraName)
+    if (index == -1) {
+      None
+    } else {
+      Some(new Camera(index))
     }
   }
 
 }
 
-class Camera(val webcam: Webcam) extends VideoSource {
-  webcam.open()
+class Camera(deviceIndex: Int) extends VideoSource {
+  val grabber = Camera.withContextClassLoader( () => {
+    val g = new OpenCVFrameGrabber(deviceIndex)
+    g.start()
+    g
+  })
 
   var cachedImage = Option.empty[BufferedImage]
 
   def isPlaying = cachedImage.isEmpty
 
+  private var isClosed = false
+  def isOpen = !isClosed
+
   override def setTime(timeInSeconds: Double): Unit = {}
 
-  override def stop() = { cachedImage = Some(captureImage()) }
+  override def stop() = {
+    cachedImage = Some(captureImage())
+  }
 
-  override def play() = { cachedImage = None }
+  override def play() = {
+    cachedImage = None
+  }
 
-  override def close() = webcam.close()
+  override def close() = {
+    isClosed = true
+    Camera.withContextClassLoader( () => {
+      grabber.stop()
+    })
+  }
 
-  override def captureImage(): BufferedImage =
-    cachedImage.getOrElse(webcam.getImage)
+  override def captureImage(): BufferedImage = {
+    cachedImage.getOrElse(
+      Camera.withContextClassLoader( () => {
+        val frame = grabber.grab()
+        Java2DFrameUtils.toBufferedImage(frame)
+      })
+    )
+  }
 
   class UpdateImage extends Service[Image] {
     override protected def createTask(): Task[Image] =
@@ -104,6 +143,7 @@ class Camera(val webcam: Webcam) extends VideoSource {
     BoundedNode(imageView, preferredSize, enforcedBounds)
   }
 
-  override def videoNode(bounds: Option[(Double, Double)]): BoundedNode =
+  override def videoNode(bounds: Option[(Double, Double)]): BoundedNode = {
     cameraNode(bounds)
+  }
 }
