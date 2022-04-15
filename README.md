@@ -95,6 +95,7 @@ When running the extension on macOS and using `vid:camera-open` or `vid:camera-s
 [`vid:record-interface`](#vidrecord-interface)
 [`vid:record-source`](#vidrecord-source)
 [`vid:recorder-status`](#vidrecorder-status)
+[`vid:reset-recorder`](#vidreset-recorder)
 [`vid:start-recorder`](#vidstart-recorder)
 [`vid:save-recording`](#vidsave-recording)
 
@@ -443,6 +444,11 @@ vid:reset-recorder
 vid:recorder-status ; => "inactive"
 ```
 
+
+
+### `vid:reset-recorder`
+
+Stops the current recording, discards any recorded frames without saving them, and forgets the currently set recording resolution.
 
 
 ### `vid:start-recorder`
