@@ -3,7 +3,7 @@ package org.nlogo.extensions.vid
 import java.awt.image.BufferedImage
 import java.awt.Dimension
 
-import org.openimaj.video.capture.{ Device, VideoCapture }
+import org.openimaj.video.capture.VideoCapture
 
 import org.bytedeco.javacv.{ Java2DFrameUtils, OpenCVFrameGrabber }
 
@@ -22,7 +22,7 @@ trait CameraFactory {
 
 object Camera extends CameraFactory {
 
-  private var devices: Option[Seq[Device]] = None
+  private var devices: Option[Seq[String]] = None
   private val cameraCcl = classOf[Camera].getClassLoader
 
   def withContextClassLoader[A](f: () => A): A = {
@@ -33,11 +33,11 @@ object Camera extends CameraFactory {
     result
   }
 
-  private def initDevices(): Seq[Device] = {
+  private def initDevices(): Seq[String] = {
     val ds = devices.getOrElse({
       import scala.collection.JavaConverters.collectionAsScalaIterableConverter
       withContextClassLoader( () => {
-        VideoCapture.getVideoDevices().asScala.toSeq
+        VideoCapture.getVideoDevices().asScala.toSeq.map(_.getNameStr())
       })
     })
     devices = Some(ds)
@@ -45,8 +45,7 @@ object Camera extends CameraFactory {
   }
 
   override var cameraNames: Seq[String] = {
-    val ds = initDevices()
-    ds.map(_.getNameStr())
+    initDevices
   }
 
   override var defaultCameraName: Option[String] = {
@@ -55,7 +54,7 @@ object Camera extends CameraFactory {
 
   override def open(cameraName: String): Option[VideoSource] = {
     val ds = initDevices()
-    val index = ds.indexWhere(_.getNameStr() == cameraName)
+    val index = ds.indexWhere(_ == cameraName)
     if (index == -1) {
       None
     } else {
