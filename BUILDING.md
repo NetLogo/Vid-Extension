@@ -36,7 +36,7 @@ Note that we don't actually 100% need the plugin to do this.  We could do someth
 , "org.bytedeco" % "openblas" % "0.3.19-1.5.7" classifier "windows-x86_64"
 ```
 
-But we'd have to write code to enumerate all the projects and architecture compibnations.  So why bother if we already have an sbt plugin that will do it for us?  (The secret answer is because that sbt plugin might break in the future and we might not want to deal with updating it.)
+But we'd have to write code to enumerate all the projects and architecture combinations, and keep them all up to date as things change.  So why bother if we already have an sbt plugin that will do it for us?  (The secret answer is because that sbt plugin might break in the future and we might not want to deal with updating it.)
 
 3.  Why all those excluded deps for OpenImaj?
 
