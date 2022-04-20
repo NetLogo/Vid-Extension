@@ -54,6 +54,7 @@ libraryDependencies ++= Seq(
     exclude("com.twelvemonkeys.imageio", "imageio-core")
     exclude("uk.ac.ed.ph.snuggletex", "snuggletex-jeuclid")
     exclude("com.twelvemonkeys.imageio", "imageio-jpeg")
+    exclude("org.apache.ant", "ant")
 // only include `javacv` and not `javacv-platform` as we manually specify the native libraries
 // throught the `sbt-javacpp` sbt plugin
 , "org.bytedeco" % "javacv" % "1.5.7"
