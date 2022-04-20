@@ -2,7 +2,7 @@ package org.nlogo.extensions.vid
 
 import javafx.embed.swing.JFXPanel
 
-import org.scalatest.{ BeforeAndAfter }
+import org.scalatest.BeforeAndAfter
 import org.scalatest.funsuite.AnyFunSuite
 
 class CameraTest extends AnyFunSuite with BeforeAndAfter {
