@@ -4,7 +4,7 @@ enablePlugins(NetLogoExtension, ExtensionDocumentationPlugin)
 
 organization := "org.nlogo"
 scalaVersion := "2.12.12"
-version      := "1.0.2"
+version      := "1.1.0"
 isSnapshot   := true
 
 scalacOptions ++= Seq(
