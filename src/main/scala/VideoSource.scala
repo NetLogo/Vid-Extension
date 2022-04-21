@@ -13,6 +13,7 @@ trait VideoSource {
 }
 
 trait VideoSourceContainer {
+  def closeSource(): Unit
   def videoSource: Option[VideoSource]
   def videoSource_=(source: Option[VideoSource]): Unit
 }

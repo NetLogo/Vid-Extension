@@ -70,6 +70,10 @@ object RunVid extends App with VideoSourceContainer {
     }
   }
 
+  def closeSource(): Unit = {
+    _videoSource.foreach(_.close())
+  }
+
   var _videoSource: Option[VideoSource] = None
 
   def videoSource: Option[VideoSource] = _videoSource
@@ -82,7 +86,7 @@ object RunVid extends App with VideoSourceContainer {
           .apply(player.boundedSize)
         player.present(videoNode)
       }
-      _videoSource.foreach(_.close())
+      closeSource()
     } catch {
       case e: Exception =>
         println("VID Extension Exception")

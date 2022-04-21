@@ -14,6 +14,7 @@ class CameraOpen(vid: VideoSourceContainer, cameras: CameraFactory) extends Comm
           throw new ExtensionException("vid: no cameras found"))
       else
         args(0).getString
+    vid.closeSource()
     cameras.open(cameraName) match {
       case cam@Some(camera) => vid.videoSource = Some(camera)
       case _                =>

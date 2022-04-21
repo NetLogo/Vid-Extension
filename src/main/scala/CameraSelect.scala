@@ -9,9 +9,9 @@ class CameraSelect(videoContainer: VideoSourceContainer, cameras: CameraFactory,
   override def perform(args: Array[Argument], context: Context): Unit = {
     if (cameras.cameraNames.isEmpty)
       throw new ExtensionException("vid: no cameras found")
+    videoContainer.closeSource()
     selector.selectOneOf(cameras.cameraNames).foreach { cameraName =>
       videoContainer.videoSource = cameras.open(cameraName)
     }
   }
 }
-

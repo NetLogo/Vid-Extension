@@ -48,8 +48,12 @@ class VidExtension(movies: MovieFactory, cameras: CameraFactory, player: Player,
   }
 
   override def unload(em: ExtensionManager) = {
-    _videoSource.foreach(_.close())
+    closeSource()
     recorder.reset()
+  }
+
+  def closeSource(): Unit = {
+    _videoSource.foreach(_.close())
   }
 
   var _videoSource: Option[VideoSource] = None
@@ -65,7 +69,7 @@ class VidExtension(movies: MovieFactory, cameras: CameraFactory, player: Player,
           .apply(player.boundedSize)
         player.present(boundedNode)
       }
-      _videoSource.foreach(_.close())
+      closeSource()
     } catch {
       case e: Exception =>
         println("VID Extension Exception")
