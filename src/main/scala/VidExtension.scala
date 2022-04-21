@@ -1,18 +1,9 @@
 package org.nlogo.extensions.vid
 
-import java.awt.Dialog
-
 import org.nlogo.api.{ DefaultClassManager, ExtensionManager, PrimitiveManager }
-import org.nlogo.app.App
-import org.nlogo.swing.MessageDialog
-import org.nlogo.util.Utils
-
-import scala.language.reflectiveCalls
 
 object VidExtension {
-  private def isWindows = {
-    System.getProperty("os.name").toLowerCase.startsWith("win")
-  }
+
   // we use two headless variables. The java one forces headless, the other one says NetLogo would like it if you ran headlessly
   def guiOrHeadless[A](gui: => A, headless: => A): A = {
     if (System.getProperty("java.awt.headless") == "true" || System.getProperty("org.nlogo.preferHeadless") == "true") {
@@ -21,21 +12,8 @@ object VidExtension {
       try {
         gui
       } catch {
-        case ex: java.lang.ExceptionInInitializerError if isWindows =>
-          val dialog = new MessageDialog(App.app.frame) {
-            def doShow(stackTrace: String): Unit = {
-              val is64 = System.getProperty("os.arch").contains("64")
-              // URLs are taken from here: https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#visual-studio-2010-vc-100-sp1-no-longer-supported
-              val url = if (is64) {
-                "https://aka.ms/highdpimfc2013x64enu"
-              } else {
-                "https://aka.ms/highdpimfc2013x86enu"
-              }
-              doShow("Missing Windows Library", s"It appears that a Windows library needed by the Vid extension is not installed.  Please visit this link to download the Microsoft Visual C++ 10 runtime library installer: $url\n\nAfter installing it try running the Vid extension one more time.  If it still does not work, please report the below error message to bugs@ccl.northwestern.edu or at https://github.com/NetLogo/Vid-Extension/issues\n\n$stackTrace", 15, 60)
-            }
-          }
-          val stackTrace = Utils.getStackTrace(ex)
-          dialog.doShow(stackTrace)
+        case ex: java.lang.ExceptionInInitializerError if PlatformErrors.isPossibleWinMissingVcppRuntimeError =>
+          PlatformErrors.showMissingVcppRuntimeMessage(ex)
           headless
       }
     }

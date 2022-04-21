@@ -58,7 +58,13 @@ object Camera extends CameraFactory {
     if (index == -1) {
       None
     } else {
-      Some(new Camera(index))
+      try {
+        Some(new Camera(index))
+      } catch {
+        case ex: Exception if (PlatformErrors.isPossibleMacOSSecurityError(ex)) =>
+          PlatformErrors.showMacOSSecurityMessage(ex)
+          None
+      }
     }
   }
 
