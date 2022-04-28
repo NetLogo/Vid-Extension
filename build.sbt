@@ -24,7 +24,6 @@ scalacOptions ++= Seq(
 netLogoExtName      := "vid"
 netLogoClassManager := "org.nlogo.extensions.vid.VidExtension"
 netLogoVersion      := "6.2.2"
-netLogoZipSources   := false
 netLogoZipExtras   ++= Seq(baseDirectory.value / "README.md")
 
 resolvers += "OpenImaj Snapshots" at "https://maven.ecs.soton.ac.uk/content/repositories/openimaj-snapshots/"
