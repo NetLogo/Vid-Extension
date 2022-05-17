@@ -8,7 +8,7 @@ env:
   LIBERICA_URL: https://download.bell-sw.com/java/17.0.3+7/bellsoft-jdk17.0.3+7-linux-amd64-full.tar.gz
 
 jobs:
-  build-and-test:
+  build-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
