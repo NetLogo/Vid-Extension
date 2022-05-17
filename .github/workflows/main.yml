@@ -16,4 +16,3 @@ jobs:
         with:
           java-version: liberica@17=tgz+${{ env.LIBERICA_URL }}
       - run: sbt -v update compile
-      - run: sbt -v test
