@@ -12,10 +12,10 @@ scalacOptions ++= Seq(
   "-unchecked",
   "-feature",
   "-Xcheckinit",
-  "-encoding",
-  "us-ascii",
+  "-encoding", "us-ascii",
   "-Xfatal-warnings",
-  "-Xlint"
+  "-Xlint",
+  "-release", "11"
 )
 
 netLogoExtName      := "vid"
