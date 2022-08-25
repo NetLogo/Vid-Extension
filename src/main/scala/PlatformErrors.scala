@@ -43,9 +43,9 @@ object PlatformErrors {
     val is64 = System.getProperty("os.arch").contains("64")
     // URLs are taken from here: https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#visual-studio-2010-vc-100-sp1-no-longer-supported
     val url = if (is64) {
-      "https://aka.ms/highdpimfc2013x64enu"
+      "https://download.microsoft.com/download/1/6/5/165255E7-1014-4D0A-B094-B6A430A6BFFC/vcredist_x64.exe"
     } else {
-      "https://aka.ms/highdpimfc2013x86enu"
+      "https://download.microsoft.com/download/1/6/5/165255E7-1014-4D0A-B094-B6A430A6BFFC/vcredist_x86.exe"
     }
     val message = s"It appears that a Windows library needed by the Vid extension is not installed.  Please visit this link to download the Microsoft Visual C++ 10 runtime library installer: $url\n\nAfter installing it try running the Vid extension one more time."
     showDialog("Missing Windows Library", message, ex)
