@@ -20,7 +20,7 @@ scalacOptions ++= Seq(
 
 netLogoExtName      := "vid"
 netLogoClassManager := "org.nlogo.extensions.vid.VidExtension"
-netLogoVersion      := "6.2.2"
+netLogoVersion      := "6.3.0"
 netLogoZipExtras   ++= Seq(baseDirectory.value / "README.md")
 
 resolvers += "OpenImaj Snapshots" at "https://maven.ecs.soton.ac.uk/content/repositories/openimaj-snapshots/"
@@ -60,11 +60,7 @@ libraryDependencies ++= Seq(
 
 // necessary for testing camera functionality.
 // See https://groups.google.com/forum/#!topic/nativelibs4java/WNmOZPknRiU
-fork in Test := true
-
-resolvers      += "netlogo" at "https://dl.cloudsmith.io/public/netlogo/netlogo/maven/"
-netLogoVersion := "6.2.0-d27b502"
-isSnapshot := true
+Test / fork := true
 
 // Add JavaFX dependencies
 val javaFXVersion = "16"
