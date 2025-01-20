@@ -12,6 +12,8 @@ import javafx.scene.shape.Rectangle
 
 import javax.swing.{ JFrame, SwingUtilities }
 
+import org.nlogo.swing.NetLogoIcon
+
 import util.FunctionToCallback.function2ChangeListener
 
 class JavaFXPlayer extends Player {
@@ -80,7 +82,7 @@ class JavaFXPlayer extends Player {
     }
   }
 
-  class PlayerFrame extends JFrame("NetLogo - vid extension") {
+  class PlayerFrame extends JFrame("NetLogo - vid extension") with NetLogoIcon {
     val jfxPanel = new JFXPanel()
 
     add(jfxPanel)
