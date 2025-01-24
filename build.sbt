@@ -23,9 +23,6 @@ netLogoClassManager := "org.nlogo.extensions.vid.VidExtension"
 netLogoVersion      := "6.3.0"
 netLogoZipExtras   ++= Seq(baseDirectory.value / "README.md")
 
-resolvers += "OpenImaj Snapshots" at "https://maven.ecs.soton.ac.uk/content/repositories/openimaj-snapshots/"
-resolvers += "OpenImaj Maven" at "https://maven.ecs.soton.ac.uk/content/groups/maven.openimaj.org/"
-
 // settings for the `sbt-javacpp` sbt plugin
 javaCppVersion    :=  "1.5.7"
 // opencv depends on openblas so get those platform-specific binaries, too
@@ -34,7 +31,12 @@ javaCppPresetLibs ++= Seq("opencv" -> "4.5.5", "openblas" -> "0.3.19")
 javaCppPlatform   :=  Seq("windows-x86_64", "windows-x86", "macosx-arm64", "macosx-x86_64", "linux-x86", "linux-x86_64")
 
 libraryDependencies ++= Seq(
-  "org.openimaj" % "core-video-capture" % "1.4-SNAPSHOT"
+  "org.openimaj" % "core" % "1.4-SNAPSHOT" from "https://ccl.northwestern.edu/devel/openimaj_core-1.4-20220209.101848-153.jar"
+, "org.openimaj" % "core-image" % "1.4-SNAPSHOT" from "https://ccl.northwestern.edu/devel/openimaj_core-image-1.4-20220209.101850-153.jar"
+, "org.openimaj" % "core-aop-support" % "1.4-SNAPSHOT" from "https://ccl.northwestern.edu/devel/openimaj_core-aop-support-1.4-20220209.101849-153.jar"
+, "org.openimaj" % "core-citation" % "1.4-SNAPSHOT" from "https://ccl.northwestern.edu/devel/openimaj_core-citation-1.4-20220209.101849-153.jar"
+, "org.openimaj" % "core-video" % "1.4-SNAPSHOT" from "https://ccl.northwestern.edu/devel/openimaj_core-video-1.4-20220209.101851-153.jar"
+, "org.openimaj" % "core-video-capture" % "1.4-SNAPSHOT" from "https://ccl.northwestern.edu/devel/openimaj_core-video-capture-1.4-20220209.101851-153.jar"
     exclude("org.openimaj.content", "animation")
     exclude("org.openimaj", "core-audio")
     exclude("org.openimaj", "core-math")
@@ -51,6 +53,7 @@ libraryDependencies ++= Seq(
     exclude("uk.ac.ed.ph.snuggletex", "snuggletex-jeuclid")
     exclude("com.twelvemonkeys.imageio", "imageio-jpeg")
     exclude("org.apache.ant", "ant")
+, "com.nativelibs4java" % "bridj" % "0.7-SNAPSHOT" from "https://ccl.northwestern.edu/devel/openimaj_bridj-0.7-20140918-3.jar"
 // only include `javacv` and not `javacv-platform` as we manually specify the native libraries
 // throught the `sbt-javacpp` sbt plugin
 , "org.bytedeco" % "javacv" % "1.5.7"
