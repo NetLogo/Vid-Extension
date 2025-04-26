@@ -3,7 +3,7 @@ import org.nlogo.build.{ NetLogoExtension, ExtensionDocumentationPlugin}
 enablePlugins(NetLogoExtension, ExtensionDocumentationPlugin)
 
 organization := "org.nlogo"
-scalaVersion := "2.12.15"
+scalaVersion := "2.13.16"
 version      := "1.1.2"
 isSnapshot   := true
 

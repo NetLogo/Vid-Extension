@@ -35,7 +35,7 @@ object Camera extends CameraFactory {
 
   private def initDevices(): Seq[String] = {
     val ds = devices.getOrElse({
-      import scala.collection.JavaConverters.collectionAsScalaIterableConverter
+      import scala.jdk.CollectionConverters.CollectionHasAsScala
       withContextClassLoader( () => {
         VideoCapture.getVideoDevices().asScala.toSeq.map(_.getNameStr())
       })
@@ -45,7 +45,7 @@ object Camera extends CameraFactory {
   }
 
   override var cameraNames: Seq[String] = {
-    initDevices
+    initDevices()
   }
 
   override var defaultCameraName: Option[String] = {

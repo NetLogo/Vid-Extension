@@ -11,7 +11,7 @@ class SetTime(vid: VideoSourceContainer) extends Command {
     if (vid.videoSource.isEmpty)
       throw new ExtensionException("vid: no selected source")
     try {
-      vid.videoSource.foreach(_.setTime(args(0).getDoubleValue.toLong))
+      vid.videoSource.foreach(_.setTime(args(0).getDoubleValue.toLong.toDouble))
     } catch {
       case e: IllegalArgumentException =>
         throw new ExtensionException("vid: invalid time")

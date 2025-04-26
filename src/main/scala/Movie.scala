@@ -4,6 +4,7 @@ import java.awt.Dimension
 import java.awt.image.BufferedImage
 import java.io.File
 import java.lang.{ Void => JVoid }
+import java.util.concurrent.LinkedTransferQueue
 
 import javafx.application.Platform
 import javafx.beans.binding.Bindings
@@ -13,8 +14,6 @@ import javafx.scene.{ Group, Scene, SnapshotResult }
 import javafx.scene.media.{ Media, MediaException, MediaPlayer, MediaView }
 import javafx.scene.media.MediaPlayer.Status.UNKNOWN
 import javafx.util.{ Callback, Duration }
-
-import scala.concurrent.Channel
 
 import util.FunctionToCallback.function2ChangeListener
 
@@ -47,7 +46,7 @@ object Movie extends MovieFactory {
   def openRemote(uri: String): Option[VideoSource] = {
     try {
       val m = buildMovie(uri)
-      m.awaitLoad match {
+      m.awaitLoad() match {
         case None    => Some(m)
         case Some(e) => e.getType match {
           case MediaException.Type.MEDIA_UNSUPPORTED =>
@@ -82,17 +81,17 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
   }
 
   def awaitLoad(): Option[MediaException] = {
-    val openException = new Channel[Option[MediaException]]
+    val openException = new LinkedTransferQueue[Option[MediaException]]
 
     media.setOnError { () =>
-      openException.write(Option(media.getError))
+      openException.add(Option(media.getError))
     }
 
     val listener: ChangeListener[MediaPlayer.Status] = {
       function2ChangeListener {
         (oldStatus: MediaPlayer.Status, newStatus: MediaPlayer.Status) =>
           if (newStatus != UNKNOWN)
-            openException.write(None)
+            openException.add(None)
       }
     }
 
@@ -102,7 +101,7 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
       if (mediaPlayer.getStatus != null && mediaPlayer.getStatus != UNKNOWN)
         None
       else
-        openException.read
+        openException.poll
 
     mediaPlayer.statusProperty.removeListener(listener)
     media.setOnError({ () => })
@@ -113,11 +112,11 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
     mediaPlayer.getStatus == MediaPlayer.Status.PLAYING
 
   override def captureImage(): BufferedImage = {
-    val chan = new Channel[BufferedImage]
+    val chan = new LinkedTransferQueue[BufferedImage]
 
     val callback = new Callback[SnapshotResult, JVoid] {
       def call(res: SnapshotResult): JVoid = {
-        chan.write(SwingFXUtils.fromFXImage(res.getImage, null))
+        chan.add(SwingFXUtils.fromFXImage(res.getImage, null))
         null
       }
     }
@@ -128,7 +127,7 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
       scene.snapshot(callback, null)
     }
 
-    chan.read
+    chan.poll
   }
 
   private def movieNode(bounds: Option[(Double, Double)]): BoundedNode = {
