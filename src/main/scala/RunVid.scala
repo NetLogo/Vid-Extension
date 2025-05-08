@@ -63,7 +63,7 @@ object RunVid extends App with VideoSourceContainer {
           }.toSeq //end map
 
           val vbox = new VBox()
-          vbox.getChildren.addAll(buttons: _*)
+          vbox.getChildren.addAll(buttons*)
           stage.setScene(new Scene(vbox))
           stage.show()
         }  // end start

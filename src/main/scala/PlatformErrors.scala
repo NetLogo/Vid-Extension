@@ -17,13 +17,10 @@ object PlatformErrors {
   }
 
   def showDialog(title: String, message: String, ex: Throwable) = {
-    val dialog = new MessageDialog(App.app.frame) {
-      def doShow(stackTrace: String): Unit = {
-        doShow(title, s"$message\n\nIf it still does not work, please report the below error message to bugs@ccl.northwestern.edu or at https://github.com/NetLogo/Vid-Extension/issues\n\n$stackTrace", 15, 60)
-      }
-    }
     val stackTrace = Utils.getStackTrace(ex)
-    dialog.doShow(stackTrace)
+    val dialog = new MessageDialog(App.app.frame) {
+      doShow(title, s"$message\n\nIf it still does not work, please report the below error message to bugs@ccl.northwestern.edu or at https://github.com/NetLogo/Vid-Extension/issues\n\n$stackTrace", 15, 60)
+    }
   }
 
   def isPossibleMacOSSecurityError(ex: Exception) = {

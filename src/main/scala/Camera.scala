@@ -44,11 +44,11 @@ object Camera extends CameraFactory {
     ds
   }
 
-  override var cameraNames: Seq[String] = {
+  var cameraNames: Seq[String] = {
     initDevices()
   }
 
-  override var defaultCameraName: Option[String] = {
+  var defaultCameraName: Option[String] = {
     cameraNames.headOption
   }
 

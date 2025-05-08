@@ -12,8 +12,8 @@ object Headless {
   }
 
   object Camera extends CameraFactory {
-    override var cameraNames: Seq[String] = Seq()
-    override var defaultCameraName: Option[String] = None
+    var cameraNames: Seq[String] = Seq()
+    var defaultCameraName: Option[String] = None
     def open(cameraName: String): Option[org.nlogo.extensions.vid.VideoSource] = None
   }
 

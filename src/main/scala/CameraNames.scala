@@ -7,6 +7,6 @@ class CameraNames(cameras: CameraFactory) extends Reporter {
   override def getSyntax =
     Syntax.reporterSyntax(ret = Syntax.ListType)
   override def report(args: Array[Argument], context: Context): AnyRef =
-    LogoList(cameras.cameraNames: _*)
+    LogoList(cameras.cameraNames*)
 }
 

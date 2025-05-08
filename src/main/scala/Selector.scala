@@ -22,7 +22,7 @@ object NetLogoSelector extends Selector {
     val selectedCam = workspace.waitForResult(
       new ReporterRunnable[Object] {
         override def run(): Object = {
-          new OptionDialog(frame, "Select a Camera", "Choose a camera from the list", Array(choices: _*), I18N.gui.fn)
+          new OptionDialog(frame, "Select a Camera", "Choose a camera from the list", Array(choices*), I18N.gui.fn)
             .showOptionDialog()
         }
       })

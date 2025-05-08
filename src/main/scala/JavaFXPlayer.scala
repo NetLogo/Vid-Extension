@@ -20,7 +20,7 @@ class JavaFXPlayer extends Player {
   def boundedSize = Option(currentNode).flatMap(_.enforcedBounds)
 
   private var frame: Option[PlayerFrame] = None
-  private var currentNode: BoundedNode = _
+  private var currentNode: BoundedNode = null
 
   private val resizeListener: ChangeListener[Dimension] =
     function2ChangeListener { (oldDim: Dimension, newDim: Dimension) =>

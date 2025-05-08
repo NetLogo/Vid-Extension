@@ -3,7 +3,7 @@ import org.nlogo.build.{ NetLogoExtension, ExtensionDocumentationPlugin}
 enablePlugins(NetLogoExtension, ExtensionDocumentationPlugin)
 
 organization := "org.nlogo"
-scalaVersion := "2.13.16"
+scalaVersion := "3.7.0"
 version      := "1.1.2"
 isSnapshot   := true
 
@@ -11,16 +11,14 @@ scalacOptions ++= Seq(
   "-deprecation",
   "-unchecked",
   "-feature",
-  "-Xcheckinit",
   "-encoding", "us-ascii",
   "-Xfatal-warnings",
-  "-Xlint",
   "-release", "11"
 )
 
 netLogoExtName      := "vid"
 netLogoClassManager := "org.nlogo.extensions.vid.VidExtension"
-netLogoVersion      := "7.0.0-internal1-df97144"
+netLogoVersion      := "7.0.0-beta1"
 netLogoZipExtras   ++= Seq(baseDirectory.value / "README.md")
 
 // settings for the `sbt-javacpp` sbt plugin
