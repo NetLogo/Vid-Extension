@@ -26,7 +26,32 @@ javaCppVersion    :=  "1.5.7"
 // opencv depends on openblas so get those platform-specific binaries, too
 javaCppPresetLibs ++= Seq("opencv" -> "4.5.5", "openblas" -> "0.3.19")
 // only include the supported NetLogo platforms
-javaCppPlatform   :=  Seq("windows-x86_64", "windows-x86", "macosx-arm64", "macosx-x86_64", "linux-x86", "linux-x86_64")
+javaCppPlatform := {
+  (System.getProperty("os.name"), System.getProperty("os.arch")) match {
+    case (name, arch) if name.startsWith("Linux") =>
+      if (arch.contains("x86")) {
+        Seq("linux-x86")
+      } else {
+        Seq("linux-x86_64")
+      }
+
+    case (name, arch) if name.startsWith("Mac") =>
+      if (arch.contains("aarch64")) {
+        Seq("macosx-arm64")
+      } else {
+        Seq("macosx-x86_64")
+      }
+
+    case (name, arch) if name.startsWith("Windows") =>
+      if (arch.contains("x86")) {
+        Seq("windows-x86")
+      } else {
+        Seq("windows-x86_64")
+      }
+
+    case _ => throw new Exception("Unknown platform!")
+  }
+}
 
 libraryDependencies ++= Seq(
   "org.openimaj" % "core" % "1.4-SNAPSHOT" from "https://ccl.northwestern.edu/devel/openimaj_core-1.4-20220209.101848-153.jar"
@@ -64,7 +89,7 @@ libraryDependencies ++= Seq(
 Test / fork := true
 
 // Add JavaFX dependencies
-val javaFXVersion = "16"
+val javaFXVersion = "21"
 libraryDependencies ++= {
   // Determine OS version of JavaFX binaries
   lazy val osName = System.getProperty("os.name") match {
