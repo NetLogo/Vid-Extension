@@ -18,7 +18,7 @@ scalacOptions ++= Seq(
 
 netLogoExtName      := "vid"
 netLogoClassManager := "org.nlogo.extensions.vid.VidExtension"
-netLogoVersion      := "7.0.0-beta1"
+netLogoVersion      := "7.0.0-beta1-c8d671e"
 netLogoZipExtras   ++= Seq(baseDirectory.value / "README.md")
 
 // settings for the `sbt-javacpp` sbt plugin
