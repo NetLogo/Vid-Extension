@@ -2,10 +2,12 @@ import org.nlogo.build.{ NetLogoExtension, ExtensionDocumentationPlugin}
 
 enablePlugins(NetLogoExtension, ExtensionDocumentationPlugin)
 
+name       := "vid"
+version    := "1.1.2"
+isSnapshot := true
+
 organization := "org.nlogo"
 scalaVersion := "3.7.0"
-version      := "1.1.2"
-isSnapshot   := true
 
 scalacOptions ++= Seq(
   "-deprecation",
@@ -16,7 +18,6 @@ scalacOptions ++= Seq(
   "-release", "11"
 )
 
-netLogoExtName      := "vid"
 netLogoClassManager := "org.nlogo.extensions.vid.VidExtension"
 netLogoVersion      := "7.0.0-beta1-c8d671e"
 netLogoZipExtras   ++= Seq(baseDirectory.value / "README.md")
