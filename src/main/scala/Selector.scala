@@ -6,7 +6,7 @@ import org.nlogo.api.ReporterRunnable
 import org.nlogo.app.App
 import org.nlogo.awt.UserCancelException
 import org.nlogo.core.I18N
-import org.nlogo.swing.{ FileDialog, OptionDialog }
+import org.nlogo.swing.{ FileDialog, OptionPane }
 
 trait Selector {
   def selectOneOf(choices: Seq[String]): Option[String]
@@ -22,8 +22,7 @@ object NetLogoSelector extends Selector {
     val selectedCam = workspace.waitForResult(
       new ReporterRunnable[Object] {
         override def run(): Object = {
-          new OptionDialog(frame, "Select a Camera", "Choose a camera from the list", Array(choices*), I18N.gui.fn)
-            .showOptionDialog()
+          new OptionPane(frame, "Select a Camera", "Choose a camera from the list", choices)
         }
       })
 
