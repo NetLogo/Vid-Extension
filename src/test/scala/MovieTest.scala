@@ -2,13 +2,12 @@ package org.nlogo.extensions.vid
 
 import java.awt.image.BufferedImage
 import java.io.File
+import java.util.concurrent.LinkedTransferQueue
 
 import javafx.embed.swing.JFXPanel
 import javafx.scene.media.{ Media, MediaPlayer }
 import javafx.scene.media.MediaPlayer.{ Status => MPStatus }
 import javafx.util.Duration
-
-import scala.concurrent.Channel
 
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.concurrent.Waiters
@@ -30,10 +29,10 @@ class MovieTest extends AnyFunSuite with Waiters {
   val NotFoundMovieURL = "http://raw.githubusercontent.com/NetLogo/vid/master/src/test/resources/notreal.mp4"
 
   trait MovieFixture {
-    val isReady = new Channel[Boolean]
+    val isReady = new LinkedTransferQueue[Boolean]
     val media = new Media(new File(ValidMoviePath).toURI.toString)
     val mediaPlayer = new MediaPlayer(media)
-    mediaPlayer.setOnReady(() => isReady.write(true))
+    mediaPlayer.setOnReady(() => isReady.add(true))
     val movie = new Movie(media, mediaPlayer)
 
     def expectTransition(status: MPStatus, w: Waiter) =
@@ -45,7 +44,7 @@ class MovieTest extends AnyFunSuite with Waiters {
       )
 
     if (! (mediaPlayer.getStatus == MediaPlayer.Status.READY))
-      isReady.read
+      isReady.take
   }
 
   test("given movie doesn't exist, open returns None") {

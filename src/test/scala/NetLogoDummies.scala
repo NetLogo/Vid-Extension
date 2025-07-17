@@ -25,6 +25,9 @@ class FakeWorkspace extends org.nlogo.api.Workspace {
   override def exportView: BufferedImage = {
     new BufferedImage(480, 480, BufferedImage.TYPE_INT_ARGB)
   }
+
+  def getResourceManager: ExternalResourceManager = ???
+
   // Members declared in org.nlogo.api.Controllable
   def command(source: String): Unit = ???
   def evaluateCommands(owner: org.nlogo.api.JobOwner,source: String,waitForCompletion: Boolean): Unit = ???
@@ -62,6 +65,8 @@ class FakeWorkspace extends org.nlogo.api.Workspace {
   // Members declared in org.nlogo.api.Workspace
   def behaviorSpaceRunNumber(n: Int): Unit = ???
   def behaviorSpaceRunNumber: Int = ???
+  def getBehaviorSpaceExperiments: List[LabProtocol] = ???
+  def setBehaviorSpaceExperiments(experiments: List[LabProtocol]): Unit = ???
   def benchmark(minTime: Int,maxTime: Int): Unit = ???
   def changeTopology(wrapX: Boolean,wrapY: Boolean): Unit = ???
   def clearAll(): Unit = ???

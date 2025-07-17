@@ -87,7 +87,7 @@ class RecorderSpec extends AnyFeatureSpec with GivenWhenThen with VidHelpers {
 
     Scenario("save-recording errors if the specified directory does not exist") {
       new Helpers with ExpectError {
-        givenRecorderStarted
+        givenRecorderStarted()
         whenRunForError("vid:save-recording", vid.`save-recording`("/NoDir/test.mp4"))
         thenShouldSeeError("vid: no such directory")
       }
@@ -95,7 +95,7 @@ class RecorderSpec extends AnyFeatureSpec with GivenWhenThen with VidHelpers {
 
     Scenario("save-recording saves the recording to the specified file") {
       new Helpers {
-        givenRecorderStarted
+        givenRecorderStarted()
         Given("vid:record-view has been run")
         vid.`record-view`()
         When("vid:save-recording is run")
@@ -109,7 +109,7 @@ class RecorderSpec extends AnyFeatureSpec with GivenWhenThen with VidHelpers {
         try {
           Files.delete(Paths.get("foo.mp4"))
         } catch { case _: java.nio.file.NoSuchFileException => }
-        givenRecorderStarted
+        givenRecorderStarted()
         Given("vid:record-view has been run")
         vid.`record-view`()
         When("vid:save-recording is run")
@@ -121,7 +121,7 @@ class RecorderSpec extends AnyFeatureSpec with GivenWhenThen with VidHelpers {
 
     Scenario("save-recording throws an exception if no frames have been recorded") {
       new Helpers with ExpectError {
-        givenRecorderStarted
+        givenRecorderStarted()
         whenRunForError("vid:save-recording", vid.`save-recording`("error.mp4"))
         thenShouldSeeError("vid: no frames recorded")
       }

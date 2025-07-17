@@ -11,7 +11,7 @@ import org.nlogo.api.ExtensionException
 
 import scala.language.dynamics
 
-trait VidHelpers { suite: AnyFeatureSpec with GivenWhenThen =>
+trait VidHelpers { suite: AnyFeatureSpec & GivenWhenThen =>
   trait VidSpecHelpers extends WithLoadedVidExtension {
 
     class GivenWhenThenAndRunner(backing: CommandPrimitiveLoader, gwta: (String) => Unit) extends Dynamic {
@@ -21,13 +21,13 @@ trait VidHelpers { suite: AnyFeatureSpec with GivenWhenThen =>
           case other => other.toString
         }
         gwta(s"I run vid:$name ${argStrings.mkString(" ")}")
-        backing.applyDynamic(name)(args: _*)
+        backing.applyDynamic(name)(args*)
       }
     }
 
-    lazy val givenIHave = new GivenWhenThenAndRunner(vid, Given _)
-    lazy val andIRun    = new GivenWhenThenAndRunner(vid, And _)
-    lazy val whenIRun   = new GivenWhenThenAndRunner(vid, When _)
+    lazy val givenIHave = new GivenWhenThenAndRunner(vid, Given)
+    lazy val andIRun    = new GivenWhenThenAndRunner(vid, And)
+    lazy val whenIRun   = new GivenWhenThenAndRunner(vid, When)
 
     val dummyImage = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB)
 
@@ -74,8 +74,8 @@ trait VidHelpers { suite: AnyFeatureSpec with GivenWhenThen =>
     }
 
     val cameraFactory = new CameraFactory {
-      override var cameraNames = Seq("camera")
-      override var defaultCameraName: Option[String] = cameraNames.headOption
+      var cameraNames = Seq("camera")
+      var defaultCameraName = cameraNames.headOption
       override def open(cameraName: String): Option[VideoSource] = {
         cameraName match {
           case "camera" => Some(dummyCamera)
@@ -84,11 +84,11 @@ trait VidHelpers { suite: AnyFeatureSpec with GivenWhenThen =>
       }
     }
 
-    override val player = new DummyPlayer()
+    override val player: DummyPlayer = new DummyPlayer()
 
-    val recorder = new DummyRecorder()
+    val recorder: DummyRecorder = new DummyRecorder()
 
-    val selector = new DummySelector()
+    val selector: DummySelector = new DummySelector()
 
     def givenOpenMovie(started: Boolean = false): Unit = {
       suite.Given("I have opened a movie")
