@@ -3,7 +3,7 @@ import org.nlogo.build.{ NetLogoExtension, ExtensionDocumentationPlugin}
 enablePlugins(NetLogoExtension, ExtensionDocumentationPlugin)
 
 name       := "vid"
-version    := "1.2.0"
+version    := "1.2.1"
 isSnapshot := true
 
 organization := "org.nlogo"
