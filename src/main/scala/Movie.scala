@@ -101,7 +101,7 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
       if (mediaPlayer.getStatus != null && mediaPlayer.getStatus != UNKNOWN)
         None
       else
-        openException.poll
+        openException.take
 
     mediaPlayer.statusProperty.removeListener(listener)
     media.setOnError({ () => })
@@ -127,7 +127,7 @@ class Movie(media: Media, mediaPlayer: MediaPlayer) extends VideoSource {
       scene.snapshot(callback, null)
     }
 
-    chan.poll
+    chan.take
   }
 
   private def movieNode(bounds: Option[(Double, Double)]): BoundedNode = {

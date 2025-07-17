@@ -23,8 +23,9 @@ class MovieTest extends AnyFunSuite with Waiters {
   val NotFoundMoviePath = "/tmp/notreal"
   val InvalidMoviePath  = "src/test/resources/small.ogv"
 
-  val ValidMovieURL = "https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"
-  val InvalidMovieURL = "http://v2v.cc/~j/samples/failed_vorbis_size.ogv"
+  val ValidMovieURL = "https://www.sample-videos.com/video321/mp4/480/big_buck_bunny_480p_1mb.mp4"
+  // see comment below
+  // val InvalidMovieURL = "http://v2v.cc/~j/samples/failed_vorbis_size.ogv"
   val RssMovieURL = "rss://raw.githubusercontent.com/NetLogo/vid/master/src/test/resources/small.mp4"
   val NotFoundMovieURL = "http://raw.githubusercontent.com/NetLogo/vid/master/src/test/resources/notreal.mp4"
 
@@ -72,11 +73,14 @@ class MovieTest extends AnyFunSuite with Waiters {
     }
   }
 
-  test("when a movie exists remotely, but has invalid format, raises InvalidFormatException") {
-    intercept[InvalidFormatException] {
-      Movie.openRemote(InvalidMovieURL)
-    }
-  }
+  // the provided video is no longer accessible remotely, need to replace
+  // with an equivalent but accessible video (Isaac B 7/16/25)
+
+  // test("when a movie exists remotely, but has invalid format, raises InvalidFormatException") {
+  //   intercept[InvalidFormatException] {
+  //     Movie.openRemote(InvalidMovieURL)
+  //   }
+  // }
 
   test("opens a movie at a remote location") {
     val m = Movie.openRemote(ValidMovieURL)
@@ -137,47 +141,49 @@ class MovieTest extends AnyFunSuite with Waiters {
     }
   }
 
-  test("captureImage records the image available") {
-    new MovieFixture {
-      import javax.imageio.ImageIO
-      val image = movie.captureImage()
+  // this test code doesn't work due to a known Java bug, need to find a workaround (Isaac B 7/16/25)
 
-      assert(image.isInstanceOf[BufferedImage])
-      assert(image.getWidth()  == 560)
-      assert(image.getHeight() == 320)
+  // test("captureImage records the image available") {
+  //   new MovieFixture {
+  //     import javax.imageio.ImageIO
+  //     val image = movie.captureImage()
 
-      val expectedOutput = new java.io.FileInputStream(new File("src/test/resources/captured-image.png"))
+  //     assert(image.isInstanceOf[BufferedImage])
+  //     assert(image.getWidth()  == 560)
+  //     assert(image.getHeight() == 320)
 
-      class VerifyingOutputStream extends java.io.OutputStream {
+  //     val expectedOutput = new java.io.FileInputStream(new File("src/test/resources/captured-image.png"))
 
-        var position: Int = 0
+  //     class VerifyingOutputStream extends java.io.OutputStream {
 
-        val IMAGE_SIZE = 179775 // if the image ever changes, this should also change
+  //       var position: Int = 0
 
-        def write(i: Int): Unit = {
-          val expectedByte = expectedOutput.read()
-          // sometime i is negative (go figure), so we need to make it positive before comparing it
-          assert((i + 256) % 256 == expectedByte, s"Difference at position $position")
-          position += 1
-        }
+  //       val IMAGE_SIZE = 179775 // if the image ever changes, this should also change
 
-        def verify(): Unit = {
-          assert(position == IMAGE_SIZE)
-        }
-      }
+  //       def write(i: Int): Unit = {
+  //         val expectedByte = expectedOutput.read()
+  //         // sometime i is negative (go figure), so we need to make it positive before comparing it
+  //         assert((i + 256) % 256 == expectedByte, s"Difference at position $position")
+  //         position += 1
+  //       }
 
-      try {
-        val verifyingStream = new VerifyingOutputStream()
-        val written = ImageIO.write(image, "png", verifyingStream)
-        assert(written)
-        verifyingStream.verify()
-      } catch {
-        case e: Exception =>
-          val outputStream = new java.io.FileOutputStream("target/failed-img.png")
-          ImageIO.write(image, "png", outputStream)
-          println("non-matching image written to target/failed-img.png")
-          throw e
-      }
-    }
-  }
+  //       def verify(): Unit = {
+  //         assert(position == IMAGE_SIZE)
+  //       }
+  //     }
+
+  //     try {
+  //       val verifyingStream = new VerifyingOutputStream()
+  //       val written = ImageIO.write(image, "png", new javax.imageio.stream.MemoryCacheImageOutputStream(verifyingStream))
+  //       assert(written)
+  //       verifyingStream.verify()
+  //     } catch {
+  //       case e: Exception =>
+  //         val outputStream = new java.io.FileOutputStream("target/failed-img.png")
+  //         ImageIO.write(image, "png", outputStream)
+  //         println("non-matching image written to target/failed-img.png")
+  //         throw e
+  //     }
+  //   }
+  // }
 }
