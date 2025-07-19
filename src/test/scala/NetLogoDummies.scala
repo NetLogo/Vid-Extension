@@ -37,7 +37,7 @@ class FakeWorkspace extends org.nlogo.api.Workspace {
 
   // Members declared in org.nlogo.api.ImporterUser
   def currentPlot(plot: String): Unit = ???
-  def getPlot(plot: String): org.nlogo.api.PlotInterface = ???
+  def maybeGetPlot(plot: String): Option[PlotInterface] = ???
   def importExtensionData(name: String,data: java.util.List[Array[String]],handler: org.nlogo.api.ImportErrorHandler): Unit = ???
   def isExtensionName(name: String): Boolean = ???
   def setOutputAreaContents(text: String): Unit = ???
