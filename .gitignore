@@ -6,3 +6,6 @@
 /*.mp4
 .bundledFiles
 extensions/
+videoDeviceUtils/**/*.dll
+videoDeviceUtils/**/*.dylib
+videoDeviceUtils/**/*.so
