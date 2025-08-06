@@ -3,8 +3,6 @@ package org.nlogo.extensions.vid
 import java.awt.image.BufferedImage
 import java.awt.Dimension
 
-import org.openimaj.video.capture.VideoCapture
-
 import org.bytedeco.javacv.{ Java2DFrameUtils, OpenCVFrameGrabber }
 
 import javafx.beans.binding.Bindings
@@ -13,6 +11,8 @@ import javafx.concurrent.{ Service, Task, WorkerStateEvent }
 import javafx.embed.swing.SwingFXUtils
 import javafx.event.EventHandler
 import javafx.scene.image.{ Image, ImageView }
+
+import org.nlogo.extensions.vid.util.VideoDeviceUtils
 
 trait CameraFactory {
   var cameraNames:              Seq[String]
@@ -34,12 +34,7 @@ object Camera extends CameraFactory {
   }
 
   private def initDevices(): Seq[String] = {
-    val ds = devices.getOrElse({
-      import scala.jdk.CollectionConverters.CollectionHasAsScala
-      withContextClassLoader( () => {
-        VideoCapture.getVideoDevices().asScala.toSeq.map(_.getNameStr())
-      })
-    })
+    val ds = devices.getOrElse(withContextClassLoader(() => VideoDeviceUtils.getDeviceNames.toSeq))
     devices = Some(ds)
     ds
   }

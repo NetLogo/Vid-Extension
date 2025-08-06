@@ -55,32 +55,9 @@ javaCppPlatform := {
 }
 
 libraryDependencies ++= Seq(
-  "org.openimaj" % "core" % "1.4-SNAPSHOT" from "https://ccl.northwestern.edu/devel/openimaj_core-1.4-20220209.101848-153.jar"
-, "org.openimaj" % "core-image" % "1.4-SNAPSHOT" from "https://ccl.northwestern.edu/devel/openimaj_core-image-1.4-20220209.101850-153.jar"
-, "org.openimaj" % "core-aop-support" % "1.4-SNAPSHOT" from "https://ccl.northwestern.edu/devel/openimaj_core-aop-support-1.4-20220209.101849-153.jar"
-, "org.openimaj" % "core-citation" % "1.4-SNAPSHOT" from "https://ccl.northwestern.edu/devel/openimaj_core-citation-1.4-20220209.101849-153.jar"
-, "org.openimaj" % "core-video" % "1.4-SNAPSHOT" from "https://ccl.northwestern.edu/devel/openimaj_core-video-1.4-20220209.101851-153.jar"
-, "org.openimaj" % "core-video-capture" % "1.4-SNAPSHOT" from "https://ccl.northwestern.edu/devel/openimaj_core-video-capture-1.4-20220209.101851-153.jar"
-    exclude("org.openimaj.content", "animation")
-    exclude("org.openimaj", "core-audio")
-    exclude("org.openimaj", "core-math")
-    exclude("com.twelvemonkeys.common", "common-lang")
-    exclude("com.sun.media", "jai-codec")
-    exclude("javax.media", "jai-core")
-    exclude("net.sourceforge.jeuclid", "jeuclid-core")
-    exclude("uk.ac.ed.ph.snuggletex", "snuggletex-core")
-    exclude("com.googlecode.json-simple", "json-simple")
-    exclude("com.flickr4java", "flickr4java")
-    exclude("uk.ac.ed.ph.snuggletex", "snuggletex-upconversion")
-    exclude("com.caffeineowl", "bezier-utils")
-    exclude("com.twelvemonkeys.imageio", "imageio-core")
-    exclude("uk.ac.ed.ph.snuggletex", "snuggletex-jeuclid")
-    exclude("com.twelvemonkeys.imageio", "imageio-jpeg")
-    exclude("org.apache.ant", "ant")
-, "com.nativelibs4java" % "bridj" % "0.7-SNAPSHOT" from "https://ccl.northwestern.edu/devel/openimaj_bridj-0.7-20140918-3.jar"
 // only include `javacv` and not `javacv-platform` as we manually specify the native libraries
 // throught the `sbt-javacpp` sbt plugin
-, "org.bytedeco" % "javacv" % "1.5.7"
+  "org.bytedeco" % "javacv" % "1.5.7"
 , "org.jcodec" % "jcodec" % "0.1.9"
 , "org.jcodec" % "jcodec-javase" % "0.1.9"
 )
