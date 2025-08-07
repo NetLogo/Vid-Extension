@@ -7,5 +7,8 @@
 .bundledFiles
 extensions/
 videoDeviceUtils/**/*.dll
+videoDeviceUtils/**/*.exp
+videoDeviceUtils/**/*.lib
+videoDeviceUtils/**/*.obj
 videoDeviceUtils/**/*.dylib
 videoDeviceUtils/**/*.so

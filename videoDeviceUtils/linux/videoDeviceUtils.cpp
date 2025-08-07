@@ -11,18 +11,7 @@
 
 jobjectArray Java_org_nlogo_extensions_vid_util_VideoDeviceUtils_getDeviceNames(JNIEnv* env, jobject obj)
 {
-    // AVCaptureDeviceDiscoverySession* session = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes: @[AVCaptureDeviceTypeBuiltInWideAngleCamera, AVCaptureDeviceTypeExternal] mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionUnspecified];
-
-    // NSArray<AVCaptureDevice*>* devices = [session devices];
-
-    // jobjectArray names = (jobjectArray)env->NewObjectArray((int)[devices count], env->FindClass("java/lang/String"), env->NewStringUTF(""));
-
-    // for (unsigned int i = 0; i < [devices count]; i++)
-    // {
-    //     env->SetObjectArrayElement(names, i, env->NewStringUTF([[devices[i] localizedName] cStringUsingEncoding: NSUTF8StringEncoding]));
-    // }
-
-    // return names;
+    jobjectArray empty = env->NewObjectArray(0, env->FindClass("java/lang/String"), env->NewStringUTF(""));
 
     std::vector<char*> names_vector;
 
@@ -34,7 +23,7 @@ jobjectArray Java_org_nlogo_extensions_vid_util_VideoDeviceUtils_getDeviceNames(
 
             if (fd == -1)
             {
-                return nullptr;
+                return empty;
             }
 
             v4l2_capability capability;
@@ -43,7 +32,7 @@ jobjectArray Java_org_nlogo_extensions_vid_util_VideoDeviceUtils_getDeviceNames(
             {
                 close(fd);
 
-                return nullptr;
+                return empty;
             }
 
             close(fd);
