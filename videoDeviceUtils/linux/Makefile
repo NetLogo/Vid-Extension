@@ -1,5 +1,13 @@
-include64 := $(shell find /usr/lib/jvm -name jni.h -exec dirname {} \; | grep amd64)
-include32 := $(shell find /usr/lib/jvm -name jni.h -exec dirname {} \; | grep i386)
+ifeq ($(origin JAVA_HOME_64), undefined)
+  $(error You must set the JAVA_HOME_64 variable to the path of your 64-bit JDK)
+endif
+
+ifeq ($(origin JAVA_HOME_32), undefined)
+  $(error You must set the JAVA_HOME_32 variable to the path of your 32-bit JDK)
+endif
+
+include64 := ${JAVA_HOME_64}/include/
+include32 := ${JAVA_HOME_32}/include/
 
 64:
 	mkdir -p linux-amd64
