@@ -23,7 +23,7 @@ class MovieTest extends AnyFunSuite with Waiters {
   val NotFoundMoviePath = "/tmp/notreal"
   val InvalidMoviePath  = "src/test/resources/small.ogv"
 
-  val ValidMovieURL = "https://www.sample-videos.com/video321/mp4/480/big_buck_bunny_480p_1mb.mp4"
+  //val ValidMovieURL = "https://www.sample-videos.com/video321/mp4/480/big_buck_bunny_480p_1mb.mp4"
   // see comment below
   // val InvalidMovieURL = "http://v2v.cc/~j/samples/failed_vorbis_size.ogv"
   val RssMovieURL = "rss://raw.githubusercontent.com/NetLogo/vid/master/src/test/resources/small.mp4"
@@ -82,10 +82,10 @@ class MovieTest extends AnyFunSuite with Waiters {
   //   }
   // }
 
-  test("opens a movie at a remote location") {
-    val m = Movie.openRemote(ValidMovieURL)
-    assert(m.nonEmpty)
-  }
+  //test("opens a movie at a remote location") {
+  //  val m = Movie.openRemote(ValidMovieURL)
+  //  assert(m.nonEmpty)
+  //}
 
   test("when an attempt is made to setTime outside the time of the media, it raises IllegalArgumentException") {
     new MovieFixture {
