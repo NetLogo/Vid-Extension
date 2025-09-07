@@ -3,10 +3,11 @@ package org.nlogo.extensions.vid
 import org.nlogo.api.{ DefaultClassManager, ExtensionManager, PrimitiveManager }
 
 object VidExtension {
+  private var isHeadless = true
 
   // we use two headless variables. The java one forces headless, the other one says NetLogo would like it if you ran headlessly
   def guiOrHeadless[A](gui: => A, headless: => A): A = {
-    if (System.getProperty("java.awt.headless") == "true" || System.getProperty("org.nlogo.preferHeadless") == "true") {
+    if (isHeadless) {
       headless
     } else {
       try {
@@ -31,6 +32,7 @@ class VidExtension(movies: MovieFactory, cameras: CameraFactory, player: Player,
     this(VidExtension.movie, VidExtension.camera, VidExtension.player, VidExtension.selector, new MP4Recorder())
 
   override def runOnce(em: ExtensionManager): Unit = {
+    VidExtension.isHeadless = !em.workspaceContext.workspaceGUI
   }
 
   override def load(manager: PrimitiveManager) = {

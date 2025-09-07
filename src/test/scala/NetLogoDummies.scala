@@ -4,41 +4,44 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-import org.nlogo.api._
+import org.nlogo.api.{ Activation, Agent, CommandRunnable, Context, ExtensionManager, ExternalResourceManager,
+                       ImportErrorHandler, JobOwner, LabProtocol, LibraryManager, LogoException, MersenneTwisterFast,
+                       OutputDestination, Perspective, PlotInterface, PlotManagerInterface, PreviewCommands,
+                       RendererInterface, ReporterRunnable, Workspace, WorkspaceContext, World }
 
 class FakeContext extends Context {
   def attachCurrentDirectory(path: String): String =
     s"/currentdir/$path"
   def attachModelDir(filePath: String): String = ???
-  def getAgent: org.nlogo.api.Agent = ???
+  def getAgent: Agent = ???
   def getDrawing: java.awt.image.BufferedImage = ???
-  def getRNG: org.nlogo.api.MersenneTwisterFast = ???
+  def getRNG: MersenneTwisterFast = ???
   def importPcolors(image: java.awt.image.BufferedImage,asNetLogoColors: Boolean): Unit = ???
   def logCustomGlobals(nameValuePairs: Seq[(String, String)]): Unit = ???
   def logCustomMessage(msg: String): Unit = ???
-  def activation: org.nlogo.api.Activation = ???
-  def world: org.nlogo.api.World = ???
+  def activation: Activation = ???
+  def world: World = ???
   val workspace = new FakeWorkspace()
 }
 
-class FakeWorkspace extends org.nlogo.api.Workspace {
+class FakeWorkspace extends Workspace {
   override def exportView: BufferedImage = {
     new BufferedImage(480, 480, BufferedImage.TYPE_INT_ARGB)
   }
 
   def getResourceManager: ExternalResourceManager = ???
 
-  // Members declared in org.nlogo.api.Controllable
+  // Members declared in Controllable
   def command(source: String): Unit = ???
-  def evaluateCommands(owner: org.nlogo.api.JobOwner,source: String,waitForCompletion: Boolean): Unit = ???
-  def evaluateCommands(owner: org.nlogo.api.JobOwner,source: String): Unit = ???
-  def evaluateReporter(owner: org.nlogo.api.JobOwner,source: String): AnyRef = ???
+  def evaluateCommands(owner: JobOwner,source: String,waitForCompletion: Boolean): Unit = ???
+  def evaluateCommands(owner: JobOwner,source: String): Unit = ???
+  def evaluateReporter(owner: JobOwner,source: String): AnyRef = ???
   def report(source: String): AnyRef = ???
 
-  // Members declared in org.nlogo.api.ImporterUser
+  // Members declared in ImporterUser
   def currentPlot(plot: String): Unit = ???
   def maybeGetPlot(plot: String): Option[PlotInterface] = ???
-  def importExtensionData(name: String,data: java.util.List[Array[String]],handler: org.nlogo.api.ImportErrorHandler): Unit = ???
+  def importExtensionData(name: String,data: java.util.List[Array[String]],handler: ImportErrorHandler): Unit = ???
   def isExtensionName(name: String): Boolean = ???
   def setOutputAreaContents(text: String): Unit = ???
 
@@ -46,23 +49,23 @@ class FakeWorkspace extends org.nlogo.api.Workspace {
   def readFromString(s: String): AnyRef = ???
   def readNumberFromString(source: String): AnyRef = ???
 
-  // Members declared in org.nlogo.api.RandomServices
-  def auxRNG: org.nlogo.api.MersenneTwisterFast = ???
-  def mainRNG: org.nlogo.api.MersenneTwisterFast = ???
+  // Members declared in RandomServices
+  def auxRNG: MersenneTwisterFast = ???
+  def mainRNG: MersenneTwisterFast = ???
   def seedRNGs(seed: Int): Unit = ???
 
-  // Members declared in org.nlogo.api.ViewSettings
+  // Members declared in ViewSettings
   def drawSpotlight: Boolean = ???
   def fontSize: Int = ???
-  def isHeadless: Boolean = ???
-  def perspective: org.nlogo.api.Perspective = ???
+  def workspaceContext: WorkspaceContext = ???
+  def perspective: Perspective = ???
   def renderPerspective: Boolean = ???
   def viewHeight: Double = ???
   def viewOffsetX: Double = ???
   def viewOffsetY: Double = ???
   def viewWidth: Double = ???
 
-  // Members declared in org.nlogo.api.Workspace
+  // Members declared in Workspace
   def behaviorSpaceRunNumber(n: Int): Unit = ???
   def behaviorSpaceRunNumber: Int = ???
   def getBehaviorSpaceExperiments: List[LabProtocol] = ???
@@ -88,8 +91,8 @@ class FakeWorkspace extends org.nlogo.api.Workspace {
   def exportWorld(writer: java.io.PrintWriter): Unit = ???
   def exportWorld(path: String): Unit = ???
   def getAndCreateDrawing(): java.awt.image.BufferedImage = ???
-  def getExtensionManager: org.nlogo.api.ExtensionManager = ???
-  def getLibraryManager: org.nlogo.api.LibraryManager = ???
+  def getExtensionManager: ExtensionManager = ???
+  def getLibraryManager: LibraryManager = ???
   def getModelDir: String = ???
   def getModelFileName: String = ???
   def getModelPath: String = ???
@@ -97,24 +100,24 @@ class FakeWorkspace extends org.nlogo.api.Workspace {
   def importDrawing(path: String): Unit = ???
   def importWorld(path: String): Unit = ???
   def importWorld(reader: java.io.Reader): Unit = ???
-  def lastLogoException: org.nlogo.api.LogoException = ???
+  def lastLogoException: LogoException = ???
   def open(modelPath: String, shouldAutoInstallLibs: Boolean = false): Unit = ???
   def openModel(model: org.nlogo.core.Model, shouldAutoInstallLibs: Boolean = false): Unit = ???
-  def outputObject(obj: AnyRef,owner: AnyRef,addNewline: Boolean,readable: Boolean,destination: org.nlogo.api.OutputDestination): Unit = ???
+  def outputObject(obj: AnyRef,owner: AnyRef,addNewline: Boolean,readable: Boolean,destination: OutputDestination): Unit = ???
   def patchSize: Double = ???
   def plotManager: AnyRef = ???
   def realPlotManager: PlotManagerInterface = ???
-  def previewCommands: org.nlogo.api.PreviewCommands = ???
+  def previewCommands: PreviewCommands = ???
   def profilingEnabled: Boolean = ???
-  def renderer: org.nlogo.api.RendererInterface = ???
+  def renderer: RendererInterface = ???
   def setModelPath(path: String): Unit = ???
-  def waitFor(runnable: org.nlogo.api.CommandRunnable): Unit = ???
+  def waitFor(runnable: CommandRunnable): Unit = ???
   def waitForQueuedEvents(): Unit = ???
-  def waitForResult[T](runnable: org.nlogo.api.ReporterRunnable[T]): T = ???
+  def waitForResult[T](runnable: ReporterRunnable[T]): T = ???
   def warningMessage(message: String): Boolean = ???
-  def world: org.nlogo.api.World = ???
+  def world: World = ???
   def worldChecksum: String = ???
-  // Members declared in org.nlogo.api.WorldResizer
+  // Members declared in WorldResizer
   def patchSize(patchSize: Double): Unit = ???
   def resizeView(): Unit = ???
   def setDimensions(dim: org.nlogo.core.WorldDimensions,patchSize: Double): Unit = ???
