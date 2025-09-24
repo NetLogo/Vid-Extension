@@ -54,6 +54,8 @@ javaCppPlatform := {
   }
 }
 
+resolvers += "jitpack" at "https://jitpack.io"
+
 libraryDependencies ++= Seq(
 // only include `javacv` and not `javacv-platform` as we manually specify the native libraries
 // throught the `sbt-javacpp` sbt plugin
