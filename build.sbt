@@ -19,7 +19,7 @@ scalacOptions ++= Seq(
 )
 
 netLogoClassManager := "org.nlogo.extensions.vid.VidExtension"
-netLogoVersion      := "7.0.0-424b50b"
+netLogoVersion      := "7.0.0-2486d1e"
 netLogoZipExtras   ++= Seq(baseDirectory.value / "README.md")
 
 // settings for the `sbt-javacpp` sbt plugin
@@ -53,8 +53,6 @@ javaCppPlatform := {
     case _ => throw new Exception("Unknown platform!")
   }
 }
-
-resolvers += "jitpack" at "https://jitpack.io"
 
 libraryDependencies ++= Seq(
 // only include `javacv` and not `javacv-platform` as we manually specify the native libraries
