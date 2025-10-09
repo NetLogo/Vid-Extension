@@ -26,6 +26,8 @@ object VideoDeviceUtils {
 
   System.load(tempPath.toString)
 
+  tempPath.toFile.deleteOnExit()
+
   def getDeviceNames: Array[String] = {
     new VideoDeviceUtils().getDeviceNames
   }
