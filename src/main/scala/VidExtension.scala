@@ -3,33 +3,13 @@ package org.nlogo.extensions.vid
 import org.nlogo.api.{ DefaultClassManager, ExtensionManager, PrimitiveManager }
 
 object VidExtension {
-  private var isHeadless = true
-
-  // we use two headless variables. The java one forces headless, the other one says NetLogo would like it if you ran headlessly
-  def guiOrHeadless[A](gui: => A, headless: => A): A = {
-    if (isHeadless) {
-      headless
-    } else {
-      try {
-        gui
-      } catch {
-        case ex: java.lang.ExceptionInInitializerError if PlatformErrors.isPossibleWinMissingVcppRuntimeError =>
-          PlatformErrors.showMissingVcppRuntimeMessage(ex)
-          headless
-      }
-    }
-  }
-
-  lazy val movie: MovieFactory   = guiOrHeadless(Movie, Headless.Movie)
-  lazy val camera: CameraFactory = guiOrHeadless(Camera, Headless.Camera)
-  lazy val player: Player        = guiOrHeadless(new JavaFXPlayer(), Headless.HeadlessPlayer)
-  lazy val selector: Selector    = guiOrHeadless(NetLogoSelector, Headless.HeadlessSelector)
+  var isHeadless = true
 }
+
 class VidExtension(movies: MovieFactory, cameras: CameraFactory, player: Player, selector: Selector, recorder: Recorder)
   extends DefaultClassManager with VideoSourceContainer {
 
-  def this() =
-    this(VidExtension.movie, VidExtension.camera, VidExtension.player, VidExtension.selector, new MP4Recorder())
+  def this() = this(Movie, Camera, new JavaFXPlayer, NetLogoSelector, new MP4Recorder)
 
   override def runOnce(em: ExtensionManager): Unit = {
     VidExtension.isHeadless = !em.workspaceContext.workspaceGUI

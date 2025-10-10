@@ -31,32 +31,41 @@ class InvalidProtocolException extends Exception("Invalid protocol")
 
 object Movie extends MovieFactory {
   def open(filePath: String): Option[VideoSource] = {
-    val file = new File(filePath)
-    if (file.exists) {
-      try {
-        Some(buildMovie(file.toURI.toString))
-      } catch {
-        case me: MediaException if me.getMessage == "Unrecognized file signature!" =>
-          throw new InvalidFormatException()
-      }
-    } else
+    if (VidExtension.isHeadless) {
       None
+    } else {
+      val file = new File(filePath)
+      if (file.exists) {
+        try {
+          Some(buildMovie(file.toURI.toString))
+        } catch {
+          case me: MediaException if me.getMessage == "Unrecognized file signature!" =>
+            throw new InvalidFormatException()
+        }
+      } else {
+        None
+      }
+    }
   }
 
   def openRemote(uri: String): Option[VideoSource] = {
-    try {
-      val m = buildMovie(uri)
-      m.awaitLoad() match {
-        case None    => Some(m)
-        case Some(e) => e.getType match {
-          case MediaException.Type.MEDIA_UNSUPPORTED =>
-            throw new InvalidFormatException()
-          case _ => None
+    if (VidExtension.isHeadless) {
+      None
+    } else {
+      try {
+        val m = buildMovie(uri)
+        m.awaitLoad() match {
+          case None    => Some(m)
+          case Some(e) => e.getType match {
+            case MediaException.Type.MEDIA_UNSUPPORTED =>
+              throw new InvalidFormatException()
+            case _ => None
+          }
         }
+      } catch {
+        case e: UnsupportedOperationException if e.getMessage.startsWith("Unsupported protocol") =>
+          throw new InvalidProtocolException()
       }
-    } catch {
-      case e: UnsupportedOperationException if e.getMessage.startsWith("Unsupported protocol") =>
-        throw new InvalidProtocolException()
     }
   }
 

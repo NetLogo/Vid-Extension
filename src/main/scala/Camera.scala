@@ -15,8 +15,8 @@ import javafx.scene.image.{ Image, ImageView }
 import org.nlogo.extensions.vid.util.VideoDeviceUtils
 
 trait CameraFactory {
-  var cameraNames:              Seq[String]
-  var defaultCameraName:        Option[String]
+  def cameraNames:              Seq[String]
+  def defaultCameraName:        Option[String]
   def open(cameraName: String): Option[VideoSource]
 }
 
@@ -34,22 +34,23 @@ object Camera extends CameraFactory {
   }
 
   private def initDevices(): Seq[String] = {
-    val ds = devices.getOrElse(withContextClassLoader(() => VideoDeviceUtils.getDeviceNames.toSeq))
-    devices = Some(ds)
-    ds
+    if (VidExtension.isHeadless) {
+      Seq()
+    } else {
+      val ds = devices.getOrElse(withContextClassLoader(() => VideoDeviceUtils.getDeviceNames.toSeq))
+      devices = Some(ds)
+      ds
+    }
   }
 
-  var cameraNames: Seq[String] = {
+  def cameraNames: Seq[String] =
     initDevices()
-  }
 
-  var defaultCameraName: Option[String] = {
+  def defaultCameraName: Option[String] =
     cameraNames.headOption
-  }
 
   override def open(cameraName: String): Option[VideoSource] = {
-    val ds = initDevices()
-    val index = ds.indexWhere(_ == cameraName)
+    val index = cameraNames.indexWhere(_ == cameraName)
     if (index == -1) {
       None
     } else {

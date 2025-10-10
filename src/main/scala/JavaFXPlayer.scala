@@ -15,7 +15,9 @@ import javax.swing.{ JFrame, SwingUtilities }
 import util.FunctionToCallback.function2ChangeListener
 
 class JavaFXPlayer extends Player {
-  new JFXPanel() // init JavaFX
+  if (!VidExtension.isHeadless) {
+    new JFXPanel() // init JavaFX
+  }
 
   def boundedSize = Option(currentNode).flatMap(_.enforcedBounds)
 
@@ -35,14 +37,18 @@ class JavaFXPlayer extends Player {
   present(emptyNode(None))
 
   def emptyNode(bounds: Option[(Double, Double)]): BoundedNode = {
-    val (width, height) = bounds.getOrElse((640d, 480d))
-    val rectangle = new Rectangle(width, height)
-    val preferredSize: ObservableValue[Dimension] =
-      Bindings.createObjectBinding[Dimension](
-        () =>
-          new Dimension(rectangle.getWidth.toInt, rectangle.getHeight.toInt),
-          rectangle.widthProperty, rectangle.heightProperty)
-    BoundedNode(rectangle, preferredSize, bounds)
+    if (VidExtension.isHeadless) {
+      null
+    } else {
+      val (width, height) = bounds.getOrElse((640d, 480d))
+      val rectangle = new Rectangle(width, height)
+      val preferredSize: ObservableValue[Dimension] =
+        Bindings.createObjectBinding[Dimension](
+          () =>
+            new Dimension(rectangle.getWidth.toInt, rectangle.getHeight.toInt),
+            rectangle.widthProperty, rectangle.heightProperty)
+      BoundedNode(rectangle, preferredSize, bounds)
+    }
   }
 
   override def show(): Unit =
@@ -58,7 +64,7 @@ class JavaFXPlayer extends Player {
     }
 
   override def present(boundedNode: BoundedNode): Unit = {
-    if (boundedNode != currentNode) {
+    if (!VidExtension.isHeadless && boundedNode != currentNode) {
       onJavaFX { () =>
         if (currentNode != null)
           currentNode.preferredSize.removeListener(resizeListener)
