@@ -15,8 +15,8 @@ trait Selector {
 
 object NetLogoSelector extends Selector {
 
-  val frame = App.app.frame
-  def workspace = App.app.workspace
+  private def frame = App.app.frame
+  private def workspace = App.app.workspace
 
   override def selectOneOf(choices: Seq[String]): Option[String] = {
     if (VidExtension.isHeadless) {
