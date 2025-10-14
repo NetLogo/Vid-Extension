@@ -11,7 +11,11 @@ object VideoDeviceUtils {
     if (os.startsWith("win")) {
       (s"windows-$arch", ".dll")
     } else if (os.startsWith("mac")) {
-      (s"macosx-$arch", ".dylib")
+      if (System.getProperty("os.version").split('.')(0).toInt >= 14) {
+        (s"macosx-$arch-new", ".dylib")
+      } else {
+        (s"macosx-$arch-old", ".dylib")
+      }
     } else {
       (s"linux-$arch", ".so")
     }
