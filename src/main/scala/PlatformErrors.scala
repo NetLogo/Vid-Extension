@@ -28,7 +28,7 @@ object PlatformErrors {
   }
 
   def showMacOSSecurityMessage(ex: Exception) = {
-    val message = "It appears that NetLogo does not have permission to use the cameras on this system.  Please open System Preferences, Security & Privacy, then the Privacy Tab, select Camera in the list, and allow NetLogo to use the camera.  You will need to quit and re-open NetLogo for the change to take effect.  See this link for more details:  https://support.apple.com/en-euro/guide/mac-help/mchlf6d108da/mac"
+    val message = "It appears that NetLogo does not have permission to use the cameras on this system.  Please open System Preferences, Privacy & Security, select Camera in the list, and allow NetLogo to use the camera.  You will need to quit and re-open NetLogo for the change to take effect.  See this link for more details:  https://support.apple.com/en-euro/guide/mac-help/mchlf6d108da/mac"
     showDialog("macOS Camera Permission Needed", message, ex)
   }
 
