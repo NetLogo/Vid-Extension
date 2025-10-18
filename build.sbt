@@ -76,6 +76,6 @@ libraryDependencies ++= {
     case n if n.startsWith("Windows") => "win"
     case _ => throw new Exception("Unknown platform!")
   }
-  Seq("base", "controls", "fxml", "graphics", "media", "swing", "web")
+  Seq("base", "controls", "media", "swing")
     .map(m => "org.openjfx" % s"javafx-$m" % javaFXVersion classifier osName)
 }
