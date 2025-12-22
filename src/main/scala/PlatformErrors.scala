@@ -16,10 +16,10 @@ object PlatformErrors {
     System.getProperty("os.name").toLowerCase.startsWith("mac")
   }
 
-  def showDialog(title: String, message: String, ex: Throwable) = {
+  def showDialog(windowTitle: String, message: String, ex: Throwable) = {
     val stackTrace = Utils.getStackTrace(ex)
     val dialog = new MessageDialog(App.app.frame) {
-      doShow(title, s"$message\n\nIf it still does not work, please report the below error message to bugs@ccl.northwestern.edu or at https://github.com/NetLogo/Vid-Extension/issues\n\n$stackTrace", 15, 60)
+      doShow(windowTitle, s"$message\n\nIf it still does not work, please report the below error message to bugs@ccl.northwestern.edu or at https://github.com/NetLogo/Vid-Extension/issues\n\n$stackTrace", 15, 60)
     }
   }
 

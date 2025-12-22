@@ -15,7 +15,7 @@ scalacOptions ++= Seq(
   "-feature",
   "-encoding", "us-ascii",
   "-Xfatal-warnings",
-  "-release", "11"
+  "-release", "17"
 )
 
 netLogoClassManager := "org.nlogo.extensions.vid.VidExtension"
