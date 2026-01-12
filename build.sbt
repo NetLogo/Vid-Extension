@@ -22,32 +22,28 @@ netLogoClassManager := "org.nlogo.extensions.vid.VidExtension"
 netLogoVersion      := "7.0.0-2486d1e"
 netLogoZipExtras   ++= Seq(baseDirectory.value / "README.md")
 
-// settings for the `sbt-javacpp` sbt plugin
-javaCppVersion    :=  "1.5.7"
-// opencv depends on openblas so get those platform-specific binaries, too
-javaCppPresetLibs ++= Seq("opencv" -> "4.5.5", "openblas" -> "0.3.19")
-// only include the supported NetLogo platforms
-javaCppPlatform := {
+// only include the target platform to reduce the size of the final zip (Isaac B 1/8/26)
+val javaCppPlatform: String = {
   (System.getProperty("os.name"), System.getProperty("os.arch")) match {
     case (name, arch) if name.startsWith("Linux") =>
       if (arch.contains("x86")) {
-        Seq("linux-x86")
+        "linux-x86"
       } else {
-        Seq("linux-x86_64")
+        "linux-x86_64"
       }
 
     case (name, arch) if name.startsWith("Mac") =>
       if (arch.contains("aarch64")) {
-        Seq("macosx-arm64")
+        "macosx-arm64"
       } else {
-        Seq("macosx-x86_64")
+        "macosx-x86_64"
       }
 
     case (name, arch) if name.startsWith("Windows") =>
       if (arch.contains("x86")) {
-        Seq("windows-x86")
+        "windows-x86"
       } else {
-        Seq("windows-x86_64")
+        "windows-x86_64"
       }
 
     case _ => throw new Exception("Unknown platform!")
@@ -55,9 +51,10 @@ javaCppPlatform := {
 }
 
 libraryDependencies ++= Seq(
-// only include `javacv` and not `javacv-platform` as we manually specify the native libraries
-// throught the `sbt-javacpp` sbt plugin
-  "org.bytedeco" % "javacv" % "1.5.7"
+  "org.bytedeco" % "opencv" % "4.5.5-1.5.7" classifier javaCppPlatform
+, "org.bytedeco" % "javacpp" % "1.5.7" classifier javaCppPlatform
+, "org.bytedeco" % "openblas" % "0.3.19-1.5.7" classifier javaCppPlatform
+, "org.bytedeco" % "javacv" % "1.5.7"
 , "org.jcodec" % "jcodec" % "0.1.9"
 , "org.jcodec" % "jcodec-javase" % "0.1.9"
 )
