@@ -42,9 +42,9 @@ JNIEXPORT jobjectArray JNICALL Java_org_nlogo_extensions_vid_util_VideoDeviceUti
         return empty;
     }
 
-    IMFActivate** devices;
+    IMFActivate** devices = nullptr;
 
-    UINT32 count;
+    UINT32 count = 0;
 
     if (FAILED(MFEnumDeviceSources(attributes, &devices, &count)) || count == 0)
     {
@@ -52,10 +52,10 @@ JNIEXPORT jobjectArray JNICALL Java_org_nlogo_extensions_vid_util_VideoDeviceUti
 
         for (unsigned int i = 0; i < count; i++)
         {
-            SafeRelease(&devices[i]);
+            SafeRelease(devices + i);
         }
 
-        CoTaskMemFree(&devices);
+        CoTaskMemFree(devices);
 
         MFShutdown();
 
@@ -75,10 +75,10 @@ JNIEXPORT jobjectArray JNICALL Java_org_nlogo_extensions_vid_util_VideoDeviceUti
 
             for (unsigned int i = 0; i < count; i++)
             {
-                SafeRelease(&devices[i]);
+                SafeRelease(devices + i);
             }
 
-            CoTaskMemFree(&devices);
+            CoTaskMemFree(devices);
 
             MFShutdown();
 
