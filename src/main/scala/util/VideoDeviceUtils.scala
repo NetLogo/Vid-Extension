@@ -23,7 +23,7 @@ object VideoDeviceUtils {
 
   // dynamic libraries must be loaded from the host filesystem, so first unpack the library
   // into a temporary directory before attempting to load it (Isaac B 8/5/25)
-  private val tempPath = Paths.get(System.getProperty("java.io.tmpdir"), s"videoDeviceUtils$ext")
+  private val tempPath = Files.createTempFile("videoDeviceUtils-", ext)
 
   Files.deleteIfExists(tempPath)
   Files.copy(getClass.getResourceAsStream(s"/lib/$dir/videoDeviceUtils$ext"), tempPath)
